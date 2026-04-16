@@ -1,5 +1,7 @@
 package magizhchi.academy.pawnrestservice.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+
     private final JdbcTemplate jdbc;
 
     public AuthController(JdbcTemplate jdbc) {
@@ -31,43 +35,49 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "Username and password are required"));
         }
 
-        String sql = """
-                SELECT u.id, u.user_name, u.user_password, u.salt_value,
-                       e.name AS emp_name, r.id AS role_id, r.name AS role_name
-                FROM user_master u
-                JOIN employee e ON u.emp_id = e.id
-                JOIN role_master r ON u.role_id = r.id
-                WHERE u.user_name = ?
-                  AND u.status = 'ACTIVE'
-                  AND e.status = 'ACTIVE'
-                  AND r.status = 'ACTIVE'
-                """;
+        try {
+            String sql = """
+                    SELECT u.id, u.user_name, u.user_password, u.salt_value,
+                           e.name AS emp_name, r.id AS role_id, r.name AS role_name
+                    FROM user_master u
+                    JOIN employee e ON u.emp_id = e.id
+                    JOIN role_master r ON u.role_id = r.id
+                    WHERE u.user_name = ?
+                      AND u.status::text = 'ACTIVE'
+                      AND e.status::text = 'ACTIVE'
+                      AND r.status::text = 'ACTIVE'
+                    """;
 
-        List<Map<String, Object>> rows = jdbc.queryForList(sql, username);
+            List<Map<String, Object>> rows = jdbc.queryForList(sql, username);
 
-        if (rows.isEmpty()) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid username or inactive account"));
+            if (rows.isEmpty()) {
+                return ResponseEntity.status(401).body(Map.of("error", "Invalid username or inactive account"));
+            }
+
+            Map<String, Object> user = rows.get(0);
+            String storedHash = (String) user.get("user_password");
+            String salt       = (String) user.get("salt_value");
+
+            if (!verifyPassword(password, storedHash, salt)) {
+                return ResponseEntity.status(401).body(Map.of("error", "Invalid password"));
+            }
+
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("userId",       user.get("id"));
+            response.put("userName",     user.get("user_name"));
+            response.put("employeeName", user.get("emp_name"));
+            response.put("roleId",       user.get("role_id"));
+            response.put("roleName",     user.get("role_name"));
+            String token = Base64.getEncoder().encodeToString(
+                    (user.get("id") + ":" + username + ":" + System.currentTimeMillis()).getBytes());
+            response.put("token", token);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Login error for user {}: {}", username, e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of("error", "Login failed: " + e.getMessage()));
         }
-
-        Map<String, Object> user = rows.get(0);
-        String storedHash = (String) user.get("user_password");
-        String salt       = (String) user.get("salt_value");
-
-        if (!verifyPassword(password, storedHash, salt)) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid password"));
-        }
-
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("userId",       user.get("id"));
-        response.put("userName",     user.get("user_name"));
-        response.put("employeeName", user.get("emp_name"));
-        response.put("roleId",       user.get("role_id"));
-        response.put("roleName",     user.get("role_name"));
-        String token = Base64.getEncoder().encodeToString(
-                (user.get("id") + ":" + username + ":" + System.currentTimeMillis()).getBytes());
-        response.put("token", token);
-
-        return ResponseEntity.ok(response);
     }
 
     /** PBKDF2WithHmacSHA1, 10000 iterations, 256-bit key — same as desktop app */
