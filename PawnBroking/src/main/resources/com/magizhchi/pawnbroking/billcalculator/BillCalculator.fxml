@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.collections.*?>
+<?import com.magizhchi.pawnbroking.companymaster.*?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" stylesheets="@stockdetails.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.magizhchi.pawnbroking.billcalculator.BillCalculatorController">
+   <children>
+      <TabPane fx:id="tpScreen" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <tabs>
+            <Tab closable="false" onSelectionChanged="#companyTabClicked" text="Company Bill Calc">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane>
+                                 <children>
+                                    <ScrollPane prefHeight="100.0" prefWidth="1366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane prefHeight="350.0" prefWidth="1366.0" styleClass="screen-background">
+                                             <children>
+                                                <VBox alignment="TOP_CENTER" prefWidth="1366.0" spacing="20.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <HBox fx:id="filterHBOX" alignment="TOP_CENTER" layoutX="10.0" layoutY="30.0" spacing="10.0">
+                                                         <children>
+                                                            <HBox fx:id="companyAloneFilterHBox" alignment="CENTER" spacing="10.0">
+                                                               <children>
+                                                                  <Label text="Material Type:" />
+                                                                  <ComboBox fx:id="cbMaterialType" onAction="#cbMaterialTypeOnAction" prefWidth="100.0" value="GOLD" visibleRowCount="3">
+                                                                     <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                           <String fx:value="GOLD" />
+                                                                           <String fx:value="SILVER" />
+                                                                        </FXCollections>
+                                                                     </items>
+                                                                  </ComboBox>
+                                                                  <Label fx:id="lbFrom1" text="Closing Date:">
+                                                                     <HBox.margin>
+                                                                        <Insets left="10.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <DatePicker fx:id="dpClosingDate" minWidth="100.0" onAction="#dpClosingDateOnChanged" />
+                                                               </children>
+                                                               <HBox.margin>
+                                                                  <Insets right="20.0" />
+                                                               </HBox.margin>
+                                                            </HBox>
+                                                            <Button mnemonicParsing="false" onAction="#btCompSelectAllOnAction" text="Select All" />
+                                                            <Button mnemonicParsing="false" onAction="#btCompDeSelectAllOnAction" text="De Select All" />
+                                                            <HBox id="TOGGLEHBOX" alignment="CENTER" spacing="1.0">
+                                                               <children>
+                                                                  <Label styleClass="debit-credit-label" text="Active Company:">
+                                                                     <HBox.margin>
+                                                                        <Insets top="4.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <ComboBox fx:id="cbActiveCompany" minWidth="300.0" prefWidth="200.0" styleClass="debit-credit-field" visibleRowCount="3">
+                                                                     <items>
+                                                                        <FXCollections fx:factory="observableArrayList" />
+                                                                     </items>
+                                                                  </ComboBox>
+                                                                  <Button mnemonicParsing="false" onAction="#btActiveCompanyOnAction" styleClass="green-curve" text="Save">
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </Button>
+                                                               </children>
+                                                            </HBox>
+                                                         </children>
+                                                         <VBox.margin>
+                                                            <Insets top="10.0" />
+                                                         </VBox.margin>
+                                                      </HBox>
+                                                      <HBox fx:id="nodeAddToFilter" alignment="CENTER" spacing="10.0">
+                                                         <children>
+                                                            <ComboBox fx:id="cbMultiOperation" layoutX="109.0" layoutY="10.0" minWidth="200.0" onAction="#cbMultiOperationOnAction" value="SELECT OPERATION TYPE" visibleRowCount="6">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList">    
+                                                                    <String fx:value="SELECT OPERATION TYPE" />
+                                                                    <String fx:value="REBILLED MULTIPLE" />                                                                    
+                                                                    <String fx:value="MULTI CLOSE" />  
+                                                                    <String fx:value="MULTI OPERATION" />                                                                                                                                                                                                           
+                                                                  </FXCollections>
+                                                               </items>
+                                                            </ComboBox>
+                                                            <ComboBox fx:id="cbBeforeAfter" onAction="#cbBeforeAfterOnAction" prefWidth="100.0" value="BEFORE" visibleRowCount="3">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList">
+                                                                     <String fx:value="BEFORE" />
+                                                                     <String fx:value="AFTER" />
+                                                                  </FXCollections>
+                                                               </items>
+                                                            </ComboBox>
+                                                            <ComboBox fx:id="cbOperation" minWidth="250.0" onAction="#cbOperationOnAction" value="BILL CLOSING" visibleRowCount="6">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList">
+                                                                     <String fx:value="BILL CLOSING" />
+                                                                     <String fx:value="BILL OPENING" />
+                                                                     <String fx:value="REBILL" />
+                                                                  </FXCollections>
+                                                               </items>
+                                                            </ComboBox>
+                                                            <HBox fx:id="hbSuspenseBillNumber" alignment="CENTER" layoutX="479.0" layoutY="10.0" spacing="5.0">
+                                                               <children>
+                                                                  <Label text="Suspense Bill No:" />
+                                                                  <TextField fx:id="txtSuspenseBillNumber" layoutX="930.0" layoutY="10.0" minWidth="100.0" onAction="#txtSuspenseBillNumberOnAction" onKeyTyped="#capitalizeCharOnType" />
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox fx:id="hbClosingBillNumber" alignment="CENTER" spacing="5.0">
+                                                               <children>
+                                                                  <Label text="Closing Bill No:" />
+                                                                  <TextField fx:id="txtClosingBillNumber" layoutX="930.0" layoutY="10.0" minWidth="100.0" onAction="#txtClosingBillNumberOnAction" onKeyTyped="#capitalizeCharOnType" />
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox fx:id="hbOpeningBillNumber" alignment="CENTER" layoutX="626.0" layoutY="10.0" spacing="5.0">
+                                                               <children>
+                                                                  <Label text="Opening Bill No:" />
+                                                                  <TextField fx:id="txtOpeningBillNumber" layoutX="930.0" layoutY="10.0" minWidth="100.0" onAction="#txtOpeningBillNumberOnAction" onKeyTyped="#capitalizeCharOnType" />
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox fx:id="hbAmount" alignment="CENTER" layoutX="735.0" layoutY="10.0" spacing="5.0">
+                                                               <children>
+                                                                  <Label text="Amount:" />
+                                                                  <TextField fx:id="txtAmount" layoutX="930.0" layoutY="10.0" minWidth="100.0" onAction="#txtAmountOnAction" onKeyTyped="#txtAmountOnType" />
+                                                               </children>
+                                                            </HBox>
+                                                            <Button fx:id="btRemoveFromTable" mnemonicParsing="false" onAction="#btRemoveFromTableClicked" text="Remove All" />
+                                                            <Button fx:id="btDoOperation" layoutX="1345.0" layoutY="13.0" mnemonicParsing="false" onAction="#btDoOperationClicked" text="Do Operartion" />
+                                                            <Button fx:id="btPrintCompSelected" disable="true" focusTraversable="false" mnemonicParsing="false" mouseTransparent="true" onAction="#btPrintCompSelectedOnAction" text="Print Selected" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox alignment="CENTER" spacing="5.0">
+                                                         <children>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <HBox alignment="CENTER">
+                                                                     <children>
+                                                                        <Label styleClass="debit-credit-label" text="Open Capital:" />
+                                                                        <TextField fx:id="txtOpenCapital" editable="false" maxWidth="150.0" minWidth="100.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <HBox spacing="5.0">
+                                                                     <children>
+                                                                        <HBox alignment="CENTER">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Open Interest:" />
+                                                                              <TextField fx:id="txtOpenInterest" editable="false" maxWidth="100.0" minWidth="50.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <HBox alignment="CENTER" layoutX="563.0" layoutY="10.0">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Open Interested:" />
+                                                                              <TextField fx:id="txtOpenInterested" editable="false" focusTraversable="false" maxWidth="120.0" minWidth="100.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                               <HBox.margin>
+                                                                  <Insets />
+                                                               </HBox.margin>
+                                                            </VBox>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <HBox alignment="CENTER">
+                                                                     <children>
+                                                                        <Label styleClass="debit-credit-label" text="Close Capital:" />
+                                                                        <TextField fx:id="txtCloseCapital" editable="false" focusTraversable="false" maxWidth="150.0" minWidth="100.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <HBox spacing="5.0">
+                                                                     <children>
+                                                                        <HBox alignment="CENTER" layoutX="436.0" layoutY="10.0">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Close Interest:" />
+                                                                              <TextField fx:id="txtCloseInterest" editable="false" focusTraversable="false" maxWidth="100.0" minWidth="100.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <HBox alignment="CENTER" layoutX="650.0" layoutY="10.0">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Close Interested:" />
+                                                                              <TextField fx:id="txtCloseInterested" editable="false" focusTraversable="false" maxWidth="120.0" minWidth="100.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <HBox alignment="CENTER">
+                                                                     <children>
+                                                                        <Label fx:id="lbAmtToGet" styleClass="tot-debit-credit-field" text="Amount To Get:" />
+                                                                        <TextField fx:id="txtAmtToGet" maxWidth="200.0" minWidth="100.0" onAction="#txtAmtToGetOnAction" onKeyTyped="#txtAmountOnType" styleClass="tot-debit-credit-field" />
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <HBox spacing="5.0">
+                                                                     <children>
+                                                                        <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Rate Per Gm:" />
+                                                                              <TextField fx:id="txtTotalRatePerGm" editable="false" focusTraversable="false" maxWidth="80.0" mouseTransparent="true" onKeyTyped="#txtAmountOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <HBox alignment="CENTER">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Total Weight:" />
+                                                                              <TextField fx:id="txtTotalWt" editable="false" maxWidth="80.0" mouseTransparent="true" onKeyTyped="#txtAmountOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                      </HBox>
+                                                      <VBox alignment="TOP_CENTER">
+                                                         <children>
+                                                            <Button fx:id="btCaptureCustomerImg" mnemonicParsing="false" onAction="#btCaptureCustomerImgClicked" text="Capture Customer Image" />
+                                                            <ImageView fx:id="ivCustomer" fitHeight="170.0" fitWidth="200.0" onMouseClicked="#ivCustomerImageClicked" pickOnBounds="true" preserveRatio="true" />
+                                                         </children>
+                                                      </VBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <ScrollPane prefWidth="1366.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane prefWidth="1366.0" styleClass="screen-background">
+                                             <children>
+                                                <HBox alignment="CENTER" layoutY="10.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <TableView fx:id="tbList" layoutX="10.0" layoutY="10.0" onMouseClicked="#tbListOnMouseClicked" prefHeight="450.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+                                                         <columns>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="38.0" text="B/A">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sBOrA" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="92.0" text="Operation">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sOperation" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="63.0" text="Bill No">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sBillNumber" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="137.0" text="Name">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sName" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="114.0" text="Opening Date">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sOpeningDate" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="81.0" text="Material">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sMaterial" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="58.0" text="Item">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sItems" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="91.0" text="Gr.Weight">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sGrWt" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="100.0" text="Rate Per Gm">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sRatePerGm" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="72.0" text="Amount">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sAmount" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn minWidth="2.0" prefWidth="68.0" text="Interest">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sInterest" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="96.0" text="Intrstd Amt">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sInterestedAmt" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="150.0" text="Total Intrestd Amt">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sTotalInterestedAmt" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="70.0" text="Combo">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sCombo" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="50.0" text="SEL">
+                                                               <cellFactory>
+                                                                  <com.magizhchi.pawnbroking.billcalculator.CheckBoxCellFactory />
+                                                               </cellFactory>
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="bChecked" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                         </columns>
+                                                         <HBox.margin>
+                                                            <Insets top="10.0" />
+                                                         </HBox.margin>
+                                                      </TableView>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                          </items>
+                        </SplitPane>
+                     </children></AnchorPane>
+               </content>
+            </Tab>
+            <Tab closable="false" onSelectionChanged="#repTabClicked" text="Repledge Bill Calc">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.35" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <items>
+                              <AnchorPane>
+                                 <children>
+                                    <ScrollPane prefHeight="100.0" prefWidth="1366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane prefHeight="350.0" prefWidth="1366.0" styleClass="screen-background">
+                                             <children>
+                                                <VBox alignment="TOP_CENTER" prefWidth="1366.0" spacing="20.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <HBox fx:id="filterHBOX1" alignment="TOP_CENTER" layoutX="10.0" layoutY="30.0" spacing="15.0">
+                                                         <children>
+                                                            <HBox fx:id="companyAloneFilterHBox1" alignment="CENTER" spacing="10.0">
+                                                               <children>
+                                                                  <Label text="Material Type:" />
+                                                                  <ComboBox fx:id="cbRepMaterialType" prefWidth="100.0" value="GOLD" visibleRowCount="3">
+                                                                     <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                           <String fx:value="GOLD" />
+                                                                        </FXCollections>
+                                                                     </items>
+                                                                  </ComboBox>
+                                                                  <Label fx:id="lbFrom11" text="Closing Date:">
+                                                                     <HBox.margin>
+                                                                        <Insets left="20.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                                  <DatePicker fx:id="dpRepClosingDate" minWidth="100.0" />
+                                                               </children>
+                                                            </HBox>
+                                                            <Button fx:id="btRepSelectAll" mnemonicParsing="false" onAction="#btRepSelectAllOnAction" text="Select All" />
+                                                            <Button fx:id="btRepDeSelectAll" mnemonicParsing="false" onAction="#btRepDeSelectAllOnAction" text="De Select All" />
+                                                            <Button fx:id="btRepPendingRecords" layoutX="986.0" layoutY="10.0" mnemonicParsing="false" onAction="#btRepPendingRecordsOnAction" text="Repledge Bills To Be Taken Immediately" />
+                                                            <Button fx:id="btRepSuspense" layoutX="969.0" layoutY="10.0" mnemonicParsing="false" onAction="#btRepSuspenseOnAction" text="Repledge Suspesed Bills" />
+                                                         </children>
+                                                         <VBox.margin>
+                                                            <Insets top="10.0" />
+                                                         </VBox.margin>
+                                                      </HBox>
+                                                      <HBox fx:id="nodeRepAddToFilter" alignment="CENTER" spacing="10.0">
+                                                         <children>
+                                                            <ComboBox fx:id="cbRepBeforeAfter" onAction="#cbRepBeforeAfterOnAction" prefWidth="100.0" value="BEFORE" visibleRowCount="3">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList">
+                                                                     <String fx:value="BEFORE" />
+                                                                     <String fx:value="AFTER" />
+                                                                  </FXCollections>
+                                                               </items>
+                                                            </ComboBox>
+                                                            <ComboBox fx:id="cbRepOperation" minWidth="250.0" onAction="#cbRepOperationOnAction" value="BILL CLOSING" visibleRowCount="6">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList">
+                                                                     <String fx:value="BILL CLOSING" />
+                                                                     <String fx:value="BILL OPENING" />
+                                                                     <String fx:value="GET SUSPENSE" />
+                                                                  </FXCollections>
+                                                               </items>
+                                                            </ComboBox>
+                                                            <HBox fx:id="hbRepClosingBillNumber" alignment="CENTER" spacing="5.0">
+                                                               <children>
+                                                                  <Label text="Closing Bill No:" />
+                                                                  <TextField fx:id="txtRepClosingBillNumber" layoutX="930.0" layoutY="10.0" minWidth="100.0" onAction="#txtRepClosingBillNumberOnAction" onKeyTyped="#capitalizeCharOnType" />
+                                                               </children>
+                                                            </HBox>
+                                                            <ComboBox fx:id="cbRepNames" minWidth="350.0" onAction="#cbRepNamesOnAction" visibleRowCount="6">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList" />
+                                                               </items>
+                                                            </ComboBox>
+                                                            <HBox fx:id="hbRepOpeningBillNumber" alignment="CENTER" layoutX="626.0" layoutY="10.0" spacing="5.0">
+                                                               <children>
+                                                                  <Label text="Opening Bill No:" />
+                                                                  <TextField fx:id="txtRepOpeningBillNumber" layoutX="930.0" layoutY="10.0" minWidth="100.0" onAction="#txtRepOpeningBillNumberOnAction" onKeyTyped="#capitalizeCharOnType" />
+                                                                  <CheckBox fx:id="chChangeRepAmount" mnemonicParsing="false" text="Change Amount" />
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox fx:id="hbRepAmount" alignment="CENTER" layoutX="735.0" layoutY="10.0" spacing="5.0">
+                                                               <children>
+                                                                  <Label text="Amount:" />
+                                                                  <TextField fx:id="txtRepAmount" layoutX="930.0" layoutY="10.0" minWidth="100.0" onAction="#txtRepAmountOnAction" onKeyTyped="#txtAmountOnType" />
+                                                               </children>
+                                                            </HBox>
+                                                            <Button fx:id="btRepRemoveFromTable" mnemonicParsing="false" onAction="#btRepRemoveFromTableClicked" text="Remove All" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox alignment="CENTER" spacing="5.0">
+                                                         <children>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <HBox alignment="CENTER">
+                                                                     <children>
+                                                                        <Label styleClass="debit-credit-label" text="Open Capital:" />
+                                                                        <TextField fx:id="txtRepOpenCapital" maxWidth="150.0" minWidth="100.0" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <HBox spacing="5.0">
+                                                                     <children>
+                                                                        <HBox alignment="CENTER">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Open Interest:" />
+                                                                              <TextField fx:id="txtRepOpenInterest" maxWidth="100.0" minWidth="50.0" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <HBox alignment="CENTER" layoutX="563.0" layoutY="10.0">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Open Interested:" />
+                                                                              <TextField fx:id="txtRepOpenInterested" maxWidth="120.0" minWidth="100.0" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <HBox alignment="CENTER">
+                                                                     <children>
+                                                                        <Label styleClass="debit-credit-label" text="Close Capital:" />
+                                                                        <TextField fx:id="txtRepCloseCapital" maxWidth="150.0" minWidth="100.0" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <HBox spacing="5.0">
+                                                                     <children>
+                                                                        <HBox alignment="CENTER">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Close Interest:" />
+                                                                              <TextField fx:id="txtRepCloseInterest" maxWidth="100.0" minWidth="100.0" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <HBox alignment="CENTER" layoutX="436.0" layoutY="10.0">
+                                                                           <children>
+                                                                              <Label styleClass="debit-credit-label" text="Close Interested:" />
+                                                                              <TextField fx:id="txtRepCloseInterested" maxWidth="120.0" minWidth="100.0" onKeyTyped="#capitalizeCharOnType" styleClass="debit-credit-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                            </VBox>
+                                                            <HBox alignment="CENTER">
+                                                               <children>
+                                                                  <Label fx:id="lbAmtToGet1" styleClass="tot-debit-credit-field" text="Amount To Get:" />
+                                                                  <TextField fx:id="txtRepAmtToGet" minWidth="100.0" onAction="#txtRepAmtToGetOnAction" onKeyTyped="#txtAmountOnType" styleClass="tot-debit-credit-field" />
+                                                               </children>
+                                                            </HBox>
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox alignment="CENTER" spacing="10.0">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT">
+                                                               <HBox.margin>
+                                                                  <Insets />
+                                                               </HBox.margin>
+                                                               <children>
+                                                                  <Label text="Repledge Planner Id: " />
+                                                                  <TextField fx:id="txtRepPlannerId" minWidth="100.0" onAction="#txtRepPlannerIdOnAction" onKeyTyped="#capitalizeCharOnType" />
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox alignment="CENTER" spacing="10.0">
+                                                               <children>
+                                                                  <HBox id="TOGGLEHBOX">
+                                                                     <children>
+                                                                        <Label text="Save Mode: ">
+                                                                           <HBox.margin>
+                                                                              <Insets top="4.0" />
+                                                                           </HBox.margin>
+                                                                        </Label>
+                                                                        <HBox fx:id="hSaveModeButtons" alignment="CENTER">
+                                                                           <children>
+                                                                              <ToggleButton fx:id="tgOn" layoutX="474.0" layoutY="27.0" mnemonicParsing="false" onAction="#saveModeON" selected="true" text="ON">
+                                                                                 <toggleGroup>
+                                                                                    <ToggleGroup fx:id="ViewModeGroup" />
+                                                                                 </toggleGroup>
+                                                                              </ToggleButton>
+                                                                              <ToggleButton fx:id="tgOff" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#saveModeOFF" text="OFF" toggleGroup="$ViewModeGroup" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <Button fx:id="btSaveBill" mnemonicParsing="false" onAction="#btSaveBillClicked" text="Save Planner">
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </Button>
+                                                                  <Button fx:id="btUpdateBill" disable="true" mnemonicParsing="false" onAction="#btUpdateBillClicked" text="Update Planner" />
+                                                                  <Button fx:id="btClearAll" disable="true" mnemonicParsing="false" onAction="#btClearAllClicked" text="Clear All">
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </Button>
+                                                               </children>
+                                                               <HBox.margin>
+                                                                  <Insets />
+                                                               </HBox.margin>
+                                                            </HBox>
+                                                            <Button fx:id="btPrintSelected" mnemonicParsing="false" onAction="#btPrintSelectedOnAction" text="Print Selected" />
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <ScrollPane prefHeight="100.0" prefWidth="1366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane prefWidth="1366.0" styleClass="screen-background">
+                                             <children>
+                                                <HBox alignment="CENTER" layoutY="10.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <TableView fx:id="tbRepList" layoutX="10.0" layoutY="10.0" onMouseClicked="#tbRepListOnMouseClicked" prefHeight="370.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
+                                                         <columns>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="50.0" text="B/A">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sBOrA" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="100.0" text="Operation">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sOperation" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="111.0" text="Comp Bill No">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sBillNumber" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="155.0" text="Rep Opening Date">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sOpeningDate" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="109.0" text="Rep Number">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sRepBillNumber" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="85.0" text="Rep Name">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sRepName" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="120.0" text="Item">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sItems" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn text="Amount">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sAmount" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn text="Interest">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sInterest" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="122.0" text="Interested Amt">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sInterestedAmt" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="157.0" text="Total Intrsted Amt">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sTotalInterestedAmt" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="70.0" text="Status">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sStatus" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="50.0" text="SEL">
+                                                               <cellFactory>
+                                                                  <com.magizhchi.pawnbroking.billcalculator.CheckBoxCellFactory />
+                                                               </cellFactory>
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="bChecked" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                         </columns>
+                                                         <HBox.margin>
+                                                            <Insets top="10.0" />
+                                                         </HBox.margin>
+                                                      </TableView>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                           </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

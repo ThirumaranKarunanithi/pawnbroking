@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.collections.*?>
+<?import com.magizhchi.pawnbroking.companymaster.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" stylesheets="@credit.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.magizhchi.pawnbroking.credit.RepledgeCreditController">
+   <children>
+      <TabPane fx:id="tpScreen" style="-fx-background-color: #fff;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <tabs>
+            <Tab closable="false" text="Bill Amount ">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="680.0" prefWidth="1366.0" styleClass="screen-background">
+                                 <children>
+                                    <VBox alignment="TOP_CENTER" spacing="25.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <HBox layoutX="100.0" layoutY="70.0" spacing="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <HBox fillHeight="false" maxHeight="250.0" spacing="5.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_RIGHT" spacing="30.0">
+                                                         <children>
+                                                            <Label text="Credit Id:" />
+                                                            <Label layoutX="37.0" layoutY="10.0" text="Company:" />
+                                                            <Label text="Credited Date:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                            <Label layoutX="20.0" layoutY="423.0" text="Rep-Bill Id:" />
+                                                            <Label text="Repledge Name:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                            <Label layoutX="32.0" layoutY="245.0" text="Re-Bill Number:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                            <Label text="Comp-Bill Number:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                            <Label layoutX="39.0" layoutY="288.0" text="Comp-Status:">
+                                                               <VBox.margin>
+                                                                  <Insets top="-5.0" />
+                                                               </VBox.margin>
+                                                            </Label>
+                                                            <Label layoutX="39.0" layoutY="194.0" text="Comp-Opened Date:" />
+                                                            <Label layoutX="32.0" layoutY="241.0" text="Comp-Closed Date:">
+                                                               <VBox.margin>
+                                                                  <Insets top="-5.0" />
+                                                               </VBox.margin>
+                                                            </Label>
+                                                            <Label text="Comp-Bill Amount:" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                      <VBox prefWidth="230.0" spacing="20.0">
+                                                         <children>
+                                                            <TextField fx:id="txtDebitId" editable="false" focusTraversable="false" mouseTransparent="true" onAction="#txtDebitIdOnAction" onKeyTyped="#capitalizeCharOnType" promptText="Credit Id" styleClass="custom-text-field" />
+                                                            <HBox>
+                                                               <children>
+                                                                  <TextField fx:id="txtCompanyId" editable="false" focusTraversable="false" layoutX="10.0" layoutY="10.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="50.0" promptText="Id" />
+                                                                  <TextField fx:id="txtCompanyName" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="180.0" promptText="Name" />
+                                                               </children>
+                                                            </HBox>
+                                                            <DatePicker fx:id="dpDebittedDate" editable="false" onAction="#dpDebittedDateTextChanged" prefHeight="25.0" prefWidth="250.0" promptText="Date" />
+                                                            <TextField fx:id="txtRepBillId" editable="false" focusTraversable="false" layoutX="10.0" layoutY="415.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Bill Id" />
+                                                            <HBox prefHeight="20.0" prefWidth="200.0" spacing="2.0">
+                                                               <children>
+                                                                  <TextField fx:id="txtRepledgeId" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="50.0" promptText="No" />
+                                                                  <ComboBox fx:id="cbRepledgeName" onAction="#cbRepledgeNameOnAction" prefWidth="195.0" value="" visibleRowCount="5">
+                                                                     <items>
+                                                                        <FXCollections fx:factory="observableArrayList" />
+                                                                     </items>
+                                                                  </ComboBox>
+                                                               </children>
+                                                            </HBox>
+                                                            <TextField fx:id="txtRepledgeBillNumber" layoutX="10.0" layoutY="235.0" onAction="#txtRepledgeBillNumberOnAction" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Bill No" styleClass="custom-text-field" />
+                                                            <TextField fx:id="txtBillNumber" onAction="#txtBillNumberOnAction" onKeyTyped="#capitalizeCharOnType" promptText="Company Bill No" styleClass="custom-text-field" />
+                                                            <TextField fx:id="txtCompanyBillStatus" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Company Bill Status" />
+                                                            <TextField fx:id="txtCompanyOpenedDate" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Company Bill Opened Date" />
+                                                            <TextField fx:id="txtCompanyClosedDate" editable="false" focusTraversable="false" layoutX="10.0" layoutY="235.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Company Bill Closed Date" />
+                                                            <TextField fx:id="txtCompanyBillAmount" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Company Bill Amount" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
+                                                <HBox fillHeight="false" spacing="5.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_RIGHT" spacing="30.0">
+                                                         <children>
+                                                            <Label text="Items:" />
+                                                            <Label text="Re-Status:" />
+                                                            <Label text="Re-Opened Date:" />
+                                                            <Label text="Re-Closed Date:" />
+                                                            <Label contentDisplay="RIGHT" text="Note:" textAlignment="RIGHT" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                      <VBox prefWidth="230.0" spacing="20.0">
+                                                         <children>
+                                                            <TextField fx:id="txtItems" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="200.0" promptText="Items" />
+                                                            <TextField fx:id="txtRepledgeBillStatus" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Bill Status" />
+                                                            <TextField fx:id="txtRepledgeOpenedDate" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Bill Opened Date" />
+                                                            <TextField fx:id="txtRepledgeClosedDate" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Bill Closed Date" />
+                                                            <TextArea fx:id="txtNote" prefHeight="50.0" prefWidth="200.0" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
+                                                <HBox alignment="TOP_RIGHT" fillHeight="false" spacing="5.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_RIGHT" spacing="28.0">
+                                                         <children>
+                                                            <Label text="Re-Bill Amount:" />
+                                                            <Label layoutX="16.0" layoutY="55.0" text="Amount to be Received:" textAlignment="RIGHT" />
+                                                            <Label layoutX="27.0" layoutY="100.0" text="Received Amount:" />
+                                                            <Label text="Amount to be Given:" textAlignment="RIGHT" />
+                                                            <Label text="Given Amount:" />
+                                                            <Label text="Credited Amount:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets top="5.0" />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                      <VBox prefWidth="230.0" spacing="20.0">
+                                                         <children>
+                                                            <TextField fx:id="txtRepledgeBillAmount" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Bill Amount" />
+                                                            <TextField fx:id="txtToGetAmount" editable="false" focusTraversable="false" layoutX="10.0" layoutY="55.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="To get on bill open" />
+                                                            <TextField fx:id="txtGotAmount" editable="false" focusTraversable="false" layoutX="10.0" layoutY="100.0" mouseTransparent="true" onKeyTyped="#allowNumberAndDotOnType" promptText="Amount Received on bill open" />
+                                                            <TextField fx:id="txtToGiveAmount" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="To give on bill close" />
+                                                            <TextField fx:id="txtGivenAmount" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#allowNumberAndDotOnType" promptText="Amount given on bill close" />
+                                                            <TextField fx:id="txtDebittedAmount" onKeyTyped="#allowNumberAndDotOnType" promptText="Amount credited" styleClass="custom-text-field" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets left="30.0" top="40.0" />
+                                             </VBox.margin>
+                                          </HBox>
+                                          <HBox alignment="TOP_RIGHT" spacing="10.0">
+                                             <children>
+                                                <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                                   <children>
+                                                      <Label id="odd-Label" fx:id="lbMessage" contentDisplay="RIGHT" textAlignment="RIGHT" />
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
+                                                <HBox alignment="BOTTOM_RIGHT" spacing="10.0">
+                                                   <children>
+                                                      <HBox id="TOGGLEHBOX">
+                                                         <children>
+                                                            <Label text="Save Mode: ">
+                                                               <HBox.margin>
+                                                                  <Insets top="4.0" />
+                                                               </HBox.margin>
+                                                            </Label>
+                                                            <HBox fx:id="hSaveModeButtons">
+                                                               <children>
+                                                                  <ToggleButton fx:id="tgOn" layoutX="474.0" layoutY="27.0" mnemonicParsing="false" onAction="#saveModeON" selected="true" text="ON">
+                                                                     <toggleGroup>
+                                                                        <ToggleGroup fx:id="ViewModeGroup" />
+                                                                     </toggleGroup>
+                                                                  </ToggleButton>
+                                                                  <ToggleButton fx:id="tgOff" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#saveModeOFF" text="OFF" toggleGroup="$ViewModeGroup" />
+                                                               </children>
+                                                            </HBox>
+                                                         </children>
+                                                      </HBox>
+                                                      <Button fx:id="btSaveBill" mnemonicParsing="false" onAction="#btSaveBillClicked" text="Save Bill">
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </Button>
+                                                      <Button fx:id="btUpdateBill" disable="true" mnemonicParsing="false" onAction="#btUpdateBillClicked" text="Update Bill" />
+                                                      <Button fx:id="btClearAll" mnemonicParsing="false" onAction="#btClearAllClicked" text="Clear All">
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </Button>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets right="200.0" />
+                                             </VBox.margin>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                     </children></AnchorPane>
+               </content>
+            </Tab>
+            <Tab closable="false" text="Other Amount ">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="680.0" prefWidth="1366.0">
+                                 <children>
+                                    <VBox alignment="TOP_CENTER" spacing="60.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <HBox layoutX="100.0" layoutY="70.0" spacing="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <HBox fillHeight="false" spacing="5.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_RIGHT" spacing="30.0">
+                                                         <children>
+                                                            <Label text="Credit Id:" />
+                                                            <Label layoutX="37.0" layoutY="10.0" text="Company:" />
+                                                            <Label text="Repledge Name:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                            <Label text="Credited Date:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                            <Label layoutX="21.0" layoutY="151.0" text="Expenses for:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                            <Label text="Name:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                            <Label layoutX="55.0" layoutY="198.0" text="Reason for debit:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                      <VBox prefWidth="250.0" spacing="20.0">
+                                                         <children>
+                                                            <TextField fx:id="txtRODebitId" editable="false" focusTraversable="false" mouseTransparent="true" onAction="#txtRODebitIdOnAction" onKeyTyped="#capitalizeCharOnType" promptText="Credit Id" styleClass="custom-text-field" />
+                                                            <HBox>
+                                                               <children>
+                                                                  <TextField fx:id="txtROCompanyId" editable="false" focusTraversable="false" layoutX="10.0" layoutY="10.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="50.0" promptText="Id" />
+                                                                  <TextField fx:id="txtROCompanyName" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="200.0" promptText="Name" />
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox prefHeight="20.0" prefWidth="200.0" spacing="2.0">
+                                                               <children>
+                                                                  <TextField fx:id="txtRORepledgeId" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="50.0" promptText="No" />
+                                                                  <ComboBox fx:id="cbRORepledgeName" onAction="#cbRORepledgeNameOnAction" prefWidth="195.0" value="" visibleRowCount="5">
+                                                                     <items>
+                                                                        <FXCollections fx:factory="observableArrayList" />
+                                                                     </items>
+                                                                  </ComboBox>
+                                                               </children>
+                                                            </HBox>
+                                                            <DatePicker fx:id="dpRODebittedDate" editable="false" onAction="#dpRODebittedDateTextChanged" prefHeight="25.0" prefWidth="250.0" promptText="Date" />
+                                                            <ComboBox fx:id="cbROExpenseType" prefWidth="250.0" value="OTHER" visibleRowCount="5">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList">
+                                                                     <String fx:value="OTHER" />
+                                                                  </FXCollections>
+                                                               </items>
+                                                            </ComboBox>
+                                                            <TextField fx:id="txtROName" onKeyPressed="#capitalizeCharOnPressed" onKeyTyped="#capitalizeCharOnType" promptText="Name of the person or item name" styleClass="custom-text-field" />
+                                                            <TextArea fx:id="txtROReason" prefHeight="50.0" prefWidth="200.0" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
+                                                <HBox fillHeight="false" spacing="5.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_RIGHT" spacing="30.0">
+                                                         <children>
+                                                            <Label contentDisplay="RIGHT" text="Note:" textAlignment="RIGHT" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                      <VBox prefWidth="230.0" spacing="20.0">
+                                                         <children>
+                                                            <TextArea fx:id="txtRONote" prefHeight="50.0" prefWidth="250.0" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
+                                                <HBox alignment="TOP_RIGHT" fillHeight="false" spacing="5.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_RIGHT" spacing="28.0">
+                                                         <children>
+                                                            <Label text="Invoice No:" />
+                                                            <Label text="Invoice Amount:" textAlignment="RIGHT" />
+                                                            <Label text="Credited Amount:">
+                                                               <graphic>
+                                                                  <Label style="-fx-text-fill: #ff0000;" text="*" />
+                                                               </graphic>
+                                                            </Label>
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets top="5.0" />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                      <VBox prefWidth="250.0" spacing="20.0">
+                                                         <children>
+                                                            <TextField fx:id="txtROInvoiceNo" onKeyPressed="#capitalizeCharOnPressed" onKeyTyped="#capitalizeCharOnType" promptText="Invoice no" styleClass="custom-text-field" />
+                                                            <TextField fx:id="txtROInvoiceAmount" layoutX="10.0" layoutY="100.0" onKeyTyped="#allowNumberAndDotOnType" promptText="Invoice amount" styleClass="custom-text-field" />
+                                                            <TextField fx:id="txtRODebittedAmount" onKeyTyped="#allowNumberAndDotOnType" promptText="Amount credited" styleClass="custom-text-field" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets left="30.0" top="40.0" />
+                                             </VBox.margin>
+                                          </HBox>
+                                          <HBox alignment="TOP_RIGHT" spacing="10.0">
+                                             <children>
+                                                <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                                   <children>
+                                                      <Label id="odd-Label" fx:id="lbMessage1" contentDisplay="RIGHT" textAlignment="RIGHT" />
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
+                                                <HBox alignment="BOTTOM_RIGHT" spacing="10.0">
+                                                   <children>
+                                                      <HBox id="TOGGLEHBOX">
+                                                         <children>
+                                                            <Label text="Save Mode: ">
+                                                               <HBox.margin>
+                                                                  <Insets top="4.0" />
+                                                               </HBox.margin>
+                                                            </Label>
+                                                            <HBox fx:id="hSaveModeButtons1">
+                                                               <children>
+                                                                  <ToggleButton fx:id="tgROOn" layoutX="474.0" layoutY="27.0" mnemonicParsing="false" onAction="#saveModeROON" selected="true" text="ON">
+                                                                     <toggleGroup>
+                                                                        <ToggleGroup fx:id="ViewModeGroup1" />
+                                                                     </toggleGroup>
+                                                                  </ToggleButton>
+                                                                  <ToggleButton fx:id="tgROOff" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#saveModeROOFF" text="OFF" toggleGroup="$ViewModeGroup1" />
+                                                               </children>
+                                                            </HBox>
+                                                         </children>
+                                                      </HBox>
+                                                      <Button fx:id="btROSaveBill" mnemonicParsing="false" onAction="#btROSaveBillClicked" text="Save Bill">
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </Button>
+                                                      <Button fx:id="btROUpdateBill" disable="true" mnemonicParsing="false" onAction="#btROUpdateBillClicked" text="Update Bill" />
+                                                      <Button fx:id="btROClearAll" mnemonicParsing="false" onAction="#btROClearAllClicked" text="Clear All">
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </Button>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets right="200.0" />
+                                             </VBox.margin>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                     </children></AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.collections.*?>
+<?import com.magizhchi.pawnbroking.companymaster.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" stylesheets="@stockdetails.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.magizhchi.pawnbroking.ledger.LedgerController">
+   <children>
+      <TabPane fx:id="tpScreen" style="-fx-background-color: #fff;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <tabs>
+            <Tab closable="false" text="Company Ledger">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.25" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <items>
+                              <AnchorPane>
+                                 <children>
+                                    <ScrollPane prefHeight="100.0" prefWidth="1366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane prefHeight="150.0" prefWidth="1366.0" styleClass="screen-background">
+                                             <children>
+                                                <VBox alignment="CENTER" prefWidth="1366.0" spacing="10.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <HBox fx:id="nodeAddToFilter1" alignment="CENTER" spacing="10.0">
+                                                         <children>
+                                                            <Label text="Material Type:" />
+                                                            <ComboBox fx:id="cbCompAloneMaterialType" prefWidth="200.0" value="GOLD" visibleRowCount="3">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList">
+                                                                     <String fx:value="GOLD" />
+                                                                     <String fx:value="SILVER" />
+                                                                  </FXCollections>
+                                                               </items>
+                                                            </ComboBox>
+                                                            <Label fx:id="lbFrom1" text="From:">
+                                                               <HBox.margin>
+                                                                  <Insets left="50.0" />
+                                                               </HBox.margin>
+                                                            </Label>
+                                                            <DatePicker fx:id="dpFrom" minWidth="100.0" />
+                                                            <Label fx:id="lbTo1" layoutX="270.0" layoutY="10.0" text="To:" />
+                                                            <DatePicker fx:id="dpTo" layoutX="275.0" layoutY="10.0" minWidth="100.0" />
+                                                            <Button fx:id="btPrint" layoutX="1037.0" layoutY="10.0" mnemonicParsing="false" onAction="#btPrintClicked" text="Print Selected Records" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox alignment="CENTER" spacing="10.0">
+                                                         <children>
+                                                            <Button mnemonicParsing="false" onAction="#btCompSelectAllOnAction" text="Select All" />
+                                                            <Button layoutX="904.0" layoutY="12.0" mnemonicParsing="false" onAction="#btCompDeSelectAllOnAction" text="De Select All" />
+                                                            <Button layoutX="976.0" layoutY="12.0" mnemonicParsing="false" onAction="#btCompCalculateSelectedOnAction" text="Calculate Selected" />
+                                                            <Button layoutX="726.0" layoutY="10.0" mnemonicParsing="false" onAction="#btCompDeCalculateSelectedOnAction" text="Calculate De-Selected" />
+                                                            <Button layoutX="778.0" layoutY="10.0" mnemonicParsing="false" onAction="#btCompCalculateAllSelectedOnAction" text="Calculate All" />
+                                                            <Button fx:id="btShowAllRecords" mnemonicParsing="false" onAction="#showAllRecordsClicked" text="Show all records" />
+                                                            <Button fx:id="btShowAllRecords1" mnemonicParsing="false" onAction="#showInStockRecordsClicked" text="Show In-Stock Records" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox alignment="CENTER" spacing="10.0">
+                                                         <children>
+                                                            <HBox spacing="10.0" style="-fx-background-color: #ffffff;">
+                                                               <children>
+                                                                  <HBox id="TOGGLEHBOX" layoutX="10.0" layoutY="10.0">
+                                                                     <children>
+                                                                        <Label styleClass="debit-credit-label" text="Number of pcs:">
+                                                                           <HBox.margin>
+                                                                              <Insets top="4.0" />
+                                                                           </HBox.margin>
+                                                                        </Label>
+                                                                        <TextField fx:id="txtCompNumberOfPcs" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="150.0" styleClass="debit-credit-field" />
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <HBox id="TOGGLEHBOX">
+                                                                     <children>
+                                                                        <Label styleClass="debit-credit-label" text="Total Capital Amt: ">
+                                                                           <HBox.margin>
+                                                                              <Insets top="4.0" />
+                                                                           </HBox.margin>
+                                                                        </Label>
+                                                                        <TextField fx:id="txtCompTotalCapitalAmt" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="150.0" styleClass="debit-credit-field" />
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <HBox id="TOGGLEHBOX" layoutX="275.0" layoutY="12.0" />
+                                                                  <HBox id="TOGGLEHBOX" layoutX="559.0" layoutY="12.0" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                                                               </padding>
+                                                               <HBox.margin>
+                                                                  <Insets right="200.0" />
+                                                               </HBox.margin>
+                                                            </HBox>
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="1366.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <TableView fx:id="tbCompanyBillDetails" onMouseClicked="#tbAllDetailsOnMouseClicked" prefHeight="600.0" prefWidth="1366.0">
+                                                   <columns>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Bill No">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sBillNumber" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Op-Date">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sOpeningDate" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="150.0" text="Customer Name">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sName" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="40.0" text="ST">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sSpouseType" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="150.0" text="Spouse Name">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sSpouseName" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="300.0" text="Address">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sAdress" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn text="Amount">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sAmount" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="250.0" text="Items">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sItems" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="60.0" text="G Wt">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sGrossWeight" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn text="Clo-Date">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sClosingDate" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="50.0" text="SEL">
+                                                         <cellFactory>
+                                                            <com.magizhchi.pawnbroking.stockdetails.CheckBoxCellFactory />
+                                                         </cellFactory>
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="bChecked" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                   </columns>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </TableView>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </AnchorPane>
+                           </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

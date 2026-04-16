@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.\\(fxml|css|jrxml|jasper|properties\\)$\")",
+      "Bash(mvn compile:*)",
+      "Bash(mvn javafx:run)",
+      "Bash(powershell -Command \"Get-ChildItem -Path ''src/main/resources'' -Filter ''*.css'' -Recurse | ForEach-Object { \\(Get-Content $_FullName\\) -replace ''-fx-skin: \"\"com.sun.javafx.scene.control.skin.TabPaneSkin\"\";'', ''-fx-skin: \"\"javafx.scene.control.skin.TabPaneSkin\"\";'' | Set-Content $_FullName }; Write-Host ''Done''\")",
+      "Bash(powershell -Command \":*)",
+      "Bash(mvn package:*)",
+      "Bash(del \"C:\\\\Users\\\\tiruk\\\\OneDrive\\\\Documents\\\\NetBeansProjects\\\\PawnBroking\\\\src\\\\main\\\\java\\\\module-info.java\")",
+      "Bash(where jpackage:*)",
+      "Bash(jpackage --version)",
+      "Bash(\"C:/Users/tiruk/OneDrive/Documents/NetBeansProjects/PawnBroking/target/app/PawnBroking/PawnBroking.exe\")",
+      "Bash(powershell -Command \"Exit\")",
+      "Bash(powershell -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\tiruk\\\\OneDrive\\\\Documents\\\\NetBeansProjects\\\\PawnBroking\\\\fix-fxml-paths.ps1\")",
+      "Bash(powershell -Command \"Select-String -Path 'C:\\\\Users\\\\tiruk\\\\OneDrive\\\\Documents\\\\NetBeansProjects\\\\PawnBroking\\\\src\\\\main\\\\java\\\\com\\\\magizhchi\\\\pawnbroking\\\\mainscreen\\\\OwnerMainScreenController.java' -Pattern 'com/magizhchi/pawnbroking/com/' | Select-Object -ExpandProperty Line\")",
+      "Bash(powershell -Command 'Select-String -Path '\\\\''C:\\\\Users\\\\tiruk\\\\OneDrive\\\\Documents\\\\NetBeansProjects\\\\PawnBroking\\\\src\\\\main\\\\java\\\\com\\\\magizhchi\\\\pawnbroking\\\\companybillclosing\\\\GoldBillClosingController.java'\\\\'' -Pattern '\\\\''\\\\.fxml'\\\\'' | Select-Object -ExpandProperty Line | Where-Object { $_ -match '\\\\''Screen|fxml'\\\\'' }')",
+      "Bash(del \"C:\\\\Users\\\\tiruk\\\\OneDrive\\\\Documents\\\\NetBeansProjects\\\\PawnBroking\\\\fix-fxml-paths.ps1\")"
+    ]
+  }
+}

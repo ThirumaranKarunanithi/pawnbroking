@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs -I {} basename {})",
+      "Bash(mkdir -p \"D:\\\\Pawnbroking\\\\SOURCE\\\\mobile\\\\pawnmobileapp\\\\lib\\\\screens\")",
+      "Bash(mkdir -p \"D:\\\\Pawnbroking\\\\SOURCE\\\\mobile\\\\pawnmobileapp\\\\lib\\\\models\")",
+      "Bash(mkdir -p \"D:\\\\Pawnbroking\\\\SOURCE\\\\mobile\\\\pawnmobileapp\\\\lib\\\\services\")",
+      "Bash(mkdir -p \"D:\\\\Pawnbroking\\\\SOURCE\\\\mobile\\\\pawnmobileapp\\\\lib\\\\config\")",
+      "Bash(xargs grep:*)",
+      "Bash(flutter --version)",
+      "Bash(cp -r /d/Pawnbroking/SOURCE/webservice/pawnwebservice/.mvn /d/Pawnbroking/SOURCE/webservice/pawnrestservice/.mvn)",
+      "Bash(chmod +x /d/Pawnbroking/SOURCE/webservice/pawnrestservice/mvnw)",
+      "Bash(cp -r /d/Pawnbroking/SOURCE/webservice/pawnwebservice/.mvn /d/Pawnbroking/SOURCE/webservice/pawndbsync/.mvn)",
+      "Bash(chmod +x /d/Pawnbroking/SOURCE/webservice/pawndbsync/mvnw)"
+    ]
+  }
+}

@@ -1,0 +1,170 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.magizhchi.pawnbroking.repledgemaster;
+
+import com.magizhchi.pawnbroking.common.CommonConstants;
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+
+/**
+ * FXML Controller class
+ *
+ * @author Tiru
+ */
+public class GoldMonthSettingDialogUIController implements Initializable {
+
+    @FXML
+    private AnchorPane dialogpanel;
+    @FXML
+    private Label lbMsg;
+    @FXML
+    private TextField txtFrom;
+    @FXML
+    private TextField txtTo;
+    @FXML
+    private TextField txtAsMonth;
+
+    private RePledgeMasterController parent;
+    private boolean isDialogForAdd;
+    @FXML
+    private DatePicker dpFromDate;
+    @FXML
+    private DatePicker dpToDate;
+    
+
+
+    /**
+     * Initializes the controller class.
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+
+        try {
+                dialogpanel.addEventFilter( KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()
+                                {
+                                    Robot  eventRobot = new Robot();
+
+                                    @Override
+                                    public void handle( KeyEvent KV )
+                                    {
+                                        switch ( KV.getCode() )
+                                        {
+                                            case ENTER :
+                                            {
+                                                if ( (!(KV.getTarget() instanceof TextField)) || (!(KV.getTarget() instanceof Button)))
+                                                {
+                                                    eventRobot.keyPress( java.awt.event.KeyEvent.VK_TAB );
+                                                    eventRobot.keyRelease( java.awt.event.KeyEvent.VK_TAB );
+                                                    KV.consume();
+                                                }
+                                                break;
+                                            }
+                                            case TAB :
+                                            {
+                                                if ( ! (KV.getTarget() instanceof TextField))
+                                                {
+                                                    KV.consume();
+                                                }
+                                                break;
+                                            }
+                                            case ESCAPE :
+                                            {					               
+                                                parent.dialog.close();
+                                                break;
+                                            }
+                                                default:
+                                                        break;
+                                        }
+                                    }
+                                });
+        } catch (AWTException e) {			
+                e.printStackTrace();
+        }
+        
+    }    
+
+    @FXML
+    private void onSaveClicked(ActionEvent event) {
+        
+        String sFromDate = CommonConstants.DATETIMEFORMATTER.format(dpFromDate.getValue());
+        String sToDate = CommonConstants.DATETIMEFORMATTER.format(dpToDate.getValue());        
+        double dFrom = Double.parseDouble(txtFrom.getText());
+        double dTo = Double.parseDouble(txtTo.getText());
+        double dAsMonth = Double.parseDouble(txtAsMonth.getText());
+        int index = this.parent.tbGBMS.getSelectionModel().getSelectedIndex();
+        
+        if(isDialogForAdd) {
+            this.parent.tbGBMS.getItems().add(new MonthSettingBean(sFromDate, sToDate, dFrom, dTo, dAsMonth));                    
+        } else {
+            this.parent.tbGBMS.getItems().set(index, new MonthSettingBean(sFromDate, sToDate, dFrom, dTo, dAsMonth));                    
+        }
+        this.parent.dialog.close();        
+    }
+
+    @FXML
+    private void allowDotWithNumberOnType(KeyEvent e) {
+        
+        TextField txt_TextField = (TextField) e.getSource();                      
+        if(!("0123456789.".contains(e.getCharacter()))){ 
+            e.consume();
+        }
+    }
+
+    @FXML
+    private void allowNumberOnlyOnType(KeyEvent e) {
+        
+        TextField txt_TextField = (TextField) e.getSource();                      
+        if(!e.getCharacter().matches("[0-9]")){ 
+            e.consume();
+        }
+    }
+
+    public static EventHandler<KeyEvent> numFilter() {
+
+        EventHandler<KeyEvent> aux = new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent keyEvent) {
+                if (!"0123456789.".contains(keyEvent.getCharacter())) {
+                    keyEvent.consume();
+
+                }
+            }
+        };
+        return aux;
+    }
+        
+    public void setParent(RePledgeMasterController parent, boolean isDialogForAdd)
+    {
+        this.parent = parent;
+        this.isDialogForAdd = isDialogForAdd;
+    }
+    
+    public void setInitValues() {
+    
+        if(!isDialogForAdd)
+        {
+            int index = this.parent.tbGBMS.getSelectionModel().getSelectedIndex();
+            MonthSettingBean bean = this.parent.tbGBMS.getItems().get(index);
+            dpFromDate.setValue(LocalDate.parse(bean.getSFromDate(), CommonConstants.DATETIMEFORMATTER));
+            dpToDate.setValue(LocalDate.parse(bean.getSToDate(), CommonConstants.DATETIMEFORMATTER));            
+            txtFrom.setText(Double.toString(bean.getDFrom()));
+            txtTo.setText(Double.toString(bean.getDTo()));
+            txtAsMonth.setText(Double.toString(bean.getDAsMonth()));
+        }
+    }
+}

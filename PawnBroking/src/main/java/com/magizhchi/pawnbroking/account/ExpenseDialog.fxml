@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.cell.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="dialogpanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="1250.0" stylesheets="@todaysaccount.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="account.ExpenseDialogUIController">
+   <children>
+      <ScrollPane prefViewportHeight="250.0" prefViewportWidth="1252.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <HBox alignment="CENTER" focusTraversable="true">
+               <children>
+                  <TableView fx:id="tbTodaysAccount" onMouseClicked="#tbAllDetailsOnMouseClicked" prefHeight="250.0">
+                     <columns>
+                        <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="50.0" text="Sl No">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="sSlNo" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="120.0" text="Expense Date">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="sExpenseDate" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Expense Id">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="sExpenseId" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="200.0" text="Screen Name">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="sScreenName" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn prefWidth="400.0" text="Reason">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="sReason" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="180.0" text="Amount">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="sAmount" />
+                           </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="200.0" text="Created User">
+                           <cellValueFactory>
+                              <PropertyValueFactory property="sCreatedUser" />
+                           </cellValueFactory>
+                        </TableColumn>
+                     </columns>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </TableView>
+               </children>
+            </HBox>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>
