@@ -33,7 +33,7 @@ public class AuthController {
 
         String sql = """
                 SELECT u.id, u.user_name, u.user_password, u.salt_value,
-                       e.name AS emp_name, r.id AS role_id, r.role_name
+                       e.name AS emp_name, r.id AS role_id, r.name AS role_name
                 FROM user_master u
                 JOIN employee e ON u.emp_id = e.id
                 JOIN role_master r ON u.role_id = r.id
