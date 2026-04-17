@@ -24,97 +24,126 @@ public class ReportsController {
      * GET /api/reports/monthly?companyId=CMP1
      * Returns month-wise summary of bill openings, closings and stock
      */
+    /**
+     * GET /api/reports/monthly?companyId=CMP1
+     *
+     * Exact port of desktop ReportDBOperation.getCompMISValues():
+     * 10 columns — month, pawnBills, pawnAmt, redeemBills, redeemAmt,
+     *              profit, stockBills (cumulative), stockAmt (cumulative),
+     *              earnedBills, earnedAmt
+     * Ordered newest-first.
+     */
     @GetMapping("/monthly")
     public ResponseEntity<?> monthly(@RequestParam String companyId) {
         try {
-            // ── Bill opening / closing aggregates ───────────────────────────
+            // ── Exact desktop SQL (ported to PostgreSQL / Spring JDBC) ────────
             String sql = """
-                    SELECT mon, yr, mon_num,
-                        SUM(COALESCE(open_count,  0)) open_count,
-                        SUM(COALESCE(open_amount, 0)) open_amount,
-                        SUM(COALESCE(close_count, 0)) close_count,
-                        SUM(COALESCE(close_amount,0)) close_amount
+                SELECT
+                    CASE child.mon
+                        WHEN '01' THEN 'JAN-' || child.yyyy
+                        WHEN '02' THEN 'FEB-' || child.yyyy
+                        WHEN '03' THEN 'MAR-' || child.yyyy
+                        WHEN '04' THEN 'APR-' || child.yyyy
+                        WHEN '05' THEN 'MAY-' || child.yyyy
+                        WHEN '06' THEN 'JUN-' || child.yyyy
+                        WHEN '07' THEN 'JUL-' || child.yyyy
+                        WHEN '08' THEN 'AUG-' || child.yyyy
+                        WHEN '09' THEN 'SEP-' || child.yyyy
+                        WHEN '10' THEN 'OCT-' || child.yyyy
+                        WHEN '11' THEN 'NOV-' || child.yyyy
+                        WHEN '12' THEN 'DEC-' || child.yyyy
+                        ELSE '??'
+                    END                                        AS month,
+                    child.pawn_total_bill,
+                    child.pawn_amount,
+                    child.redeem_total_bills,
+                    child.redeem_amt,
+                    child.tot_profit,
+                    child.total_stock_bills,
+                    child.total_stock_amount,
+                    (child.pawn_total_bill - child.redeem_total_bills) AS stock_bills_earned,
+                    (child.pawn_amount     - child.redeem_amt)         AS stock_amount_earned
+                FROM (
+                    SELECT
+                        mon, yyyy,
+                        SUM(pawn_total_bill)    AS pawn_total_bill,
+                        SUM(pawn_amount)        AS pawn_amount,
+                        SUM(redeem_total_bills) AS redeem_total_bills,
+                        SUM(redeem_amt)         AS redeem_amt,
+                        SUM(interest)           AS tot_profit,
+                        SUM(SUM(pawn_total_bill) - SUM(redeem_total_bills))
+                            OVER (ORDER BY yyyy::int ASC, mon::int ASC)  AS total_stock_bills,
+                        SUM(SUM(pawn_amount)     - SUM(redeem_amt))
+                            OVER (ORDER BY yyyy::int ASC, mon::int ASC)  AS total_stock_amount
                     FROM (
-                        SELECT TO_CHAR(opening_date, 'Mon') mon,
-                               EXTRACT(YEAR  FROM opening_date)::int yr,
-                               EXTRACT(MONTH FROM opening_date)::int mon_num,
-                               COUNT(*)                open_count,
-                               COALESCE(SUM(amount),0) open_amount,
-                               0 close_count, 0 close_amount
+                        -- Openings
+                        SELECT TO_CHAR(opening_date,'MM')        AS mon,
+                               EXTRACT(YEAR FROM opening_date)::text AS yyyy,
+                               COUNT(bill_number)                AS pawn_total_bill,
+                               COALESCE(SUM(amount), 0)          AS pawn_amount,
+                               0 AS redeem_total_bills,
+                               0 AS redeem_amt,
+                               0 AS interest
                         FROM company_billing
-                        WHERE company_id = ? AND status::text NOT IN ('CANCELED')
-                        GROUP BY TO_CHAR(opening_date,'Mon'),
-                                 EXTRACT(YEAR  FROM opening_date),
-                                 EXTRACT(MONTH FROM opening_date)
+                        WHERE status::text NOT IN ('CANCELED')
+                          AND company_id = ?
+                        GROUP BY 1, 2
                         UNION ALL
-                        SELECT TO_CHAR(closing_date,'Mon'),
-                               EXTRACT(YEAR  FROM closing_date)::int,
-                               EXTRACT(MONTH FROM closing_date)::int,
-                               0, 0, COUNT(*), COALESCE(SUM(got_amount),0)
+                        -- Closings (uses original pledge amount, matching desktop)
+                        SELECT TO_CHAR(closing_date,'MM')        AS mon,
+                               EXTRACT(YEAR FROM closing_date)::text AS yyyy,
+                               0 AS pawn_total_bill,
+                               0 AS pawn_amount,
+                               COUNT(bill_number)                AS redeem_total_bills,
+                               COALESCE(SUM(amount), 0)          AS redeem_amt,
+                               0 AS interest
                         FROM company_billing
-                        WHERE company_id = ? AND closing_date IS NOT NULL
-                        GROUP BY TO_CHAR(closing_date,'Mon'),
-                                 EXTRACT(YEAR  FROM closing_date),
-                                 EXTRACT(MONTH FROM closing_date)
-                    ) t
-                    GROUP BY mon, yr, mon_num
-                    ORDER BY yr DESC, mon_num DESC
-                    """;
-            List<Map<String, Object>> raw = jdbc.queryForList(sql, companyId, companyId);
+                        WHERE status::text IN (
+                                'CLOSED','DELIVERED','REBILLED',
+                                'REBILLED-ADDED','REBILLED-REMOVED','REBILLED-MULTIPLE')
+                          AND company_id = ?
+                        GROUP BY 1, 2
+                        UNION ALL
+                        -- Profit from daily account
+                        SELECT TO_CHAR(todays_date,'MM')         AS mon,
+                               EXTRACT(YEAR FROM todays_date)::text AS yyyy,
+                               0 AS pawn_total_bill,
+                               0 AS pawn_amount,
+                               0 AS redeem_total_bills,
+                               0 AS redeem_amt,
+                               COALESCE(SUM(todays_pf_amount), 0) AS interest
+                        FROM company_todays_account_available_amount
+                        WHERE company_id = ?
+                        GROUP BY 1, 2
+                    ) chi
+                    GROUP BY chi.mon, chi.yyyy
+                ) child
+                ORDER BY child.yyyy::int DESC, child.mon::int DESC
+                """;
 
-            // ── Gross profit per month from daily account ────────────────────
-            String profitSql = """
-                    SELECT TO_CHAR(todays_date, 'Mon') mon,
-                           EXTRACT(YEAR  FROM todays_date)::int yr,
-                           EXTRACT(MONTH FROM todays_date)::int mon_num,
-                           COALESCE(SUM(todays_pf_amount), 0) profit
-                    FROM company_todays_account_available_amount
-                    WHERE company_id = ?
-                    GROUP BY TO_CHAR(todays_date,'Mon'),
-                             EXTRACT(YEAR  FROM todays_date),
-                             EXTRACT(MONTH FROM todays_date)
-                    """;
-            Map<String, Double> profitByMonth = new LinkedHashMap<>();
-            try {
-                for (Map<String, Object> pr : jdbc.queryForList(profitSql, companyId)) {
-                    String key = pr.get("mon") + "-" + pr.get("yr");
-                    profitByMonth.put(key, toDouble(pr.get("profit")));
-                }
-            } catch (Exception pe) {
-                log.warn("Profit query skipped: {}", pe.getMessage());
-            }
+            List<Map<String, Object>> raw =
+                    jdbc.queryForList(sql, companyId, companyId, companyId);
 
-            // Merge rows by mon+yr, add profit
-            Map<String, Map<String, Object>> merged = new LinkedHashMap<>();
+            // Map to camelCase response matching Android expectations
+            List<Map<String, Object>> months = new ArrayList<>();
             for (Map<String, Object> r : raw) {
-                String key = r.get("mon") + "-" + r.get("yr");
-                Map<String, Object> m = merged.computeIfAbsent(key, k -> {
-                    Map<String, Object> nm = new LinkedHashMap<>();
-                    nm.put("month",      r.get("mon") + "-" + r.get("yr"));
-                    nm.put("openCount",  0L);  nm.put("openAmount",  0.0);
-                    nm.put("closeCount", 0L);  nm.put("closeAmount", 0.0);
-                    nm.put("profit",     0.0);
-                    return nm;
-                });
-                m.put("openCount",  toLong(m.get("openCount"))    + toLong(r.get("open_count")));
-                m.put("openAmount", toDouble(m.get("openAmount")) + toDouble(r.get("open_amount")));
-                m.put("closeCount", toLong(m.get("closeCount"))   + toLong(r.get("close_count")));
-                m.put("closeAmount",toDouble(m.get("closeAmount"))+ toDouble(r.get("close_amount")));
-                // merge profit
-                String key2 = r.get("mon") + "-" + r.get("yr");
-                m.put("profit", profitByMonth.getOrDefault(key2, 0.0));
-            }
-
-            List<Map<String, Object>> months = new ArrayList<>(merged.values());
-            // Net (earned) columns
-            for (Map<String, Object> m : months) {
-                m.put("earnedCount",  toLong(m.get("openCount"))   - toLong(m.get("closeCount")));
-                m.put("earnedAmount", toDouble(m.get("openAmount"))- toDouble(m.get("closeAmount")));
+                Map<String, Object> m = new LinkedHashMap<>();
+                m.put("month",        r.get("month"));
+                m.put("pawnBills",    toLong(r.get("pawn_total_bill")));
+                m.put("pawnAmount",   toDouble(r.get("pawn_amount")));
+                m.put("redeemBills",  toLong(r.get("redeem_total_bills")));
+                m.put("redeemAmount", toDouble(r.get("redeem_amt")));
+                m.put("profit",       toDouble(r.get("tot_profit")));
+                m.put("stockBills",   toLong(r.get("total_stock_bills")));
+                m.put("stockAmount",  toDouble(r.get("total_stock_amount")));
+                m.put("earnedBills",  toLong(r.get("stock_bills_earned")));
+                m.put("earnedAmount", toDouble(r.get("stock_amount_earned")));
+                months.add(m);
             }
 
             return ResponseEntity.ok(Map.of("months", months, "total", months.size()));
         } catch (Exception e) {
-            log.error("Monthly report error: {}", e.getMessage(), e);
+            log.error("Monthly/MIS report error: {}", e.getMessage(), e);
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }

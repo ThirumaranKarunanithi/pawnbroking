@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.cell.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="dialogpanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="1250.0" stylesheets="@todaysaccount.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="account.CompanyBillClosingDialogUIController">
+   <children>
+      <HBox alignment="CENTER" focusTraversable="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TableView fx:id="tbTodaysAccount" onMouseClicked="#tbAllDetailsOnMouseClicked" prefHeight="230.0" prefWidth="1250.0">
+               <columns>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="50.0" text="Sl No">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sSlNo" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" text="Closed Date">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sDate" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" text="Bill Number">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sBillNumber" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn prefWidth="120.0" text="Customer Name">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sName" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Items">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sItems" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="50.0" text="Interest">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sInterest" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Amount">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sAmount" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" text="Inter. Amt">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sInterestedAmt" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Amt To Rec">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sToGive" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Received Amt">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sGiven" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" text="Adv. Amt">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="dTotAdvanceAmtPaid" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="150.0" text="Closed Time">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sCreatedDate" />
+                     </cellValueFactory>
+                  </TableColumn>
+                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Closed User">
+                     <cellValueFactory>
+                        <PropertyValueFactory property="sCreatedUser" />
+                     </cellValueFactory>
+                  </TableColumn>
+               </columns>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </TableView>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

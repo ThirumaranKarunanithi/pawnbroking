@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.collections.*?>
+<?import com.magizhchi.pawnbroking.companymaster.*?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1280.0" stylesheets="@billopening.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.magizhchi.pawnbroking.companybillopening.GoldBillOpeningController">
+   <children>
+      <TabPane fx:id="tpScreen" style="-fx-background-color: #fff;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <tabs>
+            <Tab fx:id="tabMainScreen" closable="false" text="Main Screen">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <SplitPane dividerPositions="0.7" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <items>
+                              <AnchorPane>
+                                 <children>
+                                    <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <content>
+                                        <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="500.0" prefWidth="1366.0" styleClass="gold-screen-background">
+                                             <children>
+                                                <VBox alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <HBox layoutX="100.0" layoutY="70.0" spacing="80.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <children>
+                                                            <HBox fillHeight="false" maxHeight="250.0">
+                                                               <children>
+                                                                  <VBox fx:id="HBLabelLeftSide" alignment="CENTER_RIGHT" prefWidth="120.0" spacing="17.0">
+                                                                     <children>
+                                                                        <Label fx:id="lbBillNo" text="Bill No:" textAlignment="JUSTIFY">
+                                                                           <VBox.margin>
+                                                                              <Insets />
+                                                                           </VBox.margin>
+                                                                        </Label>
+                                                                        <Label fx:id="lbDate" layoutX="58.0" layoutY="106.0" text="Date:">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                        </Label>
+                                                                        <Label fx:id="lbName" text="Name:">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                        </Label>
+                                                                        <Label fx:id="lbGender" text="Gender:">
+                                                                           <VBox.margin>
+                                                                              <Insets />
+                                                                           </VBox.margin></Label>
+                                                                        <ComboBox fx:id="cbSpouseType" prefWidth="90.0" visibleRowCount="4">
+                                                                           <VBox.margin>
+                                                                              <Insets />
+                                                                           </VBox.margin>
+                                                                        </ComboBox>
+                                                                        <Label fx:id="lbAddress" text="Address:">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                           <VBox.margin>
+                                                                              <Insets top="-10.0" />
+                                                                           </VBox.margin>
+                                                                        </Label>
+                                                                        <Label fx:id="lbMobileNo" text="Mobile Number:">
+                                                                           <VBox.margin>
+                                                                              <Insets top="65.0" />
+                                                                           </VBox.margin></Label>
+                                                                        <Label fx:id="lbCustomerStatus1" layoutX="10.0" layoutY="327.0" text="Id Proof:">
+                                                                           <VBox.margin>
+                                                                              <Insets />
+                                                                           </VBox.margin></Label>
+                                                                        <Label fx:id="lbCustomerStatus2" layoutX="10.0" layoutY="327.0" text="Occupation:" />
+                                                                        <Label fx:id="lbCustomerStatus3" layoutX="10.0" layoutY="327.0" text="Referred By:">
+                                                                           <VBox.margin>
+                                                                              <Insets top="-6.0" />
+                                                                           </VBox.margin>
+                                                                        </Label>
+                                                                        <Label fx:id="lbCustomerStatus" layoutX="10.0" layoutY="353.0" text="Customer Status:" />
+                                                                     </children>
+                                                                     <HBox.margin>
+                                                                        <Insets right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </VBox>
+                                                                  <VBox spacing="5.0">
+                                                                     <children>
+                                                                        <TextField fx:id="txtBillNumber" editable="false" focusTraversable="false" mouseTransparent="true" onAction="#txtBillNumberOnAction" onKeyTyped="#capitalizeCharOnType" promptText="Bill No" style="-fx-font-size: 14;" />
+                                                                        <DatePicker fx:id="dpBillOpeningDate" editable="false" onAction="#dpBillOpeningDateOnAction" prefHeight="25.0" prefWidth="255.0" promptText="Bill opening date" />
+                                                                        <HBox fx:id="nodeCustomerName" alignment="CENTER" spacing="5.0">
+                                                                           <children>
+                                                                              <TextField fx:id="txtCustomerId" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefHeight="30.0" prefWidth="50.0" promptText="ID" />
+                                                                              <ComboBox fx:id="txtCustomerName" editable="true" focusTraversable="false" onAction="#txtCustomerNameOnAction" prefWidth="200.0" promptText="Customer Name" visibleRowCount="8">
+                                                                                 <items>
+                                                                                    <FXCollections fx:factory="observableArrayList" />
+                                                                                 </items>
+                                                                              </ComboBox>
+                                                                              <ComboBox fx:id="cbCustomerName" onAction="#cbCustomerNameOnAction" prefWidth="200.0">
+                                                                                 <items>
+                                                                                    <FXCollections fx:factory="observableArrayList">
+                                                                                    </FXCollections>
+                                                                                 </items>
+                                                                              </ComboBox>
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <HBox alignment="CENTER" spacing="15.0">
+                                                                           <children>
+                                                                              <RadioButton fx:id="rbMale" mnemonicParsing="false" onMouseClicked="#rbToggleChanged" selected="true" styleClass="red-radio-button" text="Male">
+                                                                                 <toggleGroup>
+                                                                                    <ToggleGroup fx:id="rgGenderGroup" />
+                                                                                 </toggleGroup>
+                                                                              </RadioButton>
+                                                                              <RadioButton fx:id="rbFemale" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#rbToggleChanged" styleClass="red-radio-button" text="Female" toggleGroup="$rgGenderGroup" />
+                                                                              <RadioButton fx:id="rbOther" layoutX="58.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#rbToggleChanged" styleClass="red-radio-button" text="Other" toggleGroup="$rgGenderGroup" />
+                                                                           </children>
+                                                                           <VBox.margin>
+                                                                              <Insets bottom="5.0" top="9.0" />
+                                                                           </VBox.margin>
+                                                                        </HBox>
+                                                                        <TextField fx:id="txtSpouseName" layoutX="10.0" layoutY="301.0" onAction="#txtSpouseNameOnAction" onKeyPressed="#capitalizeCharOnPressed" onKeyTyped="#capitalizeCharOnType" promptText="Spouse name" styleClass="custom-text-field" />
+                                                                        <VBox spacing="5.0">
+                                                                           <children>
+                                                                              <HBox prefHeight="20.0" prefWidth="200.0" spacing="5.0">
+                                                                                 <children>
+                                                                                    <TextField fx:id="txtDoorNo" minWidth="40.0" onAction="#txtDoorNoOnAction" onKeyPressed="#capitalizeCharOnPressed" onKeyTyped="#capitalizeCharOnType" prefWidth="52.0" promptText="No" styleClass="custom-text-field" />
+                                                                                    <ComboBox fx:id="txtStreetName" editable="true" onAction="#txtStreetNameOnAction" prefWidth="200.0" promptText="Street Name" visibleRowCount="5">
+                                                                                       <items>
+                                                                                          <FXCollections fx:factory="observableArrayList" />
+                                                                                       </items>
+                                                                                    </ComboBox>
+                                                                                 </children>
+                                                                              </HBox>
+                                                                              <TextField fx:id="txtArea" onAction="#txtAreaOnAction" onKeyPressed="#capitalizeCharOnPressed" onKeyTyped="#capitalizeCharOnType" promptText="Area" styleClass="custom-text-field" />
+                                                                              <TextField fx:id="txtCity" onAction="#txtCityOnAction" onKeyPressed="#capitalizeCharOnPressed" onKeyTyped="#capitalizeCharOnType" promptText="City" styleClass="custom-text-field" />
+                                                                           </children>
+                                                                        </VBox>
+                                                                        <HBox maxWidth="414.0" spacing="5.0">
+                                                                           <children>
+                                                                              <TextField fx:id="txtMobileNumber" maxWidth="125.0" onAction="#txtMobileNumberOnAction" onKeyTyped="#allowNumberOnlyOnType" promptText="Mobile number" styleClass="custom-text-field" />
+                                                                              <TextField fx:id="txtMobileNumber2" layoutX="10.0" layoutY="286.0" maxWidth="125.0" onAction="#txtMobileNumberOnAction" onKeyTyped="#allowNumberOnlyOnType" promptText="Mobile number" styleClass="custom-text-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <HBox spacing="5.0">
+                                                                           <children>
+                                                                              <TextField fx:id="txtIdProof" editable="false" focusTraversable="false" layoutX="10.0" layoutY="356.0" maxWidth="125.0" mouseTransparent="true" onKeyTyped="#allowNumberOnlyOnType" promptText="ID Proof" />
+                                                                              <TextField fx:id="txtIdNumber" editable="false" focusTraversable="false" maxWidth="125.0" mouseTransparent="true" onKeyTyped="#allowNumberOnlyOnType" promptText="ID Number" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <TextField fx:id="txtOccupation" editable="false" focusTraversable="false" layoutX="10.0" layoutY="391.0" mouseTransparent="true" onKeyTyped="#allowNumberOnlyOnType" promptText="Occupation" />
+                                                                        <TextField fx:id="txtRecomendedBy" editable="false" focusTraversable="false" layoutX="10.0" layoutY="426.0" mouseTransparent="true" onKeyTyped="#allowNumberOnlyOnType" promptText="Referred Customer" />
+                                                                        <HBox prefWidth="250.0" spacing="5.0">
+                                                                           <children>
+                                                                              <TextField fx:id="txtCustomerStatus" editable="false" focusTraversable="false" layoutX="10.0" layoutY="346.0" maxWidth="125.0" mouseTransparent="true" onKeyTyped="#allowNumberOnlyOnType" promptText="Customer Status" />
+                                                                              <TextField fx:id="txtCustomerVerifyStatus" editable="false" focusTraversable="false" layoutX="10.0" layoutY="10.0" maxWidth="125.0" mouseTransparent="true" onKeyTyped="#allowNumberOnlyOnType" promptText="Customer Status" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </VBox>
+                                                               </children>
+                                                               <HBox.margin>
+                                                                  <Insets top="10.0" />
+                                                               </HBox.margin>
+                                                            </HBox>
+                                                            <HBox fillHeight="false">
+                                                               <children>
+                                                                  <VBox alignment="TOP_RIGHT" spacing="25.0">
+                                                                     <children>
+                                                                        <Label fx:id="lbNominee" text="Nominee Name:" />
+                                                                        <ComboBox fx:id="cbItemType" editable="true" onAction="#cbItemTypeOnAction" prefWidth="150.0" promptText="Item Type" visibleRowCount="4">
+                                                                           <VBox.margin>
+                                                                              <Insets />
+                                                                           </VBox.margin>
+                                                                        </ComboBox>
+                                                                        <Label fx:id="lbItems" text="Items:">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                           <VBox.margin>
+                                                                              <Insets top="5.0" />
+                                                                           </VBox.margin>
+                                                                        </Label>
+                                                                        <Label fx:id="lbWeight" text="Weight (GrossWt - NetWt):">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                           <VBox.margin>
+                                                                              <Insets />
+                                                                           </VBox.margin>
+                                                                        </Label>
+                                                                        <Label fx:id="lbPurity" text="Jewel Purity:">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                        </Label>
+                                                                        <Label fx:id="lbSuggestionAmt1" text="Total Property Value:" />
+                                                                        <Label fx:id="lbRatePerGm" text="Rate/Gm:" />
+                                                                        <Label fx:id="lbSuggestionAmt" text="Suggestion Amount:" />
+                                                                        <Label fx:id="lbNote" contentDisplay="RIGHT" text="Note:" textAlignment="RIGHT" />
+                                                                     </children>
+                                                                     <HBox.margin>
+                                                                        <Insets right="5.0" />
+                                                                     </HBox.margin>
+                                                                  </VBox>
+                                                                  <VBox spacing="15.0">
+                                                                     <children>
+                                                                        <TextField fx:id="txtNomineeName" onAction="#txtNomineeNameOnAction" promptText="Nominee name" styleClass="custom-text-field" />
+                                                                        <HBox alignment="CENTER">
+                                                                           <children>
+                                                                              <TextField fx:id="txtNumberOfItems" maxWidth="95.0" onAction="#txtNumberOfItemsOnAction" onKeyTyped="#allowNumberOnlyOnType" promptText="Number of item" styleClass="custom-text-field" />
+                                                                              <Button mnemonicParsing="false" onAction="#btItemsUndoClicked" text="Undo" />
+                                                                              <Button mnemonicParsing="false" onAction="#btItemsClearAllClicked" text="Clear all" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <TextArea fx:id="txtItems" editable="false" focusTraversable="false" layoutX="10.0" layoutY="280.0" prefHeight="30.0" prefWidth="200.0" />
+                                                                        <HBox spacing="5.0">
+                                                                           <children>
+                                                                              <TextField fx:id="txtGrossWeight" maxWidth="100.0" onAction="#txtGrossWeightOnAction" promptText="Gross weight" styleClass="custom-text-field" />
+                                                                              <TextField fx:id="txtNetWeight" layoutX="10.0" layoutY="10.0" maxWidth="100.0" onAction="#txtNetWeightOnAction" onKeyTyped="#allowNumberAndDotOnType" promptText="Net weight" styleClass="custom-text-field" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <TextField fx:id="txtPurity" layoutX="10.0" layoutY="10.0" onAction="#txtPurityOnAction" onKeyTyped="#allowNumberAndDotOnType" promptText="Purity of the Jewel" styleClass="custom-text-field" />
+                                                                        <TextField fx:id="txtTotalValue" editable="false" focusTraversable="false" layoutX="10.0" layoutY="305.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="200.0" promptText="Total Value" />
+                                                                        <TextField fx:id="txtRatePerGm" focusTraversable="false" layoutX="10.0" layoutY="240.0" onAction="#txtRatePerGmOnAction" onKeyTyped="#capitalizeCharOnType" prefWidth="200.0" promptText="Rate per gram" style="-fx-background-color: #FCBAEF;" styleClass="custom-text-field" />
+                                                                        <TextField fx:id="txtSuggestionAmt" editable="false" focusTraversable="false" layoutX="10.0" layoutY="100.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="200.0" promptText="Suggestion Amount" />
+                                                                        <TextArea fx:id="txtNote" prefHeight="50.0" prefWidth="200.0" />
+                                                                     </children>
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </VBox>
+                                                               </children>
+                                                               <HBox.margin>
+                                                                  <Insets top="10.0" />
+                                                               </HBox.margin>
+                                                            </HBox>
+                                                            <HBox alignment="TOP_RIGHT" fillHeight="false" spacing="5.0">
+                                                               <children>
+                                                                  <VBox alignment="TOP_RIGHT" spacing="26.0">
+                                                                     <children>
+                                                                        <Label fx:id="lbAccClosingDate" text="Accepted Closing Date:">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                        </Label>
+                                                                        <Label fx:id="lbAmount" text="Amount:">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                        </Label>
+                                                                        <Label fx:id="lbInterest" layoutX="10.0" layoutY="10.0" text="Interest:" textAlignment="RIGHT" />
+                                                                        <Label fx:id="lbDocumentCharge" layoutX="41.0" layoutY="57.0" text="Document Charge:" textAlignment="RIGHT" />
+                                                                        <Label fx:id="lbTakenAmt" layoutX="38.0" layoutY="151.0" text="Interest Amount:" textAlignment="RIGHT">
+                                                                           <VBox.margin>
+                                                                              <Insets top="-5.0" />
+                                                                           </VBox.margin>
+                                                                        </Label>
+                                                                        <Label fx:id="lbToGive" layoutX="29.0" layoutY="151.0" text="Amount To Be Paid:" textAlignment="RIGHT" />
+                                                                        <Label fx:id="lbGivenAmt" layoutX="57.0" layoutY="10.0" text="Amount Paid:">
+                                                                           <graphic>
+                                                                              <Label style="-fx-text-fill: #ff0000;" styleClass="MANDATORY" text="*" />
+                                                                           </graphic>
+                                                                        </Label>
+                                                                        <Label fx:id="lbStatus" text="Status:" />
+                                                                        <Label fx:id="lbStatus1" layoutX="90.0" layoutY="343.0" text="Physical Location:" />
+                                                                     </children>
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </VBox>
+                                                                  <VBox spacing="15.0">
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                     <children>
+                                                                        <HBox>
+                                                                           <children>
+                                                                              <DatePicker fx:id="dpBillCLosingAcceptedDate" editable="false" onAction="#dpBillClosingAcceptedDateOnAction" prefHeight="25.0" prefWidth="105.0" promptText="Accepted Date">
+                                                                                 <HBox.margin>
+                                                                                    <Insets right="2.0" />
+                                                                                 </HBox.margin>
+                                                                              </DatePicker>
+                                                                              <VBox>
+                                                                                 <children>
+                                                                                    <HBox>
+                                                                                       <children>
+                                                                                          <RadioButton minWidth="40.0" mnemonicParsing="false" onMouseClicked="#rbBillClosingAcceptedToggleChanged" selected="true" styleClass="red-radio-button" text="1Y">
+                                                                                             <toggleGroup>
+                                                                                                <ToggleGroup fx:id="rgAcceptedDateGroup" />
+                                                                                             </toggleGroup>
+                                                                                          </RadioButton>
+                                                                                          <RadioButton layoutX="10.0" layoutY="10.0" minWidth="40.0" mnemonicParsing="false" onMouseClicked="#rbBillClosingAcceptedToggleChanged" styleClass="red-radio-button" text="9M" toggleGroup="$rgAcceptedDateGroup" />
+                                                                                          <RadioButton layoutX="58.0" layoutY="10.0" minWidth="40.0" mnemonicParsing="false" onMouseClicked="#rbBillClosingAcceptedToggleChanged" styleClass="red-radio-button" text="6M" toggleGroup="$rgAcceptedDateGroup" />
+                                                                                       </children>
+                                                                                    </HBox>
+                                                                                    <HBox>
+                                                                                       <children>
+                                                                                          <RadioButton layoutX="110.0" layoutY="14.0" minWidth="40.0" mnemonicParsing="false" onMouseClicked="#rbBillClosingAcceptedToggleChanged" styleClass="red-radio-button" text="3M" toggleGroup="$rgAcceptedDateGroup" />
+                                                                                          <RadioButton layoutX="10.0" layoutY="14.0" minWidth="40.0" mnemonicParsing="false" onMouseClicked="#rbBillClosingAcceptedToggleChanged" styleClass="red-radio-button" text="1M" toggleGroup="$rgAcceptedDateGroup" />
+                                                                                       </children>
+                                                                                    </HBox>
+                                                                                 </children>
+                                                                              </VBox>
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <TextField fx:id="txtAmount" maxWidth="200.0" prefWidth="200.0" promptText="Amount" styleClass="amout-field" />
+                                                                        <HBox alignment="CENTER_LEFT">
+                                                                           <children>
+                                                                              <TextField fx:id="txtInterest" editable="false" focusTraversable="false" layoutX="10.0" layoutY="10.0" maxWidth="40.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Interest" />
+                                                                              <Label text="Per Month:" textAlignment="RIGHT">
+                                                                                 <HBox.margin>
+                                                                                    <Insets left="5.0" />
+                                                                                 </HBox.margin>
+                                                                              </Label>
+                                                                              <TextField fx:id="txtInterestPerMonth" editable="false" focusTraversable="false" maxWidth="90.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Interest" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <TextField fx:id="txtDocumentCharge" editable="false" focusTraversable="false" layoutX="10.0" layoutY="55.0" maxWidth="200.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Document charge" />
+                                                                        <TextField fx:id="txtTakenAmount" editable="false" focusTraversable="false" layoutX="10.0" layoutY="100.0" maxWidth="200.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Taken amount" style="-fx-background-color: #55FF30;" />
+                                                                        <TextField fx:id="txtToGiveAmount" editable="false" focusTraversable="false" layoutX="10.0" layoutY="145.0" maxWidth="200.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="To give" />
+                                                                        <HBox alignment="CENTER_LEFT">
+                                                                           <children>
+                                                                              <TextField fx:id="txtGivenAmount" layoutX="10.0" layoutY="10.0" maxWidth="95.0" onAction="#txtGivenAmountOnAction" onKeyTyped="#allowNumberAndDotOnType" promptText="Amount given to the customer" styleClass="custom-text-field" />
+                                                                              <Button fx:id="btDenom" mnemonicParsing="false" onAction="#btDenomClicked" text="Denom" />
+                                                                              <Button fx:id="btPrintReciept" mnemonicParsing="false" onAction="#btPrintRecieptClicked" text="Print Rec" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                        <ComboBox fx:id="cbStatus" maxWidth="200.0" prefWidth="200.0" value="OPENED" visibleRowCount="3">
+                                                                           <items>
+                                                                              <FXCollections fx:factory="observableArrayList">
+                                                                                 <String fx:value="OPENED" />
+                                                                                 <String fx:value="LOCKED" />
+                                                                              </FXCollections>
+                                                                           </items>
+                                                                        </ComboBox>
+                                                                        <TextField fx:id="txtPhysicalLocation" editable="false" focusTraversable="false" maxWidth="200.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Physical Location" />
+                                                                     </children>
+                                                                  </VBox>
+                                                               </children>
+                                                               <HBox.margin>
+                                                                  <Insets top="10.0" />
+                                                               </HBox.margin>
+                                                            </HBox>
+                                                         </children>
+                                                         <VBox.margin>
+                                                            <Insets left="10.0" />
+                                                         </VBox.margin>
+                                                      </HBox>
+                                                      <HBox alignment="TOP_RIGHT" spacing="5.0">
+                                                         <children>
+                                                            <HBox alignment="CENTER">
+                                                               <children>
+                                                                  <Label id="screen-message-label" fx:id="lbScreenMessage" alignment="CENTER" text="Note:" textAlignment="JUSTIFY" textFill="RED">
+                                                                     <HBox.margin>
+                                                                        <Insets left="-500.0" />
+                                                                     </HBox.margin>
+                                                                  </Label>
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox alignment="TOP_RIGHT" spacing="10.0">
+                                                               <children>
+                                                                  <HBox id="TOGGLEHBOX">
+                                                                     <children>
+                                                                        <Label text="Save Mode: ">
+                                                                           <HBox.margin>
+                                                                              <Insets top="4.0" />
+                                                                           </HBox.margin>
+                                                                        </Label>
+                                                                        <HBox fx:id="hSaveModeButtons">
+                                                                           <children>
+                                                                              <ToggleButton fx:id="tgOn" layoutX="474.0" layoutY="27.0" mnemonicParsing="false" onAction="#saveModeON" selected="true" text="ON">
+                                                                                 <toggleGroup>
+                                                                                    <ToggleGroup fx:id="ViewModeGroup" />
+                                                                                 </toggleGroup>
+                                                                              </ToggleButton>
+                                                                              <ToggleButton fx:id="tgOff" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#saveModeOFF" text="OFF" toggleGroup="$ViewModeGroup" />
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </HBox>
+                                                                  <Button fx:id="btSaveBill" mnemonicParsing="false" onAction="#btSaveBillClicked" text="Save Bill">
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </Button>
+                                                                  <Button fx:id="btUpdateBill" disable="true" mnemonicParsing="false" onAction="#btUpdateBillClicked" text="Update Bill" />
+                                                                  <Button fx:id="btPrintCompanyCopy" disable="true" layoutX="315.0" layoutY="10.0" mnemonicParsing="false" onAction="#btPrintCompanyCopyClicked" text="Company Copy" />
+                                                                  <Button fx:id="btPrintCustomerCopy" disable="true" layoutX="315.0" layoutY="10.0" mnemonicParsing="false" onAction="#btPrintCustomerCopyClicked" text="Customer Copy" />
+                                                                  <Button fx:id="btPrintPackingCard" layoutX="315.0" layoutY="10.0" mnemonicParsing="false" onAction="#btPrintPackingCardClicked" text="Packing Copy" />
+                                                                  <Button fx:id="btEditCustomerDetails" layoutX="161.0" layoutY="10.0" mnemonicParsing="false" onAction="#btEditCustomerDetailsClicked" text="Edit Customer Details" />
+                                                                  <Button fx:id="btClearAll" mnemonicParsing="false" onAction="#btClearAllClicked" text="Clear All">
+                                                                     <HBox.margin>
+                                                                        <Insets />
+                                                                     </HBox.margin>
+                                                                  </Button>
+                                                               </children>
+                                                               <HBox.margin>
+                                                                  <Insets />
+                                                               </HBox.margin>
+                                                            </HBox>
+                                                         </children>
+                                                         <VBox.margin>
+                                                            <Insets right="120.0" />
+                                                         </VBox.margin>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                      </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane prefHeight="220.0" prefWidth="1366.0" styleClass="gold-screen-background">
+                                             <children>
+                                                <HBox alignment="CENTER" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_CENTER">
+                                                         <children>
+                                                            <TableView fx:id="tbCutomerBillsList" layoutX="392.0" layoutY="10.0" onMouseClicked="#tbCutomerBillsListOnMouseClicked" prefHeight="150.0" prefWidth="500.0">
+                                                               <columns>
+                                                                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="60.0" text="Material">
+                                                                     <cellValueFactory>
+                                                                        <PropertyValueFactory property="materialType" />
+                                                                     </cellValueFactory>
+                                                                  </TableColumn>
+                                                                  <TableColumn maxWidth="1000.0" minWidth="-1.0" text="Bill Number">
+                                                                     <cellValueFactory>
+                                                                        <PropertyValueFactory property="billNumber" />
+                                                                     </cellValueFactory>
+                                                                  </TableColumn>
+                                                                  <TableColumn maxWidth="1000.0" minWidth="-1.0" text="Opened Date">
+                                                                     <cellValueFactory>
+                                                                        <PropertyValueFactory property="date" />
+                                                                     </cellValueFactory>
+                                                                  </TableColumn>
+                                                                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="150.0" text="Items">
+                                                                     <cellValueFactory>
+                                                                        <PropertyValueFactory property="items" />
+                                                                     </cellValueFactory>
+                                                                  </TableColumn>
+                                                                  <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="50.0" text="Weight">
+                                                                     <cellValueFactory>
+                                                                        <PropertyValueFactory property="grossWeight" />
+                                                                     </cellValueFactory>
+                                                                  </TableColumn>
+                                                                  <TableColumn maxWidth="1000.0" minWidth="-1.0" text="Amount">
+                                                                     <cellValueFactory>
+                                                                        <PropertyValueFactory property="amount" />
+                                                                     </cellValueFactory>
+                                                                  </TableColumn>
+                                                               </columns>
+                                                            </TableView>
+                                                            <Button fx:id="btShowInBillCalc" mnemonicParsing="false" onAction="#btShowInBillCalcClicked" text="Show All Bills in BillCalculator" />
+                                                         </children>
+                                                      </VBox>
+                                                      <VBox alignment="TOP_CENTER" layoutX="668.0" layoutY="10.0">
+                                                         <children>
+                                                            <ImageView fx:id="ivCustomerDetails" fitHeight="170.0" fitWidth="300.0" onMouseClicked="#ivCustomerDetailsClicked" pickOnBounds="true" preserveRatio="true">
+                                                               <VBox.margin>
+                                                                  <Insets top="10.0" />
+                                                               </VBox.margin>
+                                                            </ImageView>
+                                                         </children>
+                                                      </VBox>
+                                                      <VBox alignment="TOP_CENTER">
+                                                         <children>
+                                                            <HBox alignment="CENTER">
+                                                               <children>
+                                                                  <ComboBox fx:id="cbCustomerImageCameraName" prefWidth="150.0" />
+                                                                  <Button fx:id="btCaptureCustomerImg" mnemonicParsing="false" onAction="#btCaptureCustomerImgClicked" text="Customer Img" />
+                                                               </children>
+                                                            </HBox>
+                                                            <ImageView fx:id="ivCustomerBill" fitHeight="170.0" fitWidth="300.0" onMouseClicked="#ivCustomerImageClicked" pickOnBounds="true" preserveRatio="true" />
+                                                         </children>
+                                                      </VBox>
+                                                      <VBox alignment="TOP_CENTER" layoutX="913.0" layoutY="10.0">
+                                                         <children>
+                                                            <HBox alignment="CENTER_LEFT">
+                                                               <children>
+                                                                  <ComboBox fx:id="cbJewelImageCameraName" prefWidth="150.0" />
+                                                                  <Button fx:id="btCaptureJewelImg" mnemonicParsing="false" onAction="#btCaptureJewelImgClicked" text="Jewel Img" />
+                                                               </children>
+                                                            </HBox>
+                                                            <ImageView fx:id="ivJewelBill" fitHeight="170.0" fitWidth="300.0" onMouseClicked="#ivJewelImageClicked" pickOnBounds="true" preserveRatio="true" />
+                                                         </children>
+                                                      </VBox>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="20.0" />
+                                             </padding></AnchorPane>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                           </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab fx:id="tabAdvanceAmountDetails" closable="false" text="Advance Receipt Details">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <ScrollPane style="-fx-background-color: #abcdef;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="700.0" prefWidth="1366.0" styleClass="gold-screen-background">
+                                 <children>
+                                    <VBox alignment="CENTER" spacing="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <HBox alignment="TOP_CENTER" spacing="20.0">
+                                             <children>
+                                                <HBox layoutX="565.0" layoutY="10.0" spacing="5.0">
+                                                   <children>
+                                                      <Label text="Total Advance Amount Paid:" textAlignment="RIGHT">
+                                                         <HBox.margin>
+                                                            <Insets top="3.0" />
+                                                         </HBox.margin>
+                                                      </Label>
+                                                      <TextField fx:id="txtAdvanceReceiptDetailTotalAmount" editable="false" focusTraversable="false" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" prefWidth="200.0" promptText="Total advance amount paid" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </HBox>
+                                          <HBox alignment="TOP_CENTER">
+                                             <children>
+                                                <TableView fx:id="tbAdvanceReceiptDetails" maxWidth="1100.0" onMouseClicked="#tbAllDetailsOnMouseClicked">
+                                                   <columns>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="200.0" text="Bill No">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sBillNumber" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="200.0" text="Paid Date">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sDate" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="200.0" text="Bill Amount">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="dBillAmount" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="200.0" text="Advance Amount Paid">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="dPaidAmount" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="300.0" text="Total Amount Paid (On that particular transaction)">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="dTotalAmount" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                   </columns>
+                                                   <VBox.margin>
+                                                      <Insets />
+                                                   </VBox.margin>
+                                                </TableView>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab closable="false" text="Other Details">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <ScrollPane style="-fx-background-color: #abcdef;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="650.0" prefWidth="1366.0" styleClass="gold-screen-background">
+                                 <children>
+                                    <VBox alignment="CENTER" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <HBox alignment="TOP_CENTER" spacing="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+                                             <children>
+                                                <HBox alignment="TOP_CENTER" fillHeight="false" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_RIGHT" spacing="30.0">
+                                                         <children>
+                                                            <Label text="Repledge Bill ID:" />
+                                                            <Label text="Repledge Name:" />
+                                                            <Label layoutX="86.0" layoutY="146.0" text="Repledge Bill Number:" />
+                                                            <Label layoutX="10.0" layoutY="104.0" text="Company Bill Number:" />
+                                                            <Label layoutX="11.0" layoutY="193.0" text="Repledge Opened Date:" />
+                                                            <Label layoutX="58.0" layoutY="104.0" text="Repledge Bill Amount:">
+                                                               <VBox.margin>
+                                                                  <Insets top="-5.0" />
+                                                               </VBox.margin>
+                                                            </Label>
+                                                            <Label layoutX="11.0" layoutY="146.0" text="Repledge Bill Status:" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                      <VBox spacing="20.0">
+                                                         <children>
+                                                            <TextArea fx:id="txtRepledgeBillId" editable="false" focusTraversable="false" prefHeight="30.0" prefWidth="200.0" />
+                                                            <TextField fx:id="txtRepledgeName" editable="false" focusTraversable="false" layoutX="10.0" layoutY="145.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Name" />
+                                                            <TextField fx:id="txtRepledgeBillNumber" editable="false" focusTraversable="false" layoutX="10.0" layoutY="280.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge BillNumber" />
+                                                            <TextField fx:id="txtCompanyBillNumber" editable="false" focusTraversable="false" layoutX="10.0" layoutY="100.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Company BillNumber" />
+                                                            <TextField fx:id="txtRepledgeOpenedDate" editable="false" focusTraversable="false" layoutX="10.0" layoutY="100.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Opened Date" />
+                                                            <TextField fx:id="txtRepledgeBillAmount" editable="false" focusTraversable="false" layoutX="10.0" layoutY="190.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Bill Amount" />
+                                                            <TextField fx:id="txtRepledgeBillStatus" editable="false" focusTraversable="false" layoutX="10.0" layoutY="145.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Repledge Bill Status" />
+                                                            <Button mnemonicParsing="false" onAction="#btOpenInRepledgeBillClosingClicked" text="Open in Repledge Bill Closing" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="TOP_CENTER" fillHeight="false" layoutX="527.0" layoutY="10.0" spacing="5.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_RIGHT" spacing="30.0">
+                                                         <children>
+                                                            <Label text="Re-Billed From:">
+                                                               <VBox.margin>
+                                                                  <Insets bottom="10.0" />
+                                                               </VBox.margin></Label>
+                                                            <Label text="Re-Billed To:" />
+                                                            <Label layoutX="25.0" layoutY="57.0" text="Created Employee:" />
+                                                            <Label layoutX="10.0" layoutY="104.0" text="Created Time:" />
+                                                            <Label text="Created User Image On Save:" />
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                      <VBox spacing="20.0">
+                                                         <children>
+                                                            <TextArea fx:id="txtReBilledFrom" editable="false" focusTraversable="false" prefHeight="30.0" prefWidth="200.0" />
+                                                            <TextField fx:id="txtReBilledTo" editable="false" focusTraversable="false" layoutX="10.0" layoutY="145.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Re-Billed To" />
+                                                            <TextField fx:id="txtCreatedEmpName" editable="false" focusTraversable="false" layoutX="10.0" layoutY="60.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Created Employee" />
+                                                            <TextField fx:id="txtCreatedTime" editable="false" focusTraversable="false" layoutX="10.0" layoutY="105.0" mouseTransparent="true" onKeyTyped="#capitalizeCharOnType" promptText="Created Time" />
+                                                            <VBox alignment="TOP_CENTER">
+                                                               <children>
+                                                                  <ComboBox fx:id="cbUserImageCameraName" prefWidth="150.0" />
+                                                                  <ImageView fx:id="ivUserBill" fitHeight="170.0" fitWidth="300.0" onMouseClicked="#ivUserImageClicked" pickOnBounds="true" preserveRatio="true" />
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </VBox>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </HBox>
+                                          <VBox alignment="CENTER" maxWidth="1100.0" prefWidth="1000.0" spacing="5.0">
+                                             <children>
+                                                <Label styleClass="bottom-heading-label" text="Rebilled-Multiple - Repledge Bills " textAlignment="JUSTIFY" textFill="#34d331" underline="true" wrapText="true">
+                                                   <font>
+                                                      <Font size="24.0" />
+                                                   </font>
+                                                </Label>
+                                                <TableView fx:id="tbRepList" editable="true" onMouseClicked="#tbRNYDeliveredOnMouseClicked" prefHeight="150.0">
+                                                   <columns>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="130.0" text="Repledge Bill Number">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sRepledgeBillNumber" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="150.0" text="Repledge Name">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sRepledgeName" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="120.0" text="Rep-Opened Date">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sRepledgeDate" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="100.0" text="Rep Amount">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sRepledgeAmount" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="140.0" text="Company Bill Number">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sCompanyBillNumber" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="140.0" text="Company Opened Date">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sCompanyDate" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="120.0" text="Company Amount">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sCompanyAmount" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn prefWidth="100.0" text="Repledge Status">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sRepledgeStatus" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                      <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Repledge BillID">
+                                                         <cellValueFactory>
+                                                            <PropertyValueFactory property="sRepledgeBillId" />
+                                                         </cellValueFactory>
+                                                      </TableColumn>
+                                                   </columns>
+                                                </TableView>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+            <Tab closable="false" text="All Details ">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.3" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane>
+                                 <children>
+                                    <ScrollPane prefHeight="100.0" prefWidth="1366.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane prefHeight="200.0" prefWidth="1366.0" styleClass="gold-screen-background">
+                                             <children>
+                                                <VBox alignment="CENTER" prefWidth="1366.0" spacing="30.0" styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <HBox fx:id="nodeAddToFilter" alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <children>
+                                                            <ComboBox fx:id="cbAllDetailsFilter" minWidth="250.0" onAction="#cbAllDetailsFilterOnAction" visibleRowCount="6">
+                                                                <items>
+                                                                   <FXCollections fx:factory="observableArrayList">
+                                                                      <String fx:value="BILL NO" />
+                                                                      <String fx:value="DATE" />
+                                                                      <String fx:value="AMOUNT" />
+                                                                      <String fx:value="NAME" />
+                                                                      <String fx:value="GENDER" />
+                                                                      <String fx:value="SPOUSE TYPE" />
+                                                                      <String fx:value="SPOUSE NAME" />
+                                                                      <String fx:value="STREET" />
+                                                                      <String fx:value="AREA" />
+                                                                      <String fx:value="MOBILE NO" />
+                                                                      <String fx:value="ITEMS" />
+                                                                      <String fx:value="GROSS WEIGHT" />
+                                                                      <String fx:value="NET WEIGHT" />
+                                                                      <String fx:value="PURITY" />
+                                                                      <String fx:value="STATUS" />
+                                                                      <String fx:value="NOTE" />
+                                                                   </FXCollections>
+                                                                </items>
+                                                                <value>
+                                                                    <String fx:value="MOBILE NO" />
+                                                                </value>
+                                                            </ComboBox>
+                                                            <DatePicker fx:id="dpAddToFilter" minWidth="350.0" />
+                                                            <ComboBox fx:id="cbAddToFilter" layoutX="107.0" layoutY="10.0" minWidth="350.0" visibleRowCount="6">
+                                                               <items>
+                                                                  <FXCollections fx:factory="observableArrayList">
+                                                                  </FXCollections>
+                                                               </items>
+                                                            </ComboBox>
+                                                            <TextField fx:id="txtAddToFilter" minWidth="350.0" onAction="#btAddToFilterClicked" onKeyTyped="#capitalizeCharOnType" />
+                                                            <Button fx:id="btAddToFilter" mnemonicParsing="false" onAction="#btAddToFilterClicked" text="Add to filter" />
+                                                            <Button fx:id="btShowAllRecords" mnemonicParsing="false" onAction="#showAllRecordsClicked" text="Show all records" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox alignment="TOP_CENTER" spacing="10.0">
+                                                         <children>
+                                                            <TextField fx:id="txtFilter" editable="false" focusTraversable="false" minWidth="700.0" mouseTransparent="true" />
+                                                            <Button mnemonicParsing="false" onAction="#btFilterUndoOnAction" text="Undo" />
+                                                            <Button layoutX="975.0" layoutY="10.0" mnemonicParsing="false" onAction="#btFilterClearAllClicked" text="Clear all" />
+                                                            <Button fx:id="btShowFilteredRecords" layoutX="997.0" layoutY="10.0" mnemonicParsing="false" onAction="#showFilteredRecordsClicked" text="Show Filtered records" />
+                                                            <Button layoutX="1061.0" layoutY="10.0" mnemonicParsing="false" onAction="#btOpenInBillClosingClicked" text="Open in Bill Closing" />
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <ScrollPane style="-fx-background-color: #abcdef;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="450.0" styleClass="gold-screen-background">
+                                             <children>
+                                                <HBox styleClass="screen-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <TableView fx:id="tbAllDetails" onMouseClicked="#tbAllDetailsOnMouseClicked">
+                                                         <columns>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Bill No">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sBillNumber" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn maxWidth="1000.0" minWidth="-1.0" prefWidth="100.0" text="Date">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sDate" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="82.0" text="Amount">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sAmount" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="77.0" text="Name">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sName" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="75.0" text="Gender">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sGender" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="95.0" text="Spouse type">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sSpouseType" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="95.0" text="Spouse name">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sSpouseName" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="75.0" text="Street">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sStreet" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="75.0" text="Area">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sArea" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="75.0" text="Mobile no">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sMobileNumber" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="75.0" text="Items">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sItems" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn editable="false" prefWidth="75.0" sortable="false" text="Gross wt">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sGrossWeight" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn editable="false" prefWidth="75.0" sortable="false" text="Net wt">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sNetWeight" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn editable="false" prefWidth="65.0" sortable="false" text="Purity">
+                                                               <cellValueFactory>
+                                                                  <PropertyValueFactory property="sPurity" />
+                                                               </cellValueFactory>
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="100.0" text="Status">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sStatus" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                            <TableColumn prefWidth="100.0" text="Note">
+                                                                <cellValueFactory>
+                                                                <PropertyValueFactory property="sNote" />
+                                                                </cellValueFactory>                                                                
+                                                            </TableColumn>
+                                                         </columns>
+                                                         <HBox.margin>
+                                                            <Insets />
+                                                         </HBox.margin>
+                                                      </TableView>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                          </items>
+                        </SplitPane>
+                     </children></AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
