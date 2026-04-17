@@ -78,7 +78,7 @@ public class CustomersActivity extends AppCompatActivity {
         if (query.length() < 2) return;
 
         progressBar.setVisibility(View.VISIBLE);
-        ApiService.searchCustomers(query, new ApiService.Callback<JSONArray>() {
+        ApiService.searchCustomers(companyId, query, new ApiService.Callback<JSONArray>() {
             @Override public void onSuccess(JSONArray data) {
                 runOnUiThread(() -> {
                     progressBar.setVisibility(View.GONE);

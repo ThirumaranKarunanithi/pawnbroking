@@ -201,10 +201,11 @@ public class ApiService {
 
     // ── Customers ─────────────────────────────────────────────────────────────
 
-    public static void searchCustomers(String query, Callback<JSONArray> cb) {
+    public static void searchCustomers(String companyId, String query, Callback<JSONArray> cb) {
         EXEC.execute(() -> {
             try {
                 HttpUrl url = HttpUrl.parse(AppConfig.CUSTOMERS + "/search").newBuilder()
+                    .addQueryParameter("companyId", companyId)
                     .addQueryParameter("query", query)
                     .build();
                 Request req = new Request.Builder().url(url).get().build();

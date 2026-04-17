@@ -32,7 +32,7 @@ public class CompanyController {
 
     /** GET /api/companies/{id} — single company details */
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable long id) {
+    public ResponseEntity<?> get(@PathVariable String id) {
         String sql = """
                 SELECT id, name, door_number, street, area, city, state,
                        lc_holder_name, lc_number, mobile_number, landline_number,

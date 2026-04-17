@@ -1,5 +1,7 @@
 package magizhchi.academy.pawnrestservice.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -11,42 +13,91 @@ import java.util.Map;
 @RequestMapping("/api/customers")
 public class CustomerController {
 
+    private static final Logger log = LoggerFactory.getLogger(CustomerController.class);
     private final JdbcTemplate jdbc;
 
-    public CustomerController(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+    public CustomerController(JdbcTemplate jdbc) { this.jdbc = jdbc; }
 
-    /** GET /api/customers/search?query= — search by name or mobile */
+    /**
+     * GET /api/customers/search?companyId=CMP1&query=name
+     * Searches customers from company_billing records.
+     */
     @GetMapping("/search")
-    public ResponseEntity<List<Map<String, Object>>> search(
+    public ResponseEntity<?> search(
+            @RequestParam(required = false) String companyId,
             @RequestParam String query) {
+        try {
+            String like = "%" + query.toLowerCase() + "%";
+            String sql;
+            List<Map<String, Object>> rows;
 
-        String sql = """
-                SELECT id, customer_name, mobile_number, mobile_number_2,
-                       door_number, street, area, city, status
-                FROM customer_details
-                WHERE status = 'ACTIVE'
-                  AND (customer_name ILIKE ? OR mobile_number ILIKE ? OR mobile_number_2 ILIKE ?)
-                ORDER BY customer_name
-                LIMIT 50
-                """;
-        String q = "%" + query + "%";
-        return ResponseEntity.ok(jdbc.queryForList(sql, q, q, q));
+            if (companyId != null && !companyId.isBlank()) {
+                sql = """
+                    SELECT DISTINCT customer_name,
+                           MAX(spouse_type)    AS spouse_type,
+                           MAX(spouse_name)    AS spouse_name,
+                           MAX(mobile_number)  AS mobile_number,
+                           MAX(door_number)    AS door_number,
+                           MAX(street)         AS street,
+                           MAX(area)           AS area,
+                           MAX(city)           AS city,
+                           COUNT(CASE WHEN status::text IN ('OPENED','LOCKED') THEN 1 END) AS open_bills,
+                           COUNT(*) AS total_bills
+                    FROM company_billing
+                    WHERE company_id = ?
+                      AND (LOWER(customer_name) LIKE ? OR mobile_number LIKE ?)
+                    GROUP BY customer_name
+                    ORDER BY customer_name
+                    LIMIT 50
+                    """;
+                rows = jdbc.queryForList(sql, companyId, like, like);
+            } else {
+                sql = """
+                    SELECT DISTINCT customer_name,
+                           MAX(spouse_type)    AS spouse_type,
+                           MAX(spouse_name)    AS spouse_name,
+                           MAX(mobile_number)  AS mobile_number,
+                           MAX(area)           AS area,
+                           MAX(city)           AS city,
+                           COUNT(CASE WHEN status::text IN ('OPENED','LOCKED') THEN 1 END) AS open_bills,
+                           COUNT(*) AS total_bills
+                    FROM company_billing
+                    WHERE LOWER(customer_name) LIKE ? OR mobile_number LIKE ?
+                    GROUP BY customer_name
+                    ORDER BY customer_name
+                    LIMIT 50
+                    """;
+                rows = jdbc.queryForList(sql, like, like);
+            }
+            return ResponseEntity.ok(rows);
+        } catch (Exception e) {
+            log.error("Customer search error: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
     }
 
-    /** GET /api/customers/{id} — single customer details */
-    @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable long id) {
-        String sql = """
-                SELECT id, customer_name, gender, spouse_type, spouse_name,
-                       door_number, street, area, city, mobile_number, mobile_number_2,
-                       nominee_name, id_proof_type, id_proof_number, occupation, status
-                FROM customer_details
-                WHERE id = ?
-                """;
-        List<Map<String, Object>> rows = jdbc.queryForList(sql, id);
-        if (rows.isEmpty()) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(rows.get(0));
+    /**
+     * GET /api/customers/bills?companyId=CMP1&customerName=xyz
+     * Returns all bills for a customer by name.
+     */
+    @GetMapping("/bills")
+    public ResponseEntity<?> customerBills(
+            @RequestParam String companyId,
+            @RequestParam String customerName) {
+        try {
+            List<Map<String, Object>> rows = jdbc.queryForList("""
+                    SELECT bill_number, jewel_material_type::text material_type,
+                           opening_date::text, closing_date::text,
+                           amount, open_taken_amount, status::text status, items,
+                           area, mobile_number
+                    FROM company_billing
+                    WHERE company_id = ? AND customer_name = ?
+                    ORDER BY created_date DESC
+                    """, companyId, customerName);
+            return ResponseEntity.ok(rows);
+        } catch (Exception e) {
+            log.error("Customer bills error: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
     }
 }
