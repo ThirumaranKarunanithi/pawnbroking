@@ -23,7 +23,11 @@
         <activity android:name=".BillsActivity" android:exported="false" />
         <activity android:name=".BillDetailActivity" android:exported="false" />
         <activity android:name=".TodaysAccountActivity" android:exported="false" />
-        <activity android:name=".AccountDetailActivity" android:exported="false" />
+        <activity android:name=".AccountDetailActivity"  android:exported="false" />
+        <activity android:name=".StockDetailsActivity"   android:exported="false" />
+        <activity android:name=".MonthlyReportActivity"  android:exported="false" />
+        <activity android:name=".TrialBalanceActivity"   android:exported="false" />
+        <activity android:name=".CustomersActivity"      android:exported="false" />
 
     </application>
 

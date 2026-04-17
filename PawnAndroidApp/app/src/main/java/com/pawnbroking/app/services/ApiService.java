@@ -199,6 +199,106 @@ public class ApiService {
         });
     }
 
+    // ── Customers ─────────────────────────────────────────────────────────────
+
+    public static void searchCustomers(String query, Callback<JSONArray> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl url = HttpUrl.parse(AppConfig.CUSTOMERS + "/search").newBuilder()
+                    .addQueryParameter("query", query)
+                    .build();
+                Request req = new Request.Builder().url(url).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "[]";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONArray(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
+    // ── Stock ─────────────────────────────────────────────────────────────────
+
+    public static void getStock(String companyId, String materialType, String search,
+                                String from, String to, int page, int size,
+                                Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl.Builder b = HttpUrl.parse(AppConfig.STOCK).newBuilder()
+                    .addQueryParameter("companyId", companyId)
+                    .addQueryParameter("materialType", materialType)
+                    .addQueryParameter("search", search != null ? search : "")
+                    .addQueryParameter("page",  String.valueOf(page))
+                    .addQueryParameter("size",  String.valueOf(size));
+                if (from != null && !from.isEmpty()) b.addQueryParameter("from", from);
+                if (to   != null && !to.isEmpty())   b.addQueryParameter("to",   to);
+                Request req = new Request.Builder().url(b.build()).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
+    public static void getRepledgeStock(String companyId, String materialType, String search,
+                                        int page, int size, Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl url = HttpUrl.parse(AppConfig.STOCK_REPLEDGE).newBuilder()
+                    .addQueryParameter("companyId", companyId)
+                    .addQueryParameter("materialType", materialType)
+                    .addQueryParameter("search", search != null ? search : "")
+                    .addQueryParameter("page",  String.valueOf(page))
+                    .addQueryParameter("size",  String.valueOf(size))
+                    .build();
+                Request req = new Request.Builder().url(url).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
+    // ── Reports ───────────────────────────────────────────────────────────────
+
+    public static void getMonthlyReport(String companyId, Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl url = HttpUrl.parse(AppConfig.REPORT_MONTHLY).newBuilder()
+                    .addQueryParameter("companyId", companyId)
+                    .build();
+                Request req = new Request.Builder().url(url).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
+    public static void getTrialBalance(String companyId, String from, String to,
+                                       Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl.Builder b = HttpUrl.parse(AppConfig.REPORT_TRIAL_BALANCE).newBuilder()
+                    .addQueryParameter("companyId", companyId);
+                if (from != null && !from.isEmpty()) b.addQueryParameter("from", from);
+                if (to   != null && !to.isEmpty())   b.addQueryParameter("to",   to);
+                Request req = new Request.Builder().url(b.build()).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
     public static void getTodaysAccountDetails(String companyId, String date, String type,
                                                Callback<JSONObject> cb) {
         EXEC.execute(() -> {

@@ -9,4 +9,8 @@ public class AppConfig {
     public static final String CUSTOMERS      = BASE_URL + "/api/customers";
     public static final String TODAYS_ACCOUNT         = BASE_URL + "/api/todays-account";
     public static final String TODAYS_ACCOUNT_DETAILS = BASE_URL + "/api/todays-account/details";
+    public static final String STOCK                  = BASE_URL + "/api/stock";
+    public static final String STOCK_REPLEDGE         = BASE_URL + "/api/stock/repledge";
+    public static final String REPORT_MONTHLY         = BASE_URL + "/api/reports/monthly";
+    public static final String REPORT_TRIAL_BALANCE   = BASE_URL + "/api/reports/trial-balance";
 }

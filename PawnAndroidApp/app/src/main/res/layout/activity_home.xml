@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/bg_card"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:menu="@menu/menu_home"
+        app:title="Pawnbroking"
+        app:titleTextColor="@color/gold"
+        xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+    <ProgressBar
+        android:id="@+id/progressCompany"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="32dp"
+        android:indeterminateTint="@color/gold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvNoCompany"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="32dp"
+        android:text="No companies found"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/layoutContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <!-- Company Selector -->
+                <Spinner
+                    android:id="@+id/spinnerCompany"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_card"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:popupBackground="@color/bg_card" />
+
+                <!-- Date -->
+                <TextView
+                    android:id="@+id/tvDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/white54"
+                    android:textSize="13sp" />
+
+                <!-- Dashboard Progress -->
+                <ProgressBar
+                    android:id="@+id/progressDashboard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:indeterminateTint="@color/gold"
+                    android:visibility="gone" />
+
+                <!-- Stats Row 1: Opened / Closed -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout android:id="@+id/cardOpened" style="@style/StatCard">
+                        <TextView android:text="📂" android:textSize="20sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvOpenedToday"
+                            android:textColor="@color/green" android:textSize="22sp"
+                            android:textStyle="bold" android:text="0"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:text="Opened Today" android:textColor="@color/white54"
+                            android:textSize="12sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="10dp" android:layout_height="1dp"/>
+
+                    <LinearLayout android:id="@+id/cardClosed" style="@style/StatCard">
+                        <TextView android:text="✅" android:textSize="20sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvClosedToday"
+                            android:textColor="@color/orange" android:textSize="22sp"
+                            android:textStyle="bold" android:text="0"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:text="Closed Today" android:textColor="@color/white54"
+                            android:textSize="12sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Stats Row 2: Active Bills / Total Loan -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout style="@style/StatCard">
+                        <TextView android:text="📁" android:textSize="20sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvActiveBills"
+                            android:textColor="@color/gold" android:textSize="22sp"
+                            android:textStyle="bold" android:text="0"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:text="Active Bills" android:textColor="@color/white54"
+                            android:textSize="12sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="10dp" android:layout_height="1dp"/>
+
+                    <LinearLayout style="@style/StatCard">
+                        <TextView android:text="🏦" android:textSize="20sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvTotalLoan"
+                            android:textColor="@color/blue" android:textSize="16sp"
+                            android:textStyle="bold" android:text="₹0"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:text="Total Loan" android:textColor="@color/white54"
+                            android:textSize="12sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Stats Row 3: Given / Received -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout style="@style/StatCard">
+                        <TextView android:text="⬆" android:textSize="20sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvGivenToday"
+                            android:textColor="@color/red" android:textSize="16sp"
+                            android:textStyle="bold" android:text="₹0"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:text="Given Today" android:textColor="@color/white54"
+                            android:textSize="12sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="10dp" android:layout_height="1dp"/>
+
+                    <LinearLayout style="@style/StatCard">
+                        <TextView android:text="⬇" android:textSize="20sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:id="@+id/tvReceivedToday"
+                            android:textColor="@color/green" android:textSize="16sp"
+                            android:textStyle="bold" android:text="₹0"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <TextView android:text="Received Today" android:textColor="@color/white54"
+                            android:textSize="12sp"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ── BILLS SECTION ── -->
+                <TextView style="@style/SectionHeader" android:text="BILLS"
+                    android:layout_marginTop="20dp" />
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/btnGoldBills" style="@style/ActionBtn"
+                        android:text="★ Gold Bills" android:textColor="#E6B800" />
+                    <View android:layout_width="10dp" android:layout_height="1dp"/>
+                    <Button android:id="@+id/btnSilverBills" style="@style/ActionBtn"
+                        android:text="● Silver Bills" android:textColor="#AAAAAA" />
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp" android:orientation="horizontal">
+                    <Button android:id="@+id/btnAllActive" style="@style/ActionBtn"
+                        android:text="📂 All Active" android:textColor="@color/green" />
+                    <View android:layout_width="10dp" android:layout_height="1dp"/>
+                    <Button android:id="@+id/btnClosed" style="@style/ActionBtn"
+                        android:text="✅ Closed Bills" android:textColor="@color/orange" />
+                </LinearLayout>
+
+                <!-- ── STOCK SECTION ── -->
+                <TextView style="@style/SectionHeader" android:text="STOCK"
+                    android:layout_marginTop="20dp" />
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/btnGoldStock" style="@style/ActionBtn"
+                        android:text="★ Gold Stock" android:textColor="#E6B800" />
+                    <View android:layout_width="10dp" android:layout_height="1dp"/>
+                    <Button android:id="@+id/btnSilverStock" style="@style/ActionBtn"
+                        android:text="● Silver Stock" android:textColor="#AAAAAA" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnAllStock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/bg_card"
+                    android:text="📦  All Stock Details"
+                    android:textColor="@color/blue"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <!-- ── ACCOUNT SECTION ── -->
+                <TextView style="@style/SectionHeader" android:text="ACCOUNT"
+                    android:layout_marginTop="20dp" />
+
+                <Button
+                    android:id="@+id/btnTodaysAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/bg_card"
+                    android:text="📒  Today's Account"
+                    android:textColor="@color/gold"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <!-- ── REPORTS SECTION ── -->
+                <TextView style="@style/SectionHeader" android:text="REPORTS"
+                    android:layout_marginTop="20dp" />
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/btnMonthlyReport" style="@style/ActionBtn"
+                        android:text="📊 Monthly" android:textColor="@color/blue" />
+                    <View android:layout_width="10dp" android:layout_height="1dp"/>
+                    <Button android:id="@+id/btnTrialBalance" style="@style/ActionBtn"
+                        android:text="⚖ Trial Balance" android:textColor="@color/green" />
+                </LinearLayout>
+
+                <!-- ── CUSTOMERS SECTION ── -->
+                <TextView style="@style/SectionHeader" android:text="CUSTOMERS"
+                    android:layout_marginTop="20dp" />
+
+                <Button
+                    android:id="@+id/btnCustomers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/bg_card"
+                    android:text="👥  Customer Details"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <View android:layout_width="1dp" android:layout_height="24dp" />
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>
