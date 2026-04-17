@@ -246,8 +246,8 @@ public class TodaysAccountActivity extends AppCompatActivity {
 
             tableOperations.addView(row);
 
-            // Detail sub-text row
-            if (!detail.isEmpty()) {
+            // Detail sub-text row — only show when that operation actually has activity
+            if (!detail.isEmpty() && count > 0) {
                 TableRow detailRow = new TableRow(this);
                 detailRow.setBackgroundColor(rowBg);
                 TextView tvDetail = new TextView(this);

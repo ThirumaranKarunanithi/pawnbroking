@@ -28,38 +28,44 @@ public class ReportsController {
     public ResponseEntity<?> monthly(@RequestParam String companyId) {
         try {
             String sql = """
-                    SELECT mon, yr,
-                        COALESCE(open_count, 0) open_count,
-                        COALESCE(open_amount, 0) open_amount,
-                        COALESCE(close_count, 0) close_count,
-                        COALESCE(close_amount, 0) close_amount,
-                        COALESCE(stock_count, 0) stock_count,
-                        COALESCE(stock_amount, 0) stock_amount
+                    SELECT mon, yr, mon_num,
+                        SUM(COALESCE(open_count,  0)) open_count,
+                        SUM(COALESCE(open_amount, 0)) open_amount,
+                        SUM(COALESCE(close_count,  0)) close_count,
+                        SUM(COALESCE(close_amount, 0)) close_amount,
+                        SUM(COALESCE(stock_count,  0)) stock_count,
+                        SUM(COALESCE(stock_amount, 0)) stock_amount
                     FROM (
                         SELECT TO_CHAR(opening_date, 'Mon') mon,
-                               EXTRACT(YEAR FROM opening_date)::int yr,
+                               EXTRACT(YEAR  FROM opening_date)::int yr,
                                EXTRACT(MONTH FROM opening_date)::int mon_num,
-                               COUNT(*) open_count, COALESCE(SUM(amount),0) open_amount,
+                               COUNT(*)               open_count,
+                               COALESCE(SUM(amount),0) open_amount,
                                0 close_count, 0 close_amount, 0 stock_count, 0 stock_amount
                         FROM company_billing
                         WHERE company_id = ? AND status::text NOT IN ('CANCELED')
-                        GROUP BY TO_CHAR(opening_date,'Mon'), EXTRACT(YEAR FROM opening_date),
+                        GROUP BY TO_CHAR(opening_date,'Mon'),
+                                 EXTRACT(YEAR  FROM opening_date),
                                  EXTRACT(MONTH FROM opening_date)
                         UNION ALL
-                        SELECT TO_CHAR(closing_date,'Mon'), EXTRACT(YEAR FROM closing_date)::int,
+                        SELECT TO_CHAR(closing_date,'Mon'),
+                               EXTRACT(YEAR  FROM closing_date)::int,
                                EXTRACT(MONTH FROM closing_date)::int,
                                0, 0, COUNT(*), COALESCE(SUM(got_amount),0), 0, 0
                         FROM company_billing
                         WHERE company_id = ? AND closing_date IS NOT NULL
-                        GROUP BY TO_CHAR(closing_date,'Mon'), EXTRACT(YEAR FROM closing_date),
+                        GROUP BY TO_CHAR(closing_date,'Mon'),
+                                 EXTRACT(YEAR  FROM closing_date),
                                  EXTRACT(MONTH FROM closing_date)
                         UNION ALL
-                        SELECT TO_CHAR(opening_date,'Mon'), EXTRACT(YEAR FROM opening_date)::int,
+                        SELECT TO_CHAR(opening_date,'Mon'),
+                               EXTRACT(YEAR  FROM opening_date)::int,
                                EXTRACT(MONTH FROM opening_date)::int,
                                0, 0, 0, 0, COUNT(*), COALESCE(SUM(amount),0)
                         FROM company_billing
                         WHERE company_id = ? AND status::text IN ('OPENED','LOCKED')
-                        GROUP BY TO_CHAR(opening_date,'Mon'), EXTRACT(YEAR FROM opening_date),
+                        GROUP BY TO_CHAR(opening_date,'Mon'),
+                                 EXTRACT(YEAR  FROM opening_date),
                                  EXTRACT(MONTH FROM opening_date)
                     ) t
                     GROUP BY mon, yr, mon_num
