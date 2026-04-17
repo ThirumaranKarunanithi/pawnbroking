@@ -220,8 +220,8 @@ public class TodaysAccountActivity extends AppCompatActivity {
             tvName.setText(name + (detailType != null ? " ›" : ""));
             tvName.setTextColor(detailType != null
                     ? Color.parseColor("#64B5F6") : Color.WHITE);
-            tvName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            tvName.setPadding(dp(8), dp(6), dp(8), dp(6));
+            tvName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+            tvName.setPadding(dp(8), dp(3), dp(8), dp(3));
             TableRow.LayoutParams flexLp = new TableRow.LayoutParams(
                     0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
             tvName.setLayoutParams(flexLp);
@@ -254,7 +254,7 @@ public class TodaysAccountActivity extends AppCompatActivity {
                 tvDetail.setText(detail);
                 tvDetail.setTextColor(Color.parseColor("#888888"));
                 tvDetail.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
-                tvDetail.setPadding(dp(8), 0, dp(8), dp(6));
+                tvDetail.setPadding(dp(8), 0, dp(8), dp(3));
                 TableRow.LayoutParams spanLp = new TableRow.LayoutParams(
                         0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
                 spanLp.span = 4;
@@ -279,9 +279,9 @@ public class TodaysAccountActivity extends AppCompatActivity {
         TextView tv = new TextView(this);
         tv.setText(text);
         tv.setTextColor(color);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         tv.setGravity(gravity);
-        tv.setPadding(dp(8), dp(6), dp(8), dp(6));
+        tv.setPadding(dp(6), dp(3), dp(6), dp(3));
         TableRow.LayoutParams lp = new TableRow.LayoutParams(
                 minWidthPx, TableRow.LayoutParams.WRAP_CONTENT);
         tv.setLayoutParams(lp);

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_card">#162547</color>
+    <color name="bg_dark">#0C1B33</color>
+    <color name="blue">#2196F3</color>
+    <color name="gold">#E6B800</color>
+    <color name="gold_dark">#B8900A</color>
+    <color name="green">#4CAF50</color>
+    <color name="orange">#FF9800</color>
+    <color name="red">#F44336</color>
+    <color name="white">#FFFFFF</color>
+    <color name="white38">#61FFFFFF</color>
+    <color name="white54">#8AFFFFFF</color>
+    <string name="app_name">Rajeshwari Pawn</string>
+    <style name="ActionBtn">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:backgroundTint">@color/bg_card</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+    <style name="Chip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/chip_unselected</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:textColor">@color/white54</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+    <style name="SectionHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">@color/gold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="StatCard">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/bg_card</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">14dp</item>
+    </style>
+    <style name="Theme.PawnApp" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/gold</item>
+        <item name="colorPrimaryVariant">@color/gold_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/bg_card</item>
+        <item name="android:windowBackground">@color/bg_dark</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.PawnApp.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>
