@@ -297,6 +297,220 @@ public class TodaysAccountController {
         }
     }
 
+    // ── Detail endpoint ───────────────────────────────────────────────────────
+
+    /**
+     * GET /api/todays-account/details?companyId=CMP1&date=yyyy-MM-dd&type=GOLD_OPENING
+     * type = GOLD_OPENING | SILVER_OPENING | GOLD_CLOSING | SILVER_CLOSING
+     *        GOLD_ADVANCE | SILVER_ADVANCE
+     *        REPLEDGE_OPENING | REPLEDGE_CLOSING
+     *        EXPENSES | INCOMES
+     */
+    @GetMapping("/details")
+    public ResponseEntity<?> details(
+            @RequestParam String companyId,
+            @RequestParam(required = false) String date,
+            @RequestParam String type) {
+        try {
+            String targetDate = (date != null && !date.isBlank()) ? date : LocalDate.now().toString();
+            return switch (type.toUpperCase()) {
+                case "GOLD_OPENING"     -> ResponseEntity.ok(billOpeningDetail(companyId, targetDate, "GOLD"));
+                case "SILVER_OPENING"   -> ResponseEntity.ok(billOpeningDetail(companyId, targetDate, "SILVER"));
+                case "GOLD_CLOSING"     -> ResponseEntity.ok(billClosingDetail(companyId, targetDate, "GOLD"));
+                case "SILVER_CLOSING"   -> ResponseEntity.ok(billClosingDetail(companyId, targetDate, "SILVER"));
+                case "GOLD_ADVANCE"     -> ResponseEntity.ok(billAdvanceDetail(companyId, targetDate, "GOLD"));
+                case "SILVER_ADVANCE"   -> ResponseEntity.ok(billAdvanceDetail(companyId, targetDate, "SILVER"));
+                case "REPLEDGE_OPENING" -> ResponseEntity.ok(repledgeOpeningDetail(companyId, targetDate));
+                case "REPLEDGE_CLOSING" -> ResponseEntity.ok(repledgeClosingDetail(companyId, targetDate));
+                case "EXPENSES"         -> ResponseEntity.ok(expensesDetail(companyId, targetDate));
+                case "INCOMES"          -> ResponseEntity.ok(incomesDetail(companyId, targetDate));
+                default -> ResponseEntity.badRequest().body(Map.of("error", "Unknown type: " + type));
+            };
+        } catch (Exception e) {
+            log.error("Details error: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    private Map<String, Object> billOpeningDetail(String companyId, String date, String mat) {
+        String sql = """
+                SELECT bill_number, opening_date::text, customer_name, items,
+                       amount, given_amount, status::text, created_user_id
+                FROM company_billing
+                WHERE company_id = ? AND status::text NOT IN ('CANCELED')
+                  AND jewel_material_type::text = ? AND opening_date::date = ?::date
+                ORDER BY bill_number
+                """;
+        List<List<String>> rows = new ArrayList<>();
+        for (Map<String,Object> r : jdbc.queryForList(sql, companyId, mat, date)) {
+            rows.add(List.of(str(r.get("bill_number")), str(r.get("opening_date")),
+                str(r.get("customer_name")), str(r.get("items")),
+                fmt(r.get("amount")), fmt(r.get("given_amount")),
+                str(r.get("status")), str(r.get("created_user_id"))));
+        }
+        return detail(mat + " Bill Opening",
+            List.of("Bill No","Date","Customer","Items","Amount","Given","Status","User"), rows);
+    }
+
+    private Map<String, Object> billClosingDetail(String companyId, String date, String mat) {
+        String sql = """
+                SELECT bill_number, closing_date::text, customer_name, items,
+                       amount, got_amount, close_taken_amount, closed_user_id
+                FROM company_billing
+                WHERE company_id = ? AND jewel_material_type::text = ? AND closing_date::date = ?::date
+                ORDER BY bill_number
+                """;
+        List<List<String>> rows = new ArrayList<>();
+        for (Map<String,Object> r : jdbc.queryForList(sql, companyId, mat, date)) {
+            rows.add(List.of(str(r.get("bill_number")), str(r.get("closing_date")),
+                str(r.get("customer_name")), str(r.get("items")),
+                fmt(r.get("amount")), fmt(r.get("got_amount")),
+                fmt(r.get("close_taken_amount")), str(r.get("closed_user_id"))));
+        }
+        return detail(mat + " Bill Closing",
+            List.of("Bill No","Date","Customer","Items","Amount","Got","Interest","User"), rows);
+    }
+
+    private Map<String, Object> billAdvanceDetail(String companyId, String date, String mat) {
+        String sql = """
+                SELECT aa.bill_number, aa.paid_date::text, cb.customer_name,
+                       aa.bill_amount, aa.paid_amount, aa.total_amount, aa.user_id
+                FROM company_advance_amount aa
+                JOIN company_billing cb ON aa.bill_number = cb.bill_number
+                    AND aa.jewel_material_type = cb.jewel_material_type
+                    AND aa.company_id = cb.company_id
+                WHERE aa.company_id = ? AND aa.jewel_material_type::text = ?
+                  AND aa.paid_date::date = ?::date
+                ORDER BY aa.bill_number
+                """;
+        List<List<String>> rows = new ArrayList<>();
+        for (Map<String,Object> r : jdbc.queryForList(sql, companyId, mat, date)) {
+            rows.add(List.of(str(r.get("bill_number")), str(r.get("paid_date")),
+                str(r.get("customer_name")), fmt(r.get("bill_amount")),
+                fmt(r.get("paid_amount")), fmt(r.get("total_amount")), str(r.get("user_id"))));
+        }
+        return detail(mat + " Advance Amount",
+            List.of("Bill No","Date","Customer","Bill Amt","Paid","Total","User"), rows);
+    }
+
+    private Map<String, Object> repledgeOpeningDetail(String companyId, String date) {
+        String sql = """
+                SELECT repledge_bill_id, opening_date::text, repledge_name,
+                       repledge_bill_number, company_bill_number,
+                       amount, got_amount, created_user_id
+                FROM repledge_billing
+                WHERE company_id = ? AND opening_date::date = ?::date
+                ORDER BY repledge_name
+                """;
+        List<List<String>> rows = new ArrayList<>();
+        for (Map<String,Object> r : jdbc.queryForList(sql, companyId, date)) {
+            rows.add(List.of(str(r.get("repledge_bill_id")), str(r.get("opening_date")),
+                str(r.get("repledge_name")), str(r.get("repledge_bill_number")),
+                str(r.get("company_bill_number")), fmt(r.get("amount")),
+                fmt(r.get("got_amount")), str(r.get("created_user_id"))));
+        }
+        return detail("Repledge Opening",
+            List.of("ID","Date","Name","Repledge Bill","Company Bill","Amount","Got","User"), rows);
+    }
+
+    private Map<String, Object> repledgeClosingDetail(String companyId, String date) {
+        String sql = """
+                SELECT repledge_bill_id, closing_date::text, repledge_name,
+                       repledge_bill_number, company_bill_number,
+                       amount, given_amount, close_taken_amount, closed_user_id
+                FROM repledge_billing
+                WHERE company_id = ? AND closing_date::date = ?::date
+                ORDER BY repledge_name
+                """;
+        List<List<String>> rows = new ArrayList<>();
+        for (Map<String,Object> r : jdbc.queryForList(sql, companyId, date)) {
+            rows.add(List.of(str(r.get("repledge_bill_id")), str(r.get("closing_date")),
+                str(r.get("repledge_name")), str(r.get("repledge_bill_number")),
+                str(r.get("company_bill_number")), fmt(r.get("amount")),
+                fmt(r.get("given_amount")), fmt(r.get("close_taken_amount")),
+                str(r.get("closed_user_id"))));
+        }
+        return detail("Repledge Closing",
+            List.of("ID","Date","Name","Repledge Bill","Company Bill","Amount","Given","Interest","User"), rows);
+    }
+
+    private Map<String, Object> expensesDetail(String companyId, String date) {
+        String sql = """
+                SELECT 'Daily Allowance' AS type, employee_id AS ref, '' AS name,
+                       debitted_amount AS amount, debitted_date::text AS txn_date, '' AS remarks
+                FROM employee_daily_allowance_debit WHERE company_id=? AND debitted_date::date=?::date
+                UNION ALL
+                SELECT 'Advance Debit', employee_id, '', debitted_amount, debitted_date::text, ''
+                FROM employee_advance_amount_debit WHERE company_id=? AND debitted_date::date=?::date
+                UNION ALL
+                SELECT 'Salary Debit', employee_id, '', debitted_amount, debitted_date::text, ''
+                FROM employee_salary_amount_debit WHERE company_id=? AND debitted_date::date=?::date
+                UNION ALL
+                SELECT 'Other Debit', employee_id, '', debitted_amount, debitted_date::text, ''
+                FROM employee_other_amount_debit WHERE company_id=? AND debitted_date::date=?::date
+                UNION ALL
+                SELECT 'Bill Debit', id::text, '', debitted_amount, debitted_date::text, ''
+                FROM company_bill_debit WHERE company_id=? AND debitted_date::date=?::date
+                UNION ALL
+                SELECT 'Company Other', id::text, '', debitted_amount, debitted_date::text, ''
+                FROM company_other_debit WHERE company_id=? AND debitted_date::date=?::date
+                ORDER BY txn_date, type
+                """;
+        List<List<String>> rows = new ArrayList<>();
+        try {
+            for (Map<String,Object> r : jdbc.queryForList(sql,
+                    companyId, date, companyId, date, companyId, date,
+                    companyId, date, companyId, date, companyId, date)) {
+                rows.add(List.of(str(r.get("type")), str(r.get("ref")),
+                    str(r.get("txn_date")), fmt(r.get("amount"))));
+            }
+        } catch (Exception e) { log.warn("Expenses detail: {}", e.getMessage()); }
+        return detail("Expenses", List.of("Type","Ref","Date","Amount"), rows);
+    }
+
+    private Map<String, Object> incomesDetail(String companyId, String date) {
+        String sql = """
+                SELECT 'Advance Credit' AS type, employee_id AS ref,
+                       credited_date::text AS txn_date, credit_amount AS amount
+                FROM employee_advance_amount_credit WHERE company_id=? AND credited_date::date=?::date
+                UNION ALL
+                SELECT 'Other Credit', employee_id, credited_date::text, credited_amount
+                FROM employee_other_amount_credit WHERE company_id=? AND credited_date::date=?::date
+                UNION ALL
+                SELECT 'Bill Credit', id::text, credited_date::text, credited_amount
+                FROM company_bill_credit WHERE company_id=? AND credited_date::date=?::date
+                UNION ALL
+                SELECT 'Company Other', id::text, credited_date::text, credited_amount
+                FROM company_other_credit WHERE company_id=? AND credited_date::date=?::date
+                ORDER BY txn_date, type
+                """;
+        List<List<String>> rows = new ArrayList<>();
+        try {
+            for (Map<String,Object> r : jdbc.queryForList(sql,
+                    companyId, date, companyId, date, companyId, date, companyId, date)) {
+                rows.add(List.of(str(r.get("type")), str(r.get("ref")),
+                    str(r.get("txn_date")), fmt(r.get("amount"))));
+            }
+        } catch (Exception e) { log.warn("Incomes detail: {}", e.getMessage()); }
+        return detail("Incomes", List.of("Type","Ref","Date","Amount"), rows);
+    }
+
+    private Map<String, Object> detail(String title, List<String> headers, List<List<String>> rows) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("title", title);
+        m.put("headers", headers);
+        m.put("rows", rows);
+        m.put("count", rows.size());
+        return m;
+    }
+
+    private String fmt(Object v) {
+        if (v == null) return "0";
+        double d = toDouble(v);
+        if (d == Math.floor(d)) return String.valueOf((long) d);
+        return String.format("%.2f", d);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private Map<String, Object> buildRow(String name, List<Map<String, Object>> rows) {
