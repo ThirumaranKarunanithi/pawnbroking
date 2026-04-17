@@ -28,10 +28,10 @@ public class MonthlyReportActivity extends AppCompatActivity {
     private String companyId, companyName;
     private final NumberFormat fmt = NumberFormat.getNumberInstance(new Locale("en", "IN"));
 
-    // Columns: Month | Open# | Open Amt | Close# | Close Amt | Stock# | Stock Amt | Earned# | Earned Amt
+    // Columns: Month | Open# | Open Amt | Close# | Close Amt | Profit | Net# | Net Amt
     private static final String[] HEADERS = {
         "Month", "Open\n#", "Open Amt", "Close\n#", "Close Amt",
-        "Stock\n#", "Stock Amt", "Net\n#", "Net Amt"
+        "Profit", "Net\n#", "Net Amt"
     };
 
     @Override
@@ -48,7 +48,7 @@ public class MonthlyReportActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Monthly Report");
+            getSupportActionBar().setTitle("MIS Report");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         toolbar.setNavigationOnClickListener(v -> finish());
@@ -98,32 +98,31 @@ public class MonthlyReportActivity extends AppCompatActivity {
         if (months == null) return;
 
         // Totals accumulators
-        long   sumOpenCnt = 0, sumCloseCnt = 0, sumStockCnt = 0, sumNetCnt = 0;
-        double sumOpenAmt = 0, sumCloseAmt = 0, sumStockAmt = 0, sumNetAmt = 0;
+        long   sumOpenCnt = 0, sumCloseCnt = 0, sumNetCnt = 0;
+        double sumOpenAmt = 0, sumCloseAmt = 0, sumProfit = 0, sumNetAmt = 0;
 
         for (int i = 0; i < months.length(); i++) {
             JSONObject m = months.optJSONObject(i);
             if (m == null) continue;
 
-            long   openCnt  = m.optLong("openCount",   0);
-            double openAmt  = m.optDouble("openAmount", 0);
-            long   closeCnt = m.optLong("closeCount",  0);
-            double closeAmt = m.optDouble("closeAmount",0);
-            long   stoCnt   = m.optLong("stockCount",  0);
-            double stoAmt   = m.optDouble("stockAmount",0);
-            long   netCnt   = m.optLong("earnedCount", 0);
+            long   openCnt  = m.optLong("openCount",    0);
+            double openAmt  = m.optDouble("openAmount",  0);
+            long   closeCnt = m.optLong("closeCount",   0);
+            double closeAmt = m.optDouble("closeAmount", 0);
+            double profit   = m.optDouble("profit",      0);
+            long   netCnt   = m.optLong("earnedCount",  0);
             double netAmt   = m.optDouble("earnedAmount",0);
 
             sumOpenCnt  += openCnt;  sumOpenAmt  += openAmt;
             sumCloseCnt += closeCnt; sumCloseAmt += closeAmt;
-            sumStockCnt += stoCnt;   sumStockAmt += stoAmt;
+            sumProfit   += profit;
             sumNetCnt   += netCnt;   sumNetAmt   += netAmt;
 
             String[] cells = {
                 m.optString("month", ""),
                 String.valueOf(openCnt), shortFmt(openAmt),
                 String.valueOf(closeCnt), shortFmt(closeAmt),
-                String.valueOf(stoCnt),  shortFmt(stoAmt),
+                shortFmt(profit),
                 String.valueOf(netCnt),  shortFmt(netAmt)
             };
             addDataRow(cells, i);
@@ -137,7 +136,7 @@ public class MonthlyReportActivity extends AppCompatActivity {
             "TOTAL",
             String.valueOf(sumOpenCnt),  shortFmt(sumOpenAmt),
             String.valueOf(sumCloseCnt), shortFmt(sumCloseAmt),
-            String.valueOf(sumStockCnt), shortFmt(sumStockAmt),
+            shortFmt(sumProfit),
             String.valueOf(sumNetCnt),   shortFmt(sumNetAmt)
         };
         addTotalsRow(totals);
@@ -178,8 +177,13 @@ public class MonthlyReportActivity extends AppCompatActivity {
                 tv.setTextColor(Color.parseColor("#E6B800"));
                 tv.setTypeface(null, Typeface.BOLD);
                 tv.setGravity(Gravity.START);
-            } else if (j == 1 || j == 3 || j == 5 || j == 7) {
+            } else if (j == 1 || j == 3 || j == 6) {
+                // count columns — blue
                 tv.setTextColor(Color.parseColor("#64B5F6"));
+                tv.setGravity(Gravity.END);
+            } else if (j == 5) {
+                // profit column — green
+                tv.setTextColor(Color.parseColor("#A5D6A7"));
                 tv.setGravity(Gravity.END);
             } else {
                 tv.setTextColor(Color.WHITE);

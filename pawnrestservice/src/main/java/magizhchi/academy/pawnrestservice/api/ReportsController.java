@@ -27,21 +27,20 @@ public class ReportsController {
     @GetMapping("/monthly")
     public ResponseEntity<?> monthly(@RequestParam String companyId) {
         try {
+            // ── Bill opening / closing aggregates ───────────────────────────
             String sql = """
                     SELECT mon, yr, mon_num,
                         SUM(COALESCE(open_count,  0)) open_count,
                         SUM(COALESCE(open_amount, 0)) open_amount,
-                        SUM(COALESCE(close_count,  0)) close_count,
-                        SUM(COALESCE(close_amount, 0)) close_amount,
-                        SUM(COALESCE(stock_count,  0)) stock_count,
-                        SUM(COALESCE(stock_amount, 0)) stock_amount
+                        SUM(COALESCE(close_count, 0)) close_count,
+                        SUM(COALESCE(close_amount,0)) close_amount
                     FROM (
                         SELECT TO_CHAR(opening_date, 'Mon') mon,
                                EXTRACT(YEAR  FROM opening_date)::int yr,
                                EXTRACT(MONTH FROM opening_date)::int mon_num,
-                               COUNT(*)               open_count,
+                               COUNT(*)                open_count,
                                COALESCE(SUM(amount),0) open_amount,
-                               0 close_count, 0 close_amount, 0 stock_count, 0 stock_amount
+                               0 close_count, 0 close_amount
                         FROM company_billing
                         WHERE company_id = ? AND status::text NOT IN ('CANCELED')
                         GROUP BY TO_CHAR(opening_date,'Mon'),
@@ -51,50 +50,63 @@ public class ReportsController {
                         SELECT TO_CHAR(closing_date,'Mon'),
                                EXTRACT(YEAR  FROM closing_date)::int,
                                EXTRACT(MONTH FROM closing_date)::int,
-                               0, 0, COUNT(*), COALESCE(SUM(got_amount),0), 0, 0
+                               0, 0, COUNT(*), COALESCE(SUM(got_amount),0)
                         FROM company_billing
                         WHERE company_id = ? AND closing_date IS NOT NULL
                         GROUP BY TO_CHAR(closing_date,'Mon'),
                                  EXTRACT(YEAR  FROM closing_date),
                                  EXTRACT(MONTH FROM closing_date)
-                        UNION ALL
-                        SELECT TO_CHAR(opening_date,'Mon'),
-                               EXTRACT(YEAR  FROM opening_date)::int,
-                               EXTRACT(MONTH FROM opening_date)::int,
-                               0, 0, 0, 0, COUNT(*), COALESCE(SUM(amount),0)
-                        FROM company_billing
-                        WHERE company_id = ? AND status::text IN ('OPENED','LOCKED')
-                        GROUP BY TO_CHAR(opening_date,'Mon'),
-                                 EXTRACT(YEAR  FROM opening_date),
-                                 EXTRACT(MONTH FROM opening_date)
                     ) t
                     GROUP BY mon, yr, mon_num
                     ORDER BY yr DESC, mon_num DESC
                     """;
-            List<Map<String, Object>> raw = jdbc.queryForList(sql, companyId, companyId, companyId);
+            List<Map<String, Object>> raw = jdbc.queryForList(sql, companyId, companyId);
 
-            // Merge rows by mon+yr
+            // ── Gross profit per month from daily account ────────────────────
+            String profitSql = """
+                    SELECT TO_CHAR(todays_date, 'Mon') mon,
+                           EXTRACT(YEAR  FROM todays_date)::int yr,
+                           EXTRACT(MONTH FROM todays_date)::int mon_num,
+                           COALESCE(SUM(todays_pf_amount), 0) profit
+                    FROM company_todays_account_available_amount
+                    WHERE company_id = ?
+                    GROUP BY TO_CHAR(todays_date,'Mon'),
+                             EXTRACT(YEAR  FROM todays_date),
+                             EXTRACT(MONTH FROM todays_date)
+                    """;
+            Map<String, Double> profitByMonth = new LinkedHashMap<>();
+            try {
+                for (Map<String, Object> pr : jdbc.queryForList(profitSql, companyId)) {
+                    String key = pr.get("mon") + "-" + pr.get("yr");
+                    profitByMonth.put(key, toDouble(pr.get("profit")));
+                }
+            } catch (Exception pe) {
+                log.warn("Profit query skipped: {}", pe.getMessage());
+            }
+
+            // Merge rows by mon+yr, add profit
             Map<String, Map<String, Object>> merged = new LinkedHashMap<>();
             for (Map<String, Object> r : raw) {
                 String key = r.get("mon") + "-" + r.get("yr");
                 Map<String, Object> m = merged.computeIfAbsent(key, k -> {
                     Map<String, Object> nm = new LinkedHashMap<>();
-                    nm.put("month", r.get("mon") + "-" + r.get("yr"));
-                    nm.put("openCount",   0L); nm.put("openAmount",   0.0);
-                    nm.put("closeCount",  0L); nm.put("closeAmount",  0.0);
-                    nm.put("stockCount",  0L); nm.put("stockAmount",  0.0);
+                    nm.put("month",      r.get("mon") + "-" + r.get("yr"));
+                    nm.put("openCount",  0L);  nm.put("openAmount",  0.0);
+                    nm.put("closeCount", 0L);  nm.put("closeAmount", 0.0);
+                    nm.put("profit",     0.0);
                     return nm;
                 });
-                m.put("openCount",  toLong(m.get("openCount"))  + toLong(r.get("open_count")));
-                m.put("openAmount", toDouble(m.get("openAmount"))+ toDouble(r.get("open_amount")));
-                m.put("closeCount", toLong(m.get("closeCount")) + toLong(r.get("close_count")));
-                m.put("closeAmount",toDouble(m.get("closeAmount"))+toDouble(r.get("close_amount")));
-                m.put("stockCount", toLong(m.get("stockCount")) + toLong(r.get("stock_count")));
-                m.put("stockAmount",toDouble(m.get("stockAmount"))+toDouble(r.get("stock_amount")));
+                m.put("openCount",  toLong(m.get("openCount"))    + toLong(r.get("open_count")));
+                m.put("openAmount", toDouble(m.get("openAmount")) + toDouble(r.get("open_amount")));
+                m.put("closeCount", toLong(m.get("closeCount"))   + toLong(r.get("close_count")));
+                m.put("closeAmount",toDouble(m.get("closeAmount"))+ toDouble(r.get("close_amount")));
+                // merge profit
+                String key2 = r.get("mon") + "-" + r.get("yr");
+                m.put("profit", profitByMonth.getOrDefault(key2, 0.0));
             }
 
             List<Map<String, Object>> months = new ArrayList<>(merged.values());
-            // Add earned columns
+            // Net (earned) columns
             for (Map<String, Object> m : months) {
                 m.put("earnedCount",  toLong(m.get("openCount"))   - toLong(m.get("closeCount")));
                 m.put("earnedAmount", toDouble(m.get("openAmount"))- toDouble(m.get("closeAmount")));

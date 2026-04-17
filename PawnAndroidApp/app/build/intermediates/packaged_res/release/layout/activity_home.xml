@@ -237,7 +237,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Monthly Report"
+                    android:text="MIS Report"
                     android:textColor="@color/gold"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -246,7 +246,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Month-wise bills opened, closed &amp; stock"
+                    android:text="Month-wise opening, closing &amp; profit summary"
                     android:textColor="@color/white54"
                     android:textSize="12sp" />
             </LinearLayout>

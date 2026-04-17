@@ -204,7 +204,6 @@ public class TodaysAccountActivity extends AppCompatActivity {
             long   count  = op.optLong("count", 0);
             double debit  = op.optDouble("debit", 0);
             double credit = op.optDouble("credit", 0);
-            String detail = op.optString("detail", "");
             final String detailType = DETAIL_TYPES.get(name);
 
             // Alternate row background
@@ -246,22 +245,7 @@ public class TodaysAccountActivity extends AppCompatActivity {
 
             tableOperations.addView(row);
 
-            // Detail sub-text row — only show when that operation actually has activity
-            if (!detail.isEmpty() && count > 0) {
-                TableRow detailRow = new TableRow(this);
-                detailRow.setBackgroundColor(rowBg);
-                TextView tvDetail = new TextView(this);
-                tvDetail.setText(detail);
-                tvDetail.setTextColor(Color.parseColor("#888888"));
-                tvDetail.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
-                tvDetail.setPadding(dp(8), 0, dp(8), dp(3));
-                TableRow.LayoutParams spanLp = new TableRow.LayoutParams(
-                        0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
-                spanLp.span = 4;
-                tvDetail.setLayoutParams(spanLp);
-                detailRow.addView(tvDetail);
-                tableOperations.addView(detailRow);
-            }
+            // (detail sub-rows removed — tap the row to see drill-down details)
         }
     }
 

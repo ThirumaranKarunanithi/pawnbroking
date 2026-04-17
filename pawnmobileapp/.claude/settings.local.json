@@ -52,7 +52,9 @@
       "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; git commit -m 'Theme: navy/gold brand, logo launcher icon, compact account rows'\")",
       "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; git push origin main 2>&1\")",
       "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; .\\\\gradlew.bat assembleRelease 2>&1\")",
-      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; git add -A; git commit -m 'Fix: hide zero-count detail rows in Today Account table'; git push origin main 2>&1\")"
+      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; git add -A; git commit -m 'Fix: hide zero-count detail rows in Today Account table'; git push origin main 2>&1\")",
+      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice'; git add 'src/main/java/magizhchi/academy/pawnrestservice/api/ReportsController.java'; git commit -m 'Fix: Monthly report SQL outer SELECT needs SUM\\(\\) for GROUP BY'; git push origin main 2>&1\")",
+      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; git add -A; git commit -m 'Fix gap in Todays Account; upgrade Monthly to MIS Report with profit column'; git push origin main 2>&1\")"
     ]
   }
 }
