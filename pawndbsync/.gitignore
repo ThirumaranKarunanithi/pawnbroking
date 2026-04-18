@@ -1,0 +1,15 @@
+# Build output
+target/
+dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Local override — put real credentials here, never commit this file
+application-local.properties
+
+# OS
+Thumbs.db
+.DS_Store

@@ -45,6 +45,7 @@ public class MonthlyReportActivity extends AppCompatActivity {
     private TextView tvSumEarnedBills, tvSumEarnedAmt;
     private View layoutControls, layoutSummary;
     private Button btnAll, btnSelected, btnDeselected;
+    private Button btnSelectAll, btnDeselectAll;
 
     // ── Data ──────────────────────────────────────────────────────────────────
 
@@ -133,12 +134,16 @@ public class MonthlyReportActivity extends AppCompatActivity {
         btnAll        = findViewById(R.id.btnAll);
         btnSelected   = findViewById(R.id.btnSelected);
         btnDeselected = findViewById(R.id.btnDeselected);
+        btnSelectAll   = findViewById(R.id.btnSelectAll);
+        btnDeselectAll = findViewById(R.id.btnDeselectAll);
 
         tvCompanyName.setText(companyName);
 
         btnAll.setOnClickListener(v        -> setMode("ALL"));
         btnSelected.setOnClickListener(v   -> setMode("SELECTED"));
         btnDeselected.setOnClickListener(v -> setMode("DESELECTED"));
+        btnSelectAll.setOnClickListener(v   -> selectAll(true));
+        btnDeselectAll.setOnClickListener(v -> selectAll(false));
 
         load();
     }
@@ -226,9 +231,20 @@ public class MonthlyReportActivity extends AppCompatActivity {
     private void onRowTap(int idx) {
         MisRow r = rows.get(idx);
         r.selected = !r.selected;
-        // Repaint row background
         int bg = r.selected ? BG_SELECTED : (idx % 2 == 0 ? BG_EVEN : BG_ODD);
         r.tableRow.setBackgroundColor(bg);
+        refreshSummary();
+    }
+
+    // ── Select All / Deselect All ─────────────────────────────────────────────
+
+    private void selectAll(boolean select) {
+        for (int i = 0; i < rows.size(); i++) {
+            MisRow r = rows.get(i);
+            r.selected = select;
+            int bg = select ? BG_SELECTED : (i % 2 == 0 ? BG_EVEN : BG_ODD);
+            r.tableRow.setBackgroundColor(bg);
+        }
         refreshSummary();
     }
 

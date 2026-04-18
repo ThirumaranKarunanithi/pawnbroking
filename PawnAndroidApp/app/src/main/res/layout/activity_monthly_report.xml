@@ -52,59 +52,120 @@
         android:indeterminateTint="@color/gold"
         android:visibility="gone" />
 
-    <!-- Mode buttons: All | Selected | Deselected -->
+    <!-- Controls: two rows -->
     <LinearLayout
         android:id="@+id/layoutControls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_card"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:visibility="gone">
 
-        <TextView
-            android:layout_width="0dp"
+        <!-- Row 1: Select All | Deselect All -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Summary:"
-            android:textColor="@color/white54"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnAll"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:text="All"
-            android:textSize="11sp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:textColor="@color/gold"
-            android:layout_marginEnd="6dp" />
+            android:paddingTop="6dp"
+            android:paddingBottom="2dp">
 
-        <Button
-            android:id="@+id/btnSelected"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:text="Selected"
-            android:textSize="11sp"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Rows:"
+                android:textColor="@color/white54"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btnSelectAll"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Select All"
+                android:textSize="11sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:textColor="@color/gold"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnDeselectAll"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Deselect All"
+                android:textSize="11sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:textColor="@color/white54" />
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:background="#22FFFFFF" />
+
+        <!-- Row 2: Summary mode — All | Selected | Deselected -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:textColor="@color/white54"
-            android:layout_marginEnd="6dp" />
+            android:paddingTop="2dp"
+            android:paddingBottom="6dp">
 
-        <Button
-            android:id="@+id/btnDeselected"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:text="Deselected"
-            android:textSize="11sp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:textColor="@color/white54" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Summary:"
+                android:textColor="@color/white54"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btnAll"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="All"
+                android:textSize="11sp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:textColor="@color/gold"
+                android:layout_marginEnd="6dp" />
+
+            <Button
+                android:id="@+id/btnSelected"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Selected"
+                android:textSize="11sp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:textColor="@color/white54"
+                android:layout_marginEnd="6dp" />
+
+            <Button
+                android:id="@+id/btnDeselected"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="Deselected"
+                android:textSize="11sp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:textColor="@color/white54" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Summary card -->

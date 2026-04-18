@@ -73,13 +73,20 @@ public class FileSyncService {
 
     @PostConstruct
     void init() {
-        // Log masked key so you can confirm the right config file is being used
+        buildS3Client();
+    }
+
+    /**
+     * Builds the S3 client and verifies bucket access.
+     * A 403 just means IAM permissions are missing — we log a warning but
+     * do NOT treat it as fatal so the scheduler can still try later.
+     */
+    private boolean buildS3Client() {
         String maskedKey = accessKeyId != null && accessKeyId.length() > 8
                 ? accessKeyId.substring(0, 4) + "****" + accessKeyId.substring(accessKeyId.length() - 4)
                 : "(empty)";
         log.info("[FILE-SYNC] Initialising — region='{}' bucket='{}' prefix='{}' accessKey='{}'",
                 region, bucket, prefix, maskedKey);
-
         try {
             s3Client = S3Client.builder()
                     .region(Region.of(region))
@@ -87,19 +94,37 @@ public class FileSyncService {
                             AwsBasicCredentials.create(accessKeyId, secretAccessKey)))
                     .build();
 
-            // Verify we can actually reach the bucket
-            s3Client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
+            // Probe the bucket — 403 means "exists but no ListBucket perm",
+            // which is fine; uploads only need PutObject/HeadObject.
+            try {
+                s3Client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
+                log.info("[FILE-SYNC] S3 client ready — bucket='{}' is reachable.", bucket);
+            } catch (S3Exception e) {
+                if (e.statusCode() == 403) {
+                    // Credentials work, bucket exists — missing s3:ListBucket only.
+                    // Uploads (PutObject) may still succeed if PutObject is granted.
+                    log.warn("[FILE-SYNC] HeadBucket returned 403 — bucket exists but " +
+                             "s3:ListBucket not granted. Will attempt uploads anyway. " +
+                             "Add s3:ListBucket + s3:PutObject + s3:HeadObject to IAM policy.");
+                } else if (e.statusCode() == 404) {
+                    initError = "Bucket '" + bucket + "' does not exist in region '" + region + "'";
+                    log.error("[FILE-SYNC] {}", initError);
+                    return false;
+                } else {
+                    initError = "S3 bucket check failed: HTTP " + e.statusCode()
+                            + " — " + e.awsErrorDetails().errorMessage();
+                    log.error("[FILE-SYNC] {}", initError);
+                    return false;
+                }
+            }
 
-            log.info("[FILE-SYNC] S3 client ready — bucket='{}' is reachable.", bucket);
             initError = null;
+            return true;
 
-        } catch (S3Exception e) {
-            initError = "S3 bucket check failed: HTTP " + e.statusCode()
-                    + " — " + e.awsErrorDetails().errorMessage();
-            log.error("[FILE-SYNC] {}", initError);
         } catch (Exception e) {
             initError = "S3 init failed: " + e.getMessage();
             log.error("[FILE-SYNC] {}", initError, e);
+            return false;
         }
     }
 
@@ -124,11 +149,11 @@ public class FileSyncService {
     public synchronized void runSync() {
 
         if (s3Client == null || initError != null) {
-            lastSyncStatus = "FAILED — S3 not initialised: " + initError;
-            log.error("[FILE-SYNC] Cannot sync — S3 client not ready: {}", initError);
-            // Try to re-initialise in case it was a transient startup failure
-            init();
-            if (s3Client == null || initError != null) return;
+            log.warn("[FILE-SYNC] S3 not ready ({}), retrying init...", initError);
+            if (!buildS3Client()) {
+                lastSyncStatus = "FAILED — S3 not reachable: " + initError;
+                return;
+            }
         }
 
         syncing           = true;
@@ -255,11 +280,10 @@ public class FileSyncService {
                     // Object not on S3 yet — proceed to upload
                     log.debug("[FILE-SYNC] New file — uploading: {}", s3Key);
                 } else {
-                    // Real S3 error on HEAD — log and bail for this file
-                    log.error("[FILE-SYNC] HeadObject error for '{}': HTTP {} — {}",
-                            s3Key, e.statusCode(), e.awsErrorDetails().errorMessage());
-                    lastFilesFailed++;
-                    return;
+                    // 403 = no GetObject perm yet, other = transient error.
+                    // Don't skip — attempt PutObject anyway; it may still succeed.
+                    log.debug("[FILE-SYNC] HeadObject HTTP {} for '{}' — attempting upload anyway.",
+                            e.statusCode(), s3Key);
                 }
             }
 

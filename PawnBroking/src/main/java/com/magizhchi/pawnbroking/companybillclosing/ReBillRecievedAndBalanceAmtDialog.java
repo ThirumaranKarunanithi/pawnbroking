@@ -331,14 +331,15 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
                     sNewAmt = this.sParent.txtToGetAmount.getText();
                     sTotalOtherCharges = this.sParent.txtTotalOtherCharges.getText();
                     sDiscount = this.sParent.txtDiscountAmount.getText();
-                    sClosedGotAmt = this.sParent.txtGotAmount.getText();
+                    // sClosedGotAmt must be raw capital+interest (NOT txtGotAmount which already has advance deducted)
+                    sClosedGotAmt = Double.toString(safeDouble(sOldAmt) + safeDouble(sCloseInterestAmt));
 
                     sGrossWeight = this.sParent.txtGrossWeight.getText();
                     sPurity = this.sParent.txtPurity.getText();
                     sReductionRate = this.sParent.dbOp.getReductionWt("SILVER");
                     sCompanyRate = this.sParent.dbOp.getCompanyRate("SILVER");
                     this.sLastSelectedId = this.sParent.sLastSelectedId;
-                    this.sOperation = CommonConstants.S_REBILL_CLOSE_OPERATION;                
+                    this.sOperation = CommonConstants.S_REBILL_CLOSE_OPERATION;
                     this.closedbOp = this.sParent.dbOp;
 
                     double dGrossWt = Double.parseDouble(sGrossWeight);
@@ -363,7 +364,8 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
                     sNewAmt = this.gParent.dbOp.getRebilledFromAmt("GOLD", billNumbers);
                     sTotalOtherCharges = headerValues.get("total_other_charges");
                     sDiscount = headerValues.get("discount_amount");
-                    sClosedGotAmt = headerValues.get("got_amount");
+                    // sClosedGotAmt must be raw capital+interest (NOT got_amount DB field which already has advance deducted)
+                    sClosedGotAmt = Double.toString(safeDouble(sOldAmt) + safeDouble(sCloseInterestAmt));
 
                     sGrossWeight = headerValues.get("gross_weight");
                     sPurity = (headerValues.get("purity") != null && !headerValues.get("purity").isEmpty())
@@ -394,14 +396,15 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
                     sNewAmt = this.sParent.txtToGetAmount.getText();
                     sTotalOtherCharges = this.sParent.txtTotalOtherCharges.getText();
                     sDiscount = this.sParent.txtDiscountAmount.getText();
-                    sClosedGotAmt = this.sParent.txtGotAmount.getText();
+                    // sClosedGotAmt must be raw capital+interest (NOT txtGotAmount which already has advance deducted)
+                    sClosedGotAmt = Double.toString(safeDouble(sOldAmt) + safeDouble(sCloseInterestAmt));
 
                     sGrossWeight = this.sParent.txtGrossWeight.getText();
                     sPurity = this.sParent.txtPurity.getText();
                     sReductionRate = this.sParent.dbOp.getReductionWt("SILVER");
                     sCompanyRate = this.sParent.dbOp.getCompanyRate("SILVER");
                     this.sLastSelectedId = this.sParent.sLastSelectedId;
-                    this.sOperation = CommonConstants.S_REBILL_CLOSE_OPERATION;                
+                    this.sOperation = CommonConstants.S_REBILL_CLOSE_OPERATION;
                     this.closedbOp = this.sParent.dbOp;
 
                     double dGrossWt = Double.parseDouble(sGrossWeight);
@@ -415,7 +418,7 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
                 } catch (SQLException ex) {
                     Logger.getLogger(ReBillRecievedAndBalanceAmtDialog.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }        
+            }
         }
         
         txtTotalAdvAmtPaid.setText(sTotalAdvAmt);
@@ -425,13 +428,12 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
         txtOpenOldAmt.setText(sOldAmt);
         txtAmtGotInHand.setText("0");
         txtBalanceToGive.setText("0");
-        txtCloseToGetAmount.setText(sClosedGotAmt);
-
-        // Compute closing total from source strings — avoids any text-field read-back issue
-        dClosingAmountTotal = safeDouble(sClosedGotAmt)
+        // Closing amount to receive = (capital + closeInterest + otherCharges) − (advancePaid + discount)
+        dClosingAmountTotal = safeDouble(sOldAmt) + safeDouble(sCloseInterestAmt)
                 + safeDouble(sTotalOtherCharges)
-                - safeDouble(sDiscount)
-                - safeDouble(sTotalAdvAmt);
+                - safeDouble(sTotalAdvAmt)
+                - safeDouble(sDiscount);
+        txtCloseToGetAmount.setText(Double.toString(dClosingAmountTotal));
 
         double dNewAmt = Double.valueOf(sNewAmt);
         txtOpenNewAmt.setText(sNewAmt);
@@ -487,8 +489,9 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
                         : Double.toString(this.gParent.dbOp.getRebilledToVals("GOLD", this.gParent.txtReBilledTo.getText()));
                 sTotalOtherCharges = this.gParent.txtTotalOtherCharges.getText();
                 sDiscount = this.gParent.txtDiscountAmount.getText();
-                sClosedGotAmt = this.gParent.txtGotAmount.getText();
-                
+                // sClosedGotAmt must be raw capital+interest (NOT txtGotAmount which already has advance deducted)
+                sClosedGotAmt = Double.toString(safeDouble(sOldAmt) + safeDouble(sCloseInterestAmt));
+
                 sGrossWeight = this.gParent.txtGrossWeight.getText();
                 sPurity = this.gParent.txtPurity.getText();
                 sReductionRate = this.gParent.dbOp.getReductionWt("GOLD");
@@ -517,8 +520,9 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
                 sNewAmt = this.sParent.txtToGetAmount.getText();
                 sTotalOtherCharges = this.sParent.txtTotalOtherCharges.getText();
                 sDiscount = this.sParent.txtDiscountAmount.getText();
-                sClosedGotAmt = this.sParent.txtGotAmount.getText();
-                
+                // sClosedGotAmt must be raw capital+interest (NOT txtGotAmount which already has advance deducted)
+                sClosedGotAmt = Double.toString(safeDouble(sOldAmt) + safeDouble(sCloseInterestAmt));
+
                 sGrossWeight = this.sParent.txtGrossWeight.getText();
                 sPurity = this.sParent.txtPurity.getText();
                 sReductionRate = this.sParent.dbOp.getReductionWt("SILVER");
@@ -547,13 +551,12 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
         txtOpenOldAmt.setText(sOldAmt);
         txtAmtGotInHand.setText("0");
         txtBalanceToGive.setText("0");
-        txtCloseToGetAmount.setText(sClosedGotAmt);
-
-        // Compute closing total from source strings — avoids any text-field read-back issue
-        dClosingAmountTotal = safeDouble(sClosedGotAmt)
+        // Closing amount to receive = (capital + closeInterest + otherCharges) − (advancePaid + discount)
+        dClosingAmountTotal = safeDouble(sOldAmt) + safeDouble(sCloseInterestAmt)
                 + safeDouble(sTotalOtherCharges)
-                - safeDouble(sDiscount)
-                - safeDouble(sTotalAdvAmt);
+                - safeDouble(sTotalAdvAmt)
+                - safeDouble(sDiscount);
+        txtCloseToGetAmount.setText(Double.toString(dClosingAmountTotal));
 
         double dNewAmt = Double.valueOf(sNewAmt);
         txtOpenNewAmt.setText(sNewAmt);
@@ -750,48 +753,42 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
 
     @FXML
     private void txtGotAmountOnPress(KeyEvent e) {
-        if(e.getCode() == KeyCode.BACK_SPACE){ 
-            
-            String sAmount;
-            
-            if(txtAmtGotInHand.getCaretPosition() == 0) {
-                StringBuilder sb = new StringBuilder(txtAmtGotInHand.getText());
-                sAmount = sb.toString();
-            } else {
-                StringBuilder sb = new StringBuilder(txtAmtGotInHand.getText());
-                sb.deleteCharAt(txtAmtGotInHand.getCaretPosition() - 1);
-                sAmount = sb.toString();
-            }
-            
-            if(!"".equals(sAmount) && Double.parseDouble(sAmount) > 0) 
-            {
-                double dAmount = Double.parseDouble(sAmount);
-                setGotAmountRelatedText(dAmount);                
-            } else {
-                txtBalanceToGive.setText("");
-            }
-        }        
+        if (e.getCode() == KeyCode.BACK_SPACE) {
+            Platform.runLater(() -> {
+                String sAmount = txtAmtGotInHand.getText().trim();
+                if (!sAmount.isEmpty()) {
+                    try {
+                        double dAmount = Double.parseDouble(sAmount);
+                        if (dAmount > 0) {
+                            setGotAmountRelatedText(dAmount);
+                        } else {
+                            txtBalanceToGive.setText("");
+                        }
+                    } catch (NumberFormatException ex) {
+                        txtBalanceToGive.setText("");
+                    }
+                } else {
+                    txtBalanceToGive.setText("");
+                }
+            });
+        }
     }
 
     @FXML
     private void txtGotAmountOnType(KeyEvent e) {
-        
-        if(!("0123456789.".contains(e.getCharacter()))){             
+        if (!("0123456789.".contains(e.getCharacter()))) {
             e.consume();
-        }         
-        
-        if("0123456789.".contains(e.getCharacter())){ 
-            String sAmount;
-            if(txtAmtGotInHand.getCaretPosition() == txtAmtGotInHand.getText().length()) {
-                sAmount = txtAmtGotInHand.getText() + e.getCharacter(); 
-            } else {
-                StringBuilder sb = new StringBuilder(txtAmtGotInHand.getText());
-                sb.insert(txtAmtGotInHand.getCaretPosition(), e.getCharacter());
-                sAmount = sb.toString();
+            return;
+        }
+        Platform.runLater(() -> {
+            String sAmount = txtAmtGotInHand.getText().trim();
+            if (!sAmount.isEmpty()) {
+                try {
+                    double dAmount = Double.parseDouble(sAmount);
+                    if (dAmount > 0) setGotAmountRelatedText(dAmount);
+                } catch (NumberFormatException ex) { /* ignore partial input */ }
             }
-            double dAmount = Double.parseDouble(sAmount);
-            setGotAmountRelatedText(dAmount); 
-        }        
+        });
     }
 
     @FXML
@@ -869,10 +866,14 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
             String sTakenAmount = String.valueOf(Math.round(dEvalAmt));
             txtOpenTakenIntr.setText(sTakenAmount);
 
-            // Net money given to customer from new bill minus what's needed to close old bill
-            double dNewNetAmt = dAmount - Math.round(dEvalAmt);
-            double dToGive = dNewNetAmt - dClosingAmountTotal;
-            if(dToGive >= 0 ) {
+            // Total Amount To Be Get = closingAmountTotal + new bill interest
+            double totToGet = dClosingAmountTotal + Math.round(dEvalAmt);
+            txtTotalToGetAmount.setText(Double.toString(totToGet));
+
+            // Actual amt to give/get = openNewAmount − totalAmountToBeGet
+            // Positive → new bill > total needed → GIVE to customer; Negative → total needed > new bill → GET from customer
+            double dToGive = dAmount - totToGet;
+            if(dToGive >= 0) {
                 lbGetOrGive.setText("Actual Amt To Give:");
                 txtToGive.setStyle(Util.getTextFieldStyle("#000000", "#FF5555").toString());
                 lbdenomToGetAmt.setText("To Give Amount:");
@@ -886,14 +887,14 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
                 lbdenomBalAmt.setText("Balance To Get:");
             }
             String sToGive = Double.toString(dToGive);
-            sToGive = sToGive.replace("-", "");            
+            sToGive = sToGive.replace("-", "");
             txtToGive.setText(sToGive);
             txtToGetAmt.setText(sToGive);
-            
+
             double dGrossWt = Double.parseDouble(sGrossWeight);
             double dRatePerGm = dAmount / dGrossWt;
             txtRatePerGm.setText(String.valueOf(Math.round(dRatePerGm)));
-            
+
             double dSuggestionAmt = dNetWt * Double.parseDouble(sCompanyRate);
             txtSuggestionAmt.setText(String.valueOf(Math.round(dSuggestionAmt)));
             if(dAmount > 0 && dSuggestionAmt > 0 && dSuggestionAmt >= dAmount) {
@@ -903,9 +904,6 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
             } else {
                 txtSuggestionAmt.setStyle("-fx-background-color: #FFFFFF");
             }
-            
-            double totToGet = Double.parseDouble(txtCloseToGetAmount.getText()) + Double.parseDouble(sTakenAmount);
-            txtTotalToGetAmount.setText(Double.toString(totToGet));
             
             setGotAmountRelatedText(Double.parseDouble(txtAmtGotInHand.getText().isEmpty() 
                     ? "0" : txtAmtGotInHand.getText()));
@@ -957,11 +955,13 @@ public class ReBillRecievedAndBalanceAmtDialog implements Initializable {
     }
 
     @FXML
-        private void capitalizeCharOnType(KeyEvent e) {
-        TextField txt_TextField = (TextField) e.getSource();
-        int caretPos = txt_TextField.getCaretPosition();
-        txt_TextField.setText(txt_TextField.getText().toUpperCase());
-        txt_TextField.positionCaret(caretPos);
+    private void capitalizeCharOnType(KeyEvent e) {
+        Platform.runLater(() -> {
+            TextField txt_TextField = (TextField) e.getSource();
+            int caretPos = txt_TextField.getCaretPosition();
+            txt_TextField.setText(txt_TextField.getText().toUpperCase());
+            txt_TextField.positionCaret(caretPos);
+        });
     }
 
     @FXML

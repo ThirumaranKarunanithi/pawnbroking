@@ -77,14 +77,26 @@ public class TodaysAccountController {
 
     private void addBalanceSettings(Map<String, Object> result, String companyId, String date) {
         try {
+            // Fix: use ::date cast on both sides so timestamp columns compare correctly
             String sql = """
                     SELECT pre_date, pre_actual_amount, pre_available_amount, pre_deficit_amount,
-                           todays_date, todays_actual_amount, todays_available_amount,
-                           todays_deficit_amount, pre_note, todays_note
+                           todays_date, todays_actual_amount, todays_deficit_amount,
+                           pre_note, todays_note
                     FROM company_todays_account
-                    WHERE company_id = ? AND todays_date::text = ?
+                    WHERE company_id = ? AND todays_date::date = ?::date
                     """;
             List<Map<String, Object>> rows = jdbc.queryForList(sql, companyId, date);
+            if (rows.isEmpty()) {
+                // Fallback: latest active row — only use if its todays_date matches requested date
+                String sql2 = """
+                        SELECT pre_date, pre_actual_amount, pre_available_amount, pre_deficit_amount,
+                               todays_date, todays_actual_amount, todays_deficit_amount,
+                               pre_note, todays_note
+                        FROM company_todays_account
+                        WHERE company_id = ? AND ref_mark = 'L'
+                        """;
+                rows = jdbc.queryForList(sql2, companyId);
+            }
             if (!rows.isEmpty()) {
                 Map<String, Object> r = rows.get(0);
                 result.put("preDate",             str(r.get("pre_date")));
@@ -92,34 +104,29 @@ public class TodaysAccountController {
                 result.put("preAvailableBalance", toDouble(r.get("pre_available_amount")));
                 result.put("preDeficit",          toDouble(r.get("pre_deficit_amount")));
                 result.put("preNote",             str(r.get("pre_note")));
-                result.put("availableBalance",    toDouble(r.get("todays_available_amount")));
                 result.put("todaysNote",          str(r.get("todays_note")));
             } else {
-                // Try the REF_MARK = 'L' fallback
-                String sql2 = """
-                        SELECT pre_date, pre_actual_amount, pre_available_amount, pre_deficit_amount,
-                               todays_date, todays_actual_amount, todays_available_amount,
-                               todays_deficit_amount, pre_note, todays_note
-                        FROM company_todays_account
-                        WHERE company_id = ? AND ref_mark = 'L'
-                        """;
-                List<Map<String, Object>> rows2 = jdbc.queryForList(sql2, companyId);
-                if (!rows2.isEmpty()) {
-                    Map<String, Object> r = rows2.get(0);
-                    result.put("preDate",             str(r.get("pre_date")));
-                    result.put("preActualBalance",    toDouble(r.get("pre_actual_amount")));
-                    result.put("preAvailableBalance", toDouble(r.get("pre_available_amount")));
-                    result.put("preDeficit",          toDouble(r.get("pre_deficit_amount")));
-                    result.put("preNote",             str(r.get("pre_note")));
-                    result.put("availableBalance",    toDouble(r.get("todays_available_amount")));
-                    result.put("todaysNote",          str(r.get("todays_note")));
-                } else {
-                    result.put("preDate", ""); result.put("preActualBalance", 0.0);
-                    result.put("preAvailableBalance", 0.0); result.put("preDeficit", 0.0);
-                    result.put("preNote", ""); result.put("availableBalance", 0.0);
-                    result.put("todaysNote", "");
-                }
+                result.put("preDate", ""); result.put("preActualBalance", 0.0);
+                result.put("preAvailableBalance", 0.0); result.put("preDeficit", 0.0);
+                result.put("preNote", ""); result.put("todaysNote", "");
             }
+
+            // Available balance comes from company_todays_account_available_amount
+            // (same source as desktop getAvailableAmount()) — not from company_todays_account
+            try {
+                String availSql = """
+                        SELECT todays_available_amount
+                        FROM company_todays_account_available_amount
+                        WHERE company_id = ? AND todays_date::date = ?::date
+                        """;
+                List<Map<String, Object>> availRows = jdbc.queryForList(availSql, companyId, date);
+                result.put("availableBalance",
+                        availRows.isEmpty() ? 0.0 : toDouble(availRows.get(0).get("todays_available_amount")));
+            } catch (Exception ae) {
+                log.warn("Available amount lookup failed: {}", ae.getMessage());
+                result.put("availableBalance", 0.0);
+            }
+
         } catch (Exception e) {
             log.warn("Balance settings not found: {}", e.getMessage());
             result.put("preDate", ""); result.put("preActualBalance", 0.0);
