@@ -123,17 +123,6 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Status -->
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Status" android:textColor="@color/white54" android:textSize="11sp"
-                        android:layout_marginTop="8dp" />
-                    <TextView android:id="@+id/tvStatus"
-                        android:layout_width="match_parent" android:layout_height="44dp"
-                        android:background="@drawable/bg_input"
-                        android:gravity="center_vertical" android:paddingStart="12dp"
-                        android:layout_marginTop="4dp"
-                        android:textColor="@color/green" android:textSize="14sp" android:textStyle="bold" />
-
                     <!-- Created By | Created At -->
                     <LinearLayout android:id="@+id/layoutCreatedInfo"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -356,22 +345,23 @@
                         android:textColor="@color/gold" android:textSize="22sp" android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- ── CALCULATED AMOUNTS ── -->
+                <!-- ── BILL OPENING - CALCULATED AMOUNTS ── -->
                 <TextView style="@style/SectionHeader"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:text="CALCULATED AMOUNTS" />
+                    android:text="BILL OPENING - CALCULATED AMOUNTS" />
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:background="@drawable/bg_card"
                     android:orientation="vertical"
                     android:padding="16dp" android:layout_marginBottom="16dp">
 
+                    <!-- Interest % | Per Month -->
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Interest" android:textColor="@color/white54" android:textSize="11sp" />
+                                android:text="Interest %" android:textColor="@color/white54" android:textSize="11sp" />
                             <TextView android:id="@+id/tvInterest"
                                 android:layout_width="match_parent" android:layout_height="44dp"
                                 android:background="@drawable/bg_input"
@@ -382,8 +372,8 @@
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Document Charge" android:textColor="@color/white54" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvDocCharge"
+                                android:text="Per Month (₹)" android:textColor="@color/white54" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvIntPerMonth"
                                 android:layout_width="match_parent" android:layout_height="44dp"
                                 android:background="@drawable/bg_input"
                                 android:gravity="center_vertical" android:paddingStart="10dp"
@@ -392,54 +382,19 @@
                         </LinearLayout>
                     </LinearLayout>
 
+                    <!-- Document Charge | Rate per Gram -->
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal" android:layout_marginTop="8dp">
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Taken Amount" android:textColor="@color/white54" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvTakenAmt"
+                                android:text="Document Charge" android:textColor="@color/white54" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvDocCharge"
                                 android:layout_width="match_parent" android:layout_height="44dp"
                                 android:background="@drawable/bg_input"
                                 android:gravity="center_vertical" android:paddingStart="10dp"
                                 android:layout_marginTop="4dp"
-                                android:textColor="@color/red" android:textSize="15sp" android:textStyle="bold" />
-                        </LinearLayout>
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="To Give Amount" android:textColor="@color/white54" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvToGive"
-                                android:layout_width="match_parent" android:layout_height="44dp"
-                                android:background="@drawable/bg_input"
-                                android:gravity="center_vertical" android:paddingStart="10dp"
-                                android:layout_marginTop="4dp"
-                                android:textColor="@color/green" android:textSize="15sp" android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Given Amount (Actual)" android:textColor="@color/white54" android:textSize="11sp"
-                        android:layout_marginTop="8dp" />
-                    <TextView android:id="@+id/tvGivenAmount"
-                        android:layout_width="match_parent" android:layout_height="48dp"
-                        android:background="@drawable/bg_input"
-                        android:gravity="center_vertical" android:paddingStart="12dp"
-                        android:layout_marginTop="4dp"
-                        android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" />
-
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:orientation="horizontal" android:layout_marginTop="8dp">
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Interest / Month" android:textColor="@color/white54" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvIntPerMonth"
-                                android:layout_width="match_parent" android:layout_height="44dp"
-                                android:background="@drawable/bg_input"
-                                android:gravity="center_vertical" android:paddingStart="10dp"
-                                android:layout_marginTop="4dp"
-                                android:textColor="@color/blue" android:textSize="15sp" android:textStyle="bold" />
+                                android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
                         </LinearLayout>
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                             android:layout_weight="1" android:orientation="vertical">
@@ -451,6 +406,299 @@
                                 android:gravity="center_vertical" android:paddingStart="10dp"
                                 android:layout_marginTop="4dp"
                                 android:textColor="@color/blue" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Interest Amount (green highlight) -->
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Interest Amount (Taken)" android:textColor="@color/white54" android:textSize="11sp"
+                        android:layout_marginTop="8dp" />
+                    <TextView android:id="@+id/tvTakenAmt"
+                        android:layout_width="match_parent" android:layout_height="48dp"
+                        android:background="@drawable/bg_input"
+                        android:gravity="center_vertical" android:paddingStart="12dp"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/green" android:textSize="18sp" android:textStyle="bold" />
+
+                    <!-- Amount To Be Paid | Amount Paid -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginTop="8dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Amount To Be Paid" android:textColor="@color/white54" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvToGive"
+                                android:layout_width="match_parent" android:layout_height="44dp"
+                                android:background="@drawable/bg_input"
+                                android:gravity="center_vertical" android:paddingStart="10dp"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/green" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Amount Paid" android:textColor="@color/white54" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvGivenAmount"
+                                android:layout_width="match_parent" android:layout_height="44dp"
+                                android:background="@drawable/bg_input"
+                                android:gravity="center_vertical" android:paddingStart="10dp"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Status | Physical Location -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginTop="8dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Status" android:textColor="@color/white54" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvStatus"
+                                android:layout_width="match_parent" android:layout_height="44dp"
+                                android:background="@drawable/bg_input"
+                                android:gravity="center_vertical" android:paddingStart="10dp"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Physical Location" android:textColor="@color/white54" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvPhysicalLocation"
+                                android:layout_width="match_parent" android:layout_height="44dp"
+                                android:background="@drawable/bg_input"
+                                android:gravity="center_vertical" android:paddingStart="10dp"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/white" android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ── BILL CLOSING - CALCULATED AMOUNTS (visible only when closed) ── -->
+                <LinearLayout android:id="@+id/layoutClosingSection"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView style="@style/SectionHeader"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="BILL CLOSING - CALCULATED AMOUNTS" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:background="@drawable/bg_card"
+                        android:orientation="vertical"
+                        android:padding="16dp" android:layout_marginBottom="16dp">
+
+                        <!-- Interest Type | Actual Total Months -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Interest Type" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvCloseInterestType"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Actual Total Months" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvActualTotalMonths"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Minimum Months | To Reduce Months -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Minimum Months" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvMinimumMonths"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="To Reduce Months" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvToReduceMonths"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Accepted Ending Date | For Months -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Accepted Ending Date" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvCloseAcceptedDate"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/orange" android:textSize="14sp" android:textStyle="bold" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="For Months" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvForMonths"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/blue" android:textSize="15sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Interest % | Closing Date -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Interest %" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvCloseInterest"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/orange" android:textSize="15sp" android:textStyle="bold" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Closing Date" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvClosingDate"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Interested Amount (green highlight) -->
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Interested Amount (Closing)" android:textColor="@color/white54" android:textSize="11sp"
+                            android:layout_marginTop="8dp" />
+                        <TextView android:id="@+id/tvCloseTakenAmt"
+                            android:layout_width="match_parent" android:layout_height="48dp"
+                            android:background="@drawable/bg_input"
+                            android:gravity="center_vertical" android:paddingStart="12dp"
+                            android:layout_marginTop="4dp"
+                            android:textColor="@color/green" android:textSize="18sp" android:textStyle="bold" />
+
+                        <!-- Advance | Other Charges -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Total Advance Paid" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvTotalAdvance"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Total Other Charges" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvOtherCharges"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Amount To Be Received (full width) -->
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Amount To Be Received" android:textColor="@color/white54" android:textSize="11sp"
+                            android:layout_marginTop="8dp" />
+                        <TextView android:id="@+id/tvToGetAmt"
+                            android:layout_width="match_parent" android:layout_height="48dp"
+                            android:background="@drawable/bg_input"
+                            android:gravity="center_vertical" android:paddingStart="12dp"
+                            android:layout_marginTop="4dp"
+                            android:textColor="@color/blue" android:textSize="18sp" android:textStyle="bold" />
+
+                        <!-- Discount | Amount Received -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Discount" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvDiscount"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="15sp" android:textStyle="bold" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Amount Received" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvGotAmt"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/green" android:textSize="15sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Customer Copy | Closed By -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Customer Copy" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvCustomerCopy"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Closed By" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvClosedBy"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -535,16 +783,6 @@
                                 android:textColor="@color/white" android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
-
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Physical Location" android:textColor="@color/white54" android:textSize="11sp"
-                        android:layout_marginTop="8dp" />
-                    <TextView android:id="@+id/tvPhysicalLocation"
-                        android:layout_width="match_parent" android:layout_height="44dp"
-                        android:background="@drawable/bg_input"
-                        android:gravity="center_vertical" android:paddingStart="12dp"
-                        android:layout_marginTop="4dp"
-                        android:textColor="@color/white" android:textSize="14sp" />
 
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="Accepted Closing Date" android:textColor="@color/white54" android:textSize="11sp"

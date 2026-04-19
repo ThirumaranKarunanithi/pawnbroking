@@ -360,6 +360,31 @@ public class ApiService {
         });
     }
 
+    public static void calculateClosing(String companyId, String materialType,
+                                         double amount, double interest, double documentCharge,
+                                         String openingDate, double totalAdvancePaid,
+                                         Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl url = HttpUrl.parse(AppConfig.BILLING + "/calculate-closing").newBuilder()
+                    .addQueryParameter("companyId",       companyId)
+                    .addQueryParameter("materialType",    materialType)
+                    .addQueryParameter("amount",          String.valueOf(amount))
+                    .addQueryParameter("interest",        String.valueOf(interest))
+                    .addQueryParameter("documentCharge",  String.valueOf(documentCharge))
+                    .addQueryParameter("openingDate",     openingDate)
+                    .addQueryParameter("totalAdvancePaid",String.valueOf(totalAdvancePaid))
+                    .build();
+                Request req = new Request.Builder().url(url).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
     public static void calculateBilling(JSONObject body, Callback<JSONObject> cb) {
         EXEC.execute(() -> {
             try {

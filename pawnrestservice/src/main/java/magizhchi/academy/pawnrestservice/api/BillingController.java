@@ -92,10 +92,20 @@ public class BillingController {
                 "  COALESCE(togive_amount,0) AS to_give_amount, " +
                 "  COALESCE(given_amount,0) AS given_amount, " +
                 "  status::text AS status, " +
+                "  COALESCE(physical_location,'') AS physical_location, " +
                 "  COALESCE(note,'') AS note, " +
                 "  COALESCE(nominee_name,'') AS nominee_name, " +
                 "  to_char(accepted_closing_date, 'DD-MM-YYYY') AS accepted_closing_date, " +
-                "  to_char(created_date, 'DD-MM-YYYY HH24:MI') AS created_date " +
+                "  to_char(created_date, 'DD-MM-YYYY HH24:MI') AS created_date, " +
+                "  COALESCE(close_taken_amount,0) AS close_taken_amount, " +
+                "  COALESCE(total_advance_amount_paid,0) AS total_advance_amount_paid, " +
+                "  COALESCE(total_other_charges,0) AS total_other_charges, " +
+                "  COALESCE(toget_amount,0) AS toget_amount, " +
+                "  COALESCE(discount_amount,0) AS discount_amount, " +
+                "  COALESCE(got_amount,0) AS got_amount, " +
+                "  COALESCE(customer_copy::text,'') AS customer_copy, " +
+                "  COALESCE(closed_user_id,'') AS closed_user_id, " +
+                "  to_char(closing_date, 'DD-MM-YYYY') AS closing_date " +
                 "FROM company_billing " +
                 "WHERE company_id = ? AND bill_number = ?" +
                 (filterMt ? " AND jewel_material_type = ?::MATERIAL_TYPE" : "") +
@@ -202,6 +212,226 @@ public class BillingController {
             log.error("calculate error", e);
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
+    }
+
+    /**
+     * GET /api/billing/calculate-closing
+     * Exact port of GoldBillClosingController.setAllHeaderValuesToFields() logic.
+     * Params: companyId, materialType, amount, interest, documentCharge, openingDate (yyyy-MM-dd),
+     *         totalAdvancePaid, closingDate (yyyy-MM-dd, defaults to today)
+     */
+    @GetMapping("/calculate-closing")
+    public ResponseEntity<?> calculateClosing(
+            @RequestParam String companyId,
+            @RequestParam String materialType,
+            @RequestParam double amount,
+            @RequestParam double interest,
+            @RequestParam(defaultValue = "0") double documentCharge,
+            @RequestParam String openingDate,                         // yyyy-MM-dd
+            @RequestParam(defaultValue = "0") double totalAdvancePaid,
+            @RequestParam(required = false) String closingDate) {    // yyyy-MM-dd, null = today
+        try {
+            String mt = materialType.toUpperCase();
+            java.time.LocalDate startDate = java.time.LocalDate.parse(openingDate);
+            java.time.LocalDate endDate   = (closingDate != null && !closingDate.isBlank())
+                                            ? java.time.LocalDate.parse(closingDate)
+                                            : java.time.LocalDate.now();
+            String endDateStr = endDate.toString(); // yyyy-MM-dd
+
+            // 1. Interest type: DAY_OR_MONTHLY_INTEREST from COMPANY
+            String interestType = queryScalar(
+                "SELECT COALESCE(DAY_OR_MONTHLY_INTEREST,'MONTH') FROM COMPANY WHERE COMPANY_ID = ?",
+                companyId);
+            if (interestType == null || interestType.isBlank()) interestType = "MONTH";
+
+            // 2. Reduce data from COMPANY_REDUCE_MONTHS_OR_DAYS
+            String[] reduceDatas  = queryReduceRow(companyId, mt, "REDUCTION");
+            String[] minimumDatas = queryReduceRow(companyId, mt, "MINIMUM");
+
+            // 3. Total days between opening and closing
+            long totalDays = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+
+            // 4. Chettinad month calculation (exact desktop logic)
+            long[] actualMonths = getDifferenceMonthsChettinad(startDate, endDate);
+            long   actM = actualMonths[0];
+            long   actD = actualMonths[1];
+            String actualTotalLabel = actM + " Months and " + actD + " Days.";
+
+            // 5. Apply reduction → takenMonths, takenDays
+            double takenMonths = 0;
+            long   takenDays   = 0;
+            int    reduceVal   = parseInt(reduceDatas[0]);
+            String reduceType  = reduceDatas[1] != null ? reduceDatas[1] : "";
+            int    minVal      = parseInt(minimumDatas[0]);
+
+            if ("MONTH".equals(interestType)) {
+                long[] taken;
+                if ("MONTHS FROM TOTAL MONTH".equals(reduceType)) {
+                    taken = getDifferenceMonthsWithTotalMonthReduction(actualMonths, reduceVal);
+                } else if ("MONTHS FROM OPENING MONTH".equals(reduceType)) {
+                    taken = getDifferenceMonthsWithMonthReduction(startDate, totalDays, reduceVal);
+                } else if ("DAYS".equals(reduceType)) {
+                    taken = getDifferenceMonthsWithDayReduction(startDate, totalDays, reduceVal);
+                } else {
+                    taken = new long[]{actM, actD};
+                }
+                // Convert remaining days to fractional months via COMPANY_MONTH_SETTING
+                double remDaysAsMonths = 0;
+                if (actM > 0 && taken[1] > 0) {
+                    String rm = queryScalar(
+                        "SELECT COALESCE(AS_MONTH,0) FROM COMPANY_MONTH_SETTING " +
+                        "WHERE COMPANY_ID=? AND JEWEL_MATERIAL_TYPE=?::MATERIAL_TYPE " +
+                        "AND ? BETWEEN DAYS_FROM AND DAYS_TO " +
+                        "AND ?::date BETWEEN DATE_FROM AND DATE_TO LIMIT 1",
+                        companyId, mt, (double) taken[1], endDateStr);
+                    remDaysAsMonths = parseDouble(rm);
+                }
+                takenMonths = taken[0] + remDaysAsMonths;
+                // Apply minimum
+                if (takenMonths < minVal) takenMonths = minVal;
+            } else {
+                // DAY interest type
+                if ("MONTHS FROM OPENING MONTH".equals(reduceType)) {
+                    long[] taken = getDifferenceMonthsWithDayReductionFromMonths(startDate, totalDays, reduceVal);
+                    takenDays = taken[1];
+                } else if ("DAYS".equals(reduceType)) {
+                    takenDays = Math.max(0, totalDays - reduceVal);
+                } else {
+                    takenDays = totalDays;
+                }
+                if (takenDays < minVal) takenDays = minVal;
+                takenMonths = takenDays; // DAY mode uses days in formula
+            }
+
+            // 6. CLOSE formula
+            String formulaSql =
+                "SELECT COALESCE(FORMULA,'AMOUNT * INTEREST / 100 * TAKEN_MONTHS') FROM COMPANY_FORMULA " +
+                "WHERE COMPANY_ID=? AND JEWEL_MATERIAL_TYPE=?::MATERIAL_TYPE " +
+                "AND FORMULA_OPERATION_TYPE=?::OPERATION_TYPE " +
+                "AND ? BETWEEN AMOUNT_FROM AND AMOUNT_TO " +
+                "AND ?::date BETWEEN DATE_FROM AND DATE_TO LIMIT 1";
+            String sFormula = queryScalar(formulaSql, companyId, mt, "CLOSE", amount, endDateStr);
+            if (sFormula == null || sFormula.isBlank() || "0".equals(sFormula))
+                sFormula = "AMOUNT * INTEREST / 100 * TAKEN_MONTHS";
+
+            String evaluated = sFormula
+                .replace("AMOUNT",          String.valueOf(amount))
+                .replace("INTEREST",        String.valueOf(interest))
+                .replace("DOCUMENT_CHARGE", String.valueOf(documentCharge))
+                .replace("TAKEN_MONTHS",    String.valueOf(takenMonths))
+                .replace("TAKEN_DAYS",      String.valueOf(takenDays));
+
+            double closeTaken;
+            try {
+                ExpressionParser parser = new SpelExpressionParser();
+                closeTaken = Math.round(parser.parseExpression(evaluated).getValue(Double.class));
+            } catch (Exception e) {
+                log.warn("CLOSE formula eval failed ({}): {}", evaluated, e.getMessage());
+                closeTaken = Math.round(amount * interest / 100.0 * takenMonths);
+            }
+
+            // 7. toGetAmount = amount + closeTaken - totalAdvancePaid
+            double toGetAmount = amount + closeTaken - totalAdvancePaid;
+
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put("interestType",      interestType);
+            result.put("actualTotalMonths", actualTotalLabel);
+            result.put("minimumMonths",     minimumDatas[0] != null ? minimumDatas[0] : "0");
+            result.put("toReduceMonths",    reduceDatas[0]  != null ? reduceDatas[0]  : "0");
+            result.put("forMonths",         takenMonths);
+            result.put("closeTakenAmount",  closeTaken);
+            result.put("toGetAmount",       toGetAmount);
+            result.put("totalAdvancePaid",  totalAdvancePaid);
+            result.put("discount",          0);
+            result.put("gotAmount",         toGetAmount);
+            result.put("totalOtherCharges", 0);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("calculateClosing error", e);
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ── Date/month helpers (exact port of DateRelatedCalculations) ────────────
+
+    private long[] getDifferenceMonthsChettinad(java.time.LocalDate start, java.time.LocalDate end) {
+        int sDay = start.getDayOfMonth(), sMonth = start.getMonthValue(), sYear = start.getYear();
+        int eDay = end.getDayOfMonth(), eMonth = end.getMonthValue(), eYear = end.getYear();
+        int totDays = eDay - sDay;
+        if (totDays < 0 && eMonth > 0) { eDay += 30; eMonth--; totDays = eDay - sDay; }
+        int totMonths = eMonth - sMonth;
+        if (totMonths < 0 && eYear > sYear) { eMonth += 12; eYear--; totMonths = eMonth - sMonth; }
+        long totalMonths = totMonths + ((long)(eYear > start.getYear() ? eYear - start.getYear() : 0) * 12);
+        return new long[]{totalMonths, totDays};
+    }
+
+    private long[] getDifferenceMonthsWithTotalMonthReduction(long[] actual, int reduce) {
+        long m = actual[0] > 0 ? Math.max(0, actual[0] - reduce) : 0;
+        return new long[]{m, actual[1]};
+    }
+
+    private long[] getDifferenceMonthsWithMonthReduction(java.time.LocalDate start, long totalDays, int reduceMonths) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(start.getYear(), start.getMonthValue() - 1, start.getDayOfMonth());
+        for (int i = 0; i < reduceMonths; i++) {
+            int daysInMonth = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+            if (daysInMonth <= totalDays) { totalDays -= daysInMonth; } else { break; }
+            cal.add(java.util.Calendar.MONTH, 1);
+        }
+        long months = 0;
+        for (;;) {
+            int daysInMonth = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+            if (daysInMonth <= totalDays) { totalDays -= daysInMonth; months++; } else { break; }
+            cal.add(java.util.Calendar.MONTH, 1);
+        }
+        return new long[]{months, totalDays};
+    }
+
+    private long[] getDifferenceMonthsWithDayReduction(java.time.LocalDate start, long totalDays, int reduceDays) {
+        totalDays = Math.max(0, totalDays - reduceDays);
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(start.getYear(), start.getMonthValue() - 1, start.getDayOfMonth());
+        long months = 0;
+        for (;;) {
+            int daysInMonth = cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+            if (daysInMonth <= totalDays) { totalDays -= daysInMonth; months++; } else { break; }
+            cal.add(java.util.Calendar.MONTH, 1);
+        }
+        return new long[]{months, totalDays};
+    }
+
+    private long[] getDifferenceMonthsWithDayReductionFromMonths(java.time.LocalDate start, long totalDays, int reduceMonths) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(start.getYear(), start.getMonthValue() - 1, start.getDayOfMonth());
+        long daysToRemove = 0;
+        for (int i = 0; i < reduceMonths; i++) {
+            daysToRemove += cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH);
+            cal.add(java.util.Calendar.MONTH, 1);
+        }
+        return new long[]{0, Math.max(0, totalDays - daysToRemove)};
+    }
+
+    private String[] queryReduceRow(String companyId, String mt, String type) {
+        String[] data = {"0", ""};
+        try {
+            List<Map<String, Object>> rows = jdbc.queryForList(
+                "SELECT COALESCE(DAYS_OR_MONTHS,0), REDUCTION_TYPE " +
+                "FROM COMPANY_REDUCE_MONTHS_OR_DAYS " +
+                "WHERE COMPANY_ID=? AND JEWEL_MATERIAL_TYPE=?::MATERIAL_TYPE " +
+                "AND REDUCTION_OR_MINIMUM_TYPE=?::REDUCTION_OR_MINIMUM_TYPE LIMIT 1",
+                companyId, mt, type);
+            if (!rows.isEmpty()) {
+                Map<String, Object> r = rows.get(0);
+                Object[] vals = r.values().toArray();
+                data[0] = vals[0] != null ? vals[0].toString() : "0";
+                data[1] = vals[1] != null ? vals[1].toString() : "";
+            }
+        } catch (Exception e) { log.warn("queryReduceRow failed: {}", e.getMessage()); }
+        return data;
+    }
+
+    private int parseInt(String s) {
+        try { return s != null ? Integer.parseInt(s.trim()) : 0; } catch (Exception e) { return 0; }
     }
 
     /**
