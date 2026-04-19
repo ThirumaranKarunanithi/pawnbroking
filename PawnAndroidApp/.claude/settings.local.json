@@ -15,7 +15,9 @@
       "Bash(cmd /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice && mvnw.cmd clean package -DskipTests\")",
       "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice'; & '.\\\\mvnw.cmd' clean package -DskipTests 2>&1\")",
       "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; & '.\\\\gradlew.bat' assembleDebug 2>&1\")",
-      "Bash(powershell -Command \"Get-Item 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\app\\\\build\\\\outputs\\\\apk\\\\debug\\\\app-debug.apk' | Select-Object Name, Length, LastWriteTime\")"
+      "Bash(powershell -Command \"Get-Item 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\app\\\\build\\\\outputs\\\\apk\\\\debug\\\\app-debug.apk' | Select-Object Name, Length, LastWriteTime\")",
+      "Bash(find \"D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\" -type f \\\\\\( -name \"*.sql\" -o -name \"*.ddl\" \\\\\\) -exec grep -l \"REDUCTION_TYPE\\\\|reduction_type\" {} \\\\;)",
+      "Bash(find \"D:\\\\Pawnbroking\\\\SOURCE\" -type f -name \"*.java\" -exec grep -l \"CREATE TYPE.*REDUCTION_TYPE\\\\|@Table.*COMPANY_REDUCE\" {} \\\\;)"
     ]
   }
 }

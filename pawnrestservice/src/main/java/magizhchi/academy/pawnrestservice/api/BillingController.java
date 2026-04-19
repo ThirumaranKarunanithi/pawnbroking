@@ -273,18 +273,25 @@ public class BillingController {
                 } else if ("DAYS".equals(reduceType)) {
                     taken = getDifferenceMonthsWithDayReduction(startDate, totalDays, reduceVal);
                 } else {
+                    // No matching reduction type — desktop leaves takenMonths = 0 in this case
                     taken = new long[]{actM, actD};
                 }
+                log.info("calculateClosing reduceType='{}' reduceVal={} taken=[{},{}] actM={}",
+                    reduceType, reduceVal, taken[0], taken[1], actM);
                 // Convert remaining days to fractional months via COMPANY_MONTH_SETTING
+                // Condition matches desktop: only when actual months > 0 (lActualTotalMonths[0] > 0)
                 double remDaysAsMonths = 0;
                 if (actM > 0 && taken[1] > 0) {
-                    String rm = queryScalar(
-                        "SELECT COALESCE(AS_MONTH,0) FROM COMPANY_MONTH_SETTING " +
+                    List<Map<String, Object>> msRows = jdbc.queryForList(
+                        "SELECT COALESCE(AS_MONTH,0) AS as_month_val FROM COMPANY_MONTH_SETTING " +
                         "WHERE COMPANY_ID=? AND JEWEL_MATERIAL_TYPE=?::MATERIAL_TYPE " +
                         "AND ? BETWEEN DAYS_FROM AND DAYS_TO " +
                         "AND ?::date BETWEEN DATE_FROM AND DATE_TO LIMIT 1",
                         companyId, mt, (double) taken[1], endDateStr);
-                    remDaysAsMonths = parseDouble(rm);
+                    if (!msRows.isEmpty()) {
+                        Object msVal = msRows.get(0).get("as_month_val");
+                        remDaysAsMonths = msVal != null ? parseDouble(msVal.toString()) : 0;
+                    }
                 }
                 takenMonths = taken[0] + remDaysAsMonths;
                 // NOTE: minimum is displayed only (like desktop), not enforced in formula
@@ -413,19 +420,24 @@ public class BillingController {
     private String[] queryReduceRow(String companyId, String mt, String type) {
         String[] data = {"0", ""};
         try {
+            // Use explicit unique aliases to avoid duplicate "coalesce" column name
+            // issue in Spring JDBC's LinkedCaseInsensitiveMap
             List<Map<String, Object>> rows = jdbc.queryForList(
-                "SELECT COALESCE(DAYS_OR_MONTHS,0), COALESCE(REDUCTION_TYPE::text,'') " +
+                "SELECT COALESCE(DAYS_OR_MONTHS,0)     AS dom_val, " +
+                "       COALESCE(REDUCTION_TYPE::text,'') AS rt_val " +
                 "FROM COMPANY_REDUCE_MONTHS_OR_DAYS " +
                 "WHERE COMPANY_ID=? AND JEWEL_MATERIAL_TYPE=?::MATERIAL_TYPE " +
                 "AND REDUCTION_OR_MINIMUM_TYPE::text=? LIMIT 1",
                 companyId, mt, type);
             if (!rows.isEmpty()) {
                 Map<String, Object> r = rows.get(0);
-                Object[] vals = r.values().toArray();
-                data[0] = vals[0] != null ? vals[0].toString() : "0";
-                data[1] = vals[1] != null ? vals[1].toString() : "";
+                Object domVal = r.get("dom_val");
+                Object rtVal  = r.get("rt_val");
+                data[0] = domVal != null ? domVal.toString().trim() : "0";
+                data[1] = rtVal  != null ? rtVal.toString().trim()  : "";
+                log.info("queryReduceRow type={} dom={} rt={}", type, data[0], data[1]);
             }
-        } catch (Exception e) { log.warn("queryReduceRow failed: {}", e.getMessage()); }
+        } catch (Exception e) { log.warn("queryReduceRow failed type={}: {}", type, e.getMessage()); }
         return data;
     }
 
