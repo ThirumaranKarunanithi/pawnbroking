@@ -106,7 +106,7 @@ public class BillImageController {
         String s3Key    = prefix + "/" + companyId + "/" + materialType.toUpperCase()
                         + "/" + safeBill + "/" + imageName;
 
-        log.debug("[BILL-IMAGE] Fetching s3://{}/{}", bucket, s3Key);
+        log.info("[BILL-IMAGE] Fetching s3://{}/{}", bucket, s3Key);
 
         try {
             ResponseBytes<GetObjectResponse> obj = s3Client.getObjectAsBytes(
@@ -124,18 +124,69 @@ public class BillImageController {
             // Cache for 24 h — bill images don't change once saved
             headers.setCacheControl("public, max-age=86400");
 
+            log.info("[BILL-IMAGE] OK — {} bytes for {}", data.length, s3Key);
             return ResponseEntity.ok().headers(headers).body(data);
 
         } catch (NoSuchKeyException e) {
-            log.debug("[BILL-IMAGE] Not found: {}", s3Key);
+            log.info("[BILL-IMAGE] Not found (NoSuchKey): {}", s3Key);
             return ResponseEntity.notFound().build();
         } catch (S3Exception e) {
-            log.error("[BILL-IMAGE] S3 error for '{}': HTTP {} — {}",
-                    s3Key, e.statusCode(), e.awsErrorDetails().errorMessage());
+            // S3 returns 403 instead of 404 for non-existent keys when bucket policy
+            // blocks s3:ListBucket — treat any 4xx from S3 as "not found"
+            int code = e.statusCode();
+            log.warn("[BILL-IMAGE] S3 HTTP {} for '{}' — {}", code,
+                    s3Key, e.awsErrorDetails().errorMessage());
+            if (code >= 400 && code < 500) {
+                return ResponseEntity.notFound().build();
+            }
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
         } catch (Exception e) {
             log.error("[BILL-IMAGE] Unexpected error for '{}'", s3Key, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Diagnostic endpoint — returns the S3 key that would be fetched for a given bill,
+     * plus credential/bucket status. Useful for debugging without loading the image.
+     *
+     * GET /api/bills/image/diagnose?companyId=X&materialType=GOLD&billNumber=E001&imageName=open_customer.png
+     */
+    @GetMapping("/image/diagnose")
+    public ResponseEntity<java.util.Map<String,Object>> diagnose(
+            @RequestParam String companyId,
+            @RequestParam String materialType,
+            @RequestParam String billNumber,
+            @RequestParam String imageName) {
+
+        java.util.Map<String,Object> out = new java.util.LinkedHashMap<>();
+        String safeBill = billNumber.replace("/", "_");
+        String s3Key    = prefix + "/" + companyId + "/" + materialType.toUpperCase()
+                        + "/" + safeBill + "/" + imageName;
+
+        out.put("s3Key",     s3Key);
+        out.put("bucket",    bucket);
+        out.put("region",    region);
+        out.put("s3Ready",   s3Client != null);
+        out.put("initError", initError);
+
+        if (s3Client != null) {
+            try {
+                s3Client.headObject(
+                    software.amazon.awssdk.services.s3.model.HeadObjectRequest.builder()
+                        .bucket(bucket).key(s3Key).build());
+                out.put("objectExists", true);
+            } catch (software.amazon.awssdk.services.s3.model.NoSuchKeyException e) {
+                out.put("objectExists", false);
+                out.put("s3Error", "NoSuchKey");
+            } catch (S3Exception e) {
+                out.put("objectExists", false);
+                out.put("s3Error", "HTTP " + e.statusCode() + ": " + e.awsErrorDetails().errorMessage());
+            } catch (Exception e) {
+                out.put("objectExists", false);
+                out.put("s3Error", e.getMessage());
+            }
+        }
+        return ResponseEntity.ok(out);
     }
 }
