@@ -17,21 +17,31 @@ public class AppConfig {
     public static final String REPORT_TRIAL_BALANCE   = BASE_URL + "/api/reports/trial-balance";
     public static final String BILLING                = BASE_URL + "/api/billing";
 
-    // ── AWS S3 image base (pawndbsync uploads here) ──────────────────────────
-    private static final String S3_BASE =
-        "https://pawnbroking.s3.eu-north-1.amazonaws.com/alwarpuram";
+    // ── Bill image proxy (server fetches from S3, no public bucket needed) ──
+    public static final String BILL_IMAGE = BASE_URL + "/api/bills/image";
 
     /**
-     * Returns the S3 URL for a bill image.
-     * @param companyId      e.g. "ALW001"
-     * @param materialType   e.g. "GOLD" or "SILVER"
-     * @param billNumber     e.g. "ALW/GOLD/001"  — slashes are replaced with underscores
-     * @param imageName      e.g. "open_customer.png"
+     * Returns the REST proxy URL for a bill image.
+     * The server fetches the image from S3 and streams it back.
+     *
+     * @param companyId    e.g. "ALW001"
+     * @param materialType e.g. "GOLD" or "SILVER"
+     * @param billNumber   e.g. "ALW/GOLD/001" — the server replaces "/" with "_"
+     * @param imageName    e.g. "open_customer.png"
      */
     public static String billImageUrl(String companyId, String materialType,
                                        String billNumber, String imageName) {
-        String safeBill = billNumber.replace("/", "_");
-        return S3_BASE + "/" + companyId + "/" + materialType.toUpperCase()
-               + "/" + safeBill + "/" + imageName;
+        try {
+            return BILL_IMAGE
+                + "?companyId="    + java.net.URLEncoder.encode(companyId,    "UTF-8")
+                + "&materialType=" + java.net.URLEncoder.encode(materialType.toUpperCase(), "UTF-8")
+                + "&billNumber="   + java.net.URLEncoder.encode(billNumber,   "UTF-8")
+                + "&imageName="    + java.net.URLEncoder.encode(imageName,    "UTF-8");
+        } catch (java.io.UnsupportedEncodingException e) {
+            // UTF-8 is always supported — this never throws
+            return BILL_IMAGE + "?companyId=" + companyId
+                + "&materialType=" + materialType + "&billNumber=" + billNumber
+                + "&imageName=" + imageName;
+        }
     }
 }
