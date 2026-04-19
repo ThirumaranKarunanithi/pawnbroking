@@ -105,7 +105,12 @@ public class BillingController {
                 "  COALESCE(got_amount,0) AS got_amount, " +
                 "  COALESCE(customer_copy::text,'') AS customer_copy, " +
                 "  COALESCE(closed_user_id,'') AS closed_user_id, " +
-                "  to_char(closing_date, 'DD-MM-YYYY') AS closing_date " +
+                "  to_char(closing_date, 'DD-MM-YYYY') AS closing_date, " +
+                "  COALESCE(interest_type::text,'') AS close_interest_type, " +
+                "  COALESCE(total_days_or_months,'') AS total_days_or_months, " +
+                "  COALESCE(minimum_days_or_months,0) AS minimum_days_or_months, " +
+                "  COALESCE(reduce_days_or_months,0) AS reduce_days_or_months, " +
+                "  COALESCE(taken_days_or_months,0) AS taken_days_or_months " +
                 "FROM company_billing " +
                 "WHERE company_id = ? AND bill_number = ?" +
                 (filterMt ? " AND jewel_material_type = ?::MATERIAL_TYPE" : "") +

@@ -18,7 +18,9 @@
       "Bash(powershell -Command \"Get-Item 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\app\\\\build\\\\outputs\\\\apk\\\\debug\\\\app-debug.apk' | Select-Object Name, Length, LastWriteTime\")",
       "Bash(find \"D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\" -type f \\\\\\( -name \"*.sql\" -o -name \"*.ddl\" \\\\\\) -exec grep -l \"REDUCTION_TYPE\\\\|reduction_type\" {} \\\\;)",
       "Bash(find \"D:\\\\Pawnbroking\\\\SOURCE\" -type f -name \"*.java\" -exec grep -l \"CREATE TYPE.*REDUCTION_TYPE\\\\|@Table.*COMPANY_REDUCE\" {} \\\\;)",
-      "Bash(powershell -Command \"Get-Item 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\app\\\\build\\\\outputs\\\\apk\\\\debug\\\\app-debug.apk' | Select-Object Name, LastWriteTime; Get-Item 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice\\\\target\\\\pawnrestservice-0.0.1-SNAPSHOT.jar' | Select-Object Name, LastWriteTime\")"
+      "Bash(powershell -Command \"Get-Item 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\app\\\\build\\\\outputs\\\\apk\\\\debug\\\\app-debug.apk' | Select-Object Name, LastWriteTime; Get-Item 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice\\\\target\\\\pawnrestservice-0.0.1-SNAPSHOT.jar' | Select-Object Name, LastWriteTime\")",
+      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice'; & '.\\\\mvnw.cmd' clean package -DskipTests 2>&1 | Select-String -Pattern 'BUILD|ERROR|error'\")",
+      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; & '.\\\\gradlew.bat' assembleDebug 2>&1 | Select-String -Pattern 'BUILD|error|FAILED'\")"
     ]
   }
 }

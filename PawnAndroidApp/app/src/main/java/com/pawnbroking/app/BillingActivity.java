@@ -304,46 +304,25 @@ public class BillingActivity extends AppCompatActivity {
         final String dbClosingDate   = r.optString("closing_date",              "");
 
         if (fetchFromDb) {
-            // Bill is CLOSED/REBILLED/DELIVERED — financial amounts come from DB.
-            // But computed fields (interestType, actualTotalMonths, forMonths, etc.)
-            // are still calculated using the actual closing date — same as desktop.
-            String closingDateIso = toIsoDate(dbClosingDate);
-            ApiService.calculateClosing(
-                companyId, selectedMaterialType,
-                amount, interest, docCharge,
-                openDateIso, dbTotalAdvance,
-                closingDateIso,
-                new ApiService.Callback<JSONObject>() {
-                    @Override public void onSuccess(JSONObject c) {
-                        runOnUiThread(() -> populateClosingSection(
-                            c.optString("interestType",      "MONTH"),
-                            c.optString("actualTotalMonths", ""),
-                            c.optString("minimumMonths",     "0"),
-                            c.optString("toReduceMonths",    "0"),
-                            acceptedClosingDate,
-                            String.valueOf(c.optDouble("forMonths", 0)),
-                            fmt(interest),
-                            dbClosingDate,   // actual closing date from DB
-                            dbCloseTaken,    // DB value
-                            dbTotalAdvance,  // DB value
-                            dbOtherCharges,  // DB value
-                            dbToGet,         // DB value
-                            dbDiscount,      // DB value
-                            dbGot,           // DB value
-                            dbCustomerCopy,  // DB value
-                            dbClosedBy));    // DB value
-                    }
-                    @Override public void onError(String msg) {
-                        // Fallback: show "—" for computed fields, DB values for amounts
-                        runOnUiThread(() -> populateClosingSection(
-                            "—", "—", "—", "—",
-                            acceptedClosingDate, "—",
-                            fmt(interest), dbClosingDate,
-                            dbCloseTaken, dbTotalAdvance, dbOtherCharges,
-                            dbToGet, dbDiscount, dbGot,
-                            dbCustomerCopy, dbClosedBy));
-                    }
-                });
+            // CLOSED / REBILLED / DELIVERED — read ALL closing fields directly from DB.
+            // No calculation needed; desktop stores every field on bill close.
+            populateClosingSection(
+                r.optString("close_interest_type",   ""),
+                r.optString("total_days_or_months",  ""),
+                String.valueOf(r.optInt("minimum_days_or_months", 0)),
+                String.valueOf(r.optInt("reduce_days_or_months",  0)),
+                acceptedClosingDate,
+                String.valueOf(r.optDouble("taken_days_or_months", 0)),
+                fmt(interest),
+                dbClosingDate,
+                dbCloseTaken,
+                dbTotalAdvance,
+                dbOtherCharges,
+                dbToGet,
+                dbDiscount,
+                dbGot,
+                dbCustomerCopy,
+                dbClosedBy);
         } else {
             // OPENED / LOCKED / CANCELLED — fully calculate via server
             ApiService.calculateClosing(
