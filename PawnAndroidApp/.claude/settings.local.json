@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep *)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(./mvnw compile *)",
+      "Bash(bash -c \"cd 'D:/Pawnbroking/SOURCE/webservice/pawnrestservice' && ./mvnw compile -q 2>&1 | tail -20\")",
+      "Bash(bash -c \"cd 'D:/Pawnbroking/SOURCE/webservice/pawnrestservice' && ./mvnw package -DskipTests -q 2>&1 | tail -10\")",
+      "Bash(bash -c \"cd 'D:/Pawnbroking/SOURCE/webservice/pawnrestservice' && ./mvnw package -DskipTests -q 2>&1 | tail -5\")",
+      "Bash(./mvnw package *)",
+      "Bash(mvn package *)",
+      "Bash(bash mvnw *)"
+    ]
+  }
+}

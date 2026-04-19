@@ -41,6 +41,8 @@ public class TodaysAccountActivity extends AppCompatActivity {
     private TextView tvPreDate, tvPreActual, tvPreAvailable, tvPreDeficit, tvPreNote;
     private TextView tvActualBalance, tvAvailableBalance, tvDeficit, tvTodaysNote;
     private TextView tvTotalDebit, tvTotalCredit;
+    private View layoutStatus;
+    private TextView tvAccountStatus;
 
     private String companyId, companyName;
     private String selectedDate;
@@ -105,8 +107,10 @@ public class TodaysAccountActivity extends AppCompatActivity {
         tvDeficit         = findViewById(R.id.tvDeficit);
         tvTodaysNote      = findViewById(R.id.tvTodaysNote);
 
-        tvTotalDebit  = findViewById(R.id.tvTotalDebit);
-        tvTotalCredit = findViewById(R.id.tvTotalCredit);
+        tvTotalDebit    = findViewById(R.id.tvTotalDebit);
+        tvTotalCredit   = findViewById(R.id.tvTotalCredit);
+        layoutStatus    = findViewById(R.id.layoutStatus);
+        tvAccountStatus = findViewById(R.id.tvAccountStatus);
 
         tvCompanyName.setText(companyName);
         tvSelectedDate.setText(displaySdf.format(new Date()));
@@ -184,6 +188,19 @@ public class TodaysAccountActivity extends AppCompatActivity {
         // Totals
         tvTotalDebit.setText("₹ " + fmt.format(data.optDouble("totalDebit", 0)));
         tvTotalCredit.setText("₹ " + fmt.format(data.optDouble("totalCredit", 0)));
+
+        // Account status badge (desktop save-mode logic)
+        String status = data.optString("accountStatus", "");
+        if (!status.isEmpty() && !"UNKNOWN".equals(status)) {
+            layoutStatus.setVisibility(View.VISIBLE);
+            boolean yetToClose = "YET TO CLOSE".equals(status);
+            tvAccountStatus.setText(status);
+            tvAccountStatus.setTextColor(yetToClose
+                    ? Color.parseColor("#FF9800")   // orange  — not yet saved
+                    : Color.parseColor("#4CAF50"));  // green   — already saved/closed
+        } else {
+            layoutStatus.setVisibility(View.GONE);
+        }
 
         // Operations table
         buildOperationsTable(data.optJSONArray("operations"));
@@ -273,8 +290,6 @@ public class TodaysAccountActivity extends AppCompatActivity {
     }
 
     private String fmtShort(double v) {
-        if (v >= 100_000) return String.format("%.1fL", v / 100_000);
-        if (v >= 1_000)   return String.format("%.1fK", v / 1_000);
         return fmt.format(v);
     }
 

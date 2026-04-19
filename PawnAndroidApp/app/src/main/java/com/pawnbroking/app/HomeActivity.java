@@ -2,6 +2,7 @@ package com.pawnbroking.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,23 +38,38 @@ public class HomeActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.inflateMenu(R.menu.menu_home);
-        toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_logout) { logout(); return true; }
-            return false;
-        });
 
         spinnerCompany  = findViewById(R.id.spinnerCompany);
         progressCompany = findViewById(R.id.progressCompany);
         tvNoCompany     = findViewById(R.id.tvNoCompany);
         layoutContent   = findViewById(R.id.layoutContent);
 
-        // Three main buttons
+        // Main buttons
         findViewById(R.id.btnStockDetails).setOnClickListener(v   -> open(StockDetailsActivity.class));
         findViewById(R.id.btnTodaysAccount).setOnClickListener(v  -> open(TodaysAccountActivity.class));
+        findViewById(R.id.btnBilling).setOnClickListener(v        -> open(BillingActivity.class));
         findViewById(R.id.btnMonthlyReport).setOnClickListener(v  -> open(MonthlyReportActivity.class));
 
         loadCompanies();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        if (item.getItemId() == R.id.action_logout) {
+            logout();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadCompanies() {

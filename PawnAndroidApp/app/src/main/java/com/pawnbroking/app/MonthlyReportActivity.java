@@ -407,9 +407,6 @@ public class MonthlyReportActivity extends AppCompatActivity {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private String shortFmt(double v) {
-        if (v >= 10_000_000) return String.format("%.2fCr", v / 10_000_000);
-        if (v >= 100_000)    return String.format("%.2fL",  v / 100_000);
-        if (v >= 1_000)      return String.format("%.1fK",  v / 1_000);
         return fmt.format(v);
     }
 

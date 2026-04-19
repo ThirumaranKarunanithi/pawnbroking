@@ -13,4 +13,5 @@ public class AppConfig {
     public static final String STOCK_REPLEDGE         = BASE_URL + "/api/stock/repledge";
     public static final String REPORT_MONTHLY         = BASE_URL + "/api/reports/monthly";
     public static final String REPORT_TRIAL_BALANCE   = BASE_URL + "/api/reports/trial-balance";
+    public static final String BILLING                = BASE_URL + "/api/billing";
 }

@@ -321,6 +321,77 @@ public class ApiService {
         });
     }
 
+    // ── Billing ───────────────────────────────────────────────────────────────
+
+    public static void findBill(String companyId, String billNumber, String materialType,
+                                Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl url = HttpUrl.parse(AppConfig.BILLING + "/find").newBuilder()
+                    .addQueryParameter("companyId",    companyId)
+                    .addQueryParameter("billNumber",   billNumber)
+                    .addQueryParameter("materialType", materialType)
+                    .build();
+                Request req = new Request.Builder().url(url).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
+    public static void getNextBillNumber(String companyId, String materialType,
+                                         Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl url = HttpUrl.parse(AppConfig.BILLING + "/next-bill-number").newBuilder()
+                    .addQueryParameter("companyId",    companyId)
+                    .addQueryParameter("materialType", materialType)
+                    .build();
+                Request req = new Request.Builder().url(url).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
+    public static void calculateBilling(JSONObject body, Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                Request req = new Request.Builder()
+                    .url(AppConfig.BILLING + "/calculate")
+                    .post(RequestBody.create(body.toString(), JSON))
+                    .build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
+    public static void saveBill(JSONObject body, Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                Request req = new Request.Builder()
+                    .url(AppConfig.BILLING + "/save")
+                    .post(RequestBody.create(body.toString(), JSON))
+                    .build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
     private static void checkStatus(Response res, String raw) throws Exception {
         if (!res.isSuccessful())
             throw new Exception("API error " + res.code() + ": " + raw);

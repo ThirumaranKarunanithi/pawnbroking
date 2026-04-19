@@ -10,6 +10,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <!-- Light mode: dark icons on light toolbar bg -->
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.ActionBar" />
+
     <style name="Theme.PawnApp.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
