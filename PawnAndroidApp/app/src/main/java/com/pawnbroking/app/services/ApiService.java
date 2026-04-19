@@ -363,18 +363,21 @@ public class ApiService {
     public static void calculateClosing(String companyId, String materialType,
                                          double amount, double interest, double documentCharge,
                                          String openingDate, double totalAdvancePaid,
+                                         String closingDate,   // yyyy-MM-dd or null = today
                                          Callback<JSONObject> cb) {
         EXEC.execute(() -> {
             try {
-                HttpUrl url = HttpUrl.parse(AppConfig.BILLING + "/calculate-closing").newBuilder()
+                HttpUrl.Builder b = HttpUrl.parse(AppConfig.BILLING + "/calculate-closing").newBuilder()
                     .addQueryParameter("companyId",       companyId)
                     .addQueryParameter("materialType",    materialType)
                     .addQueryParameter("amount",          String.valueOf(amount))
                     .addQueryParameter("interest",        String.valueOf(interest))
                     .addQueryParameter("documentCharge",  String.valueOf(documentCharge))
                     .addQueryParameter("openingDate",     openingDate)
-                    .addQueryParameter("totalAdvancePaid",String.valueOf(totalAdvancePaid))
-                    .build();
+                    .addQueryParameter("totalAdvancePaid",String.valueOf(totalAdvancePaid));
+                if (closingDate != null && !closingDate.isEmpty())
+                    b.addQueryParameter("closingDate", closingDate);
+                HttpUrl url = b.build();
                 Request req = new Request.Builder().url(url).get().build();
                 try (Response res = CLIENT.newCall(req).execute()) {
                     String raw = res.body() != null ? res.body().string() : "{}";
