@@ -271,7 +271,9 @@ public class BillingActivity extends AppCompatActivity {
         tvTakenAmt.setText(   fmt(takenAmt));
         tvToGive.setText(     fmt(toGive));
         tvGivenAmount.setText(fmt(givenAmt));
-        tvStatus.setText(     r.optString("status", ""));
+        String statusVal = r.optString("status", "");
+        tvStatus.setText(statusVal);
+        tvStatus.setTextColor(getResources().getColor(statusColor(statusVal), getTheme()));
         tvPhysicalLocation.setText(r.optString("physical_location", ""));
 
         // Closing section — always show
@@ -412,6 +414,22 @@ public class BillingActivity extends AppCompatActivity {
             return Math.max(1, (long) Math.ceil(days / 30.0));
         } catch (Exception e) {
             return 1;
+        }
+    }
+
+    /** Returns a colour resource id appropriate for each bill status */
+    private int statusColor(String status) {
+        switch (status) {
+            case "OPENED":           return R.color.green;
+            case "LOCKED":           return R.color.orange;
+            case "CANCELLED":        return R.color.red;
+            case "CLOSED":
+            case "DELIVERED":        return R.color.blue;
+            case "REBILLED":
+            case "REBILLED-REMOVED":
+            case "REBILLED-ADDED":
+            case "REBILLED-MULTIPLE": return R.color.gold;
+            default:                 return R.color.white;
         }
     }
 

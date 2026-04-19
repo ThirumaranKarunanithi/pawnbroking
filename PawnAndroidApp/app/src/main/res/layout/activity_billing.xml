@@ -96,6 +96,16 @@
                     android:orientation="vertical"
                     android:padding="16dp" android:layout_marginBottom="16dp">
 
+                    <!-- Status (full-width, prominent) -->
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Status" android:textColor="@color/white54" android:textSize="11sp" />
+                    <TextView android:id="@+id/tvStatus"
+                        android:layout_width="match_parent" android:layout_height="48dp"
+                        android:background="@drawable/bg_input"
+                        android:gravity="center_vertical" android:paddingStart="14dp"
+                        android:layout_marginTop="4dp" android:layout_marginBottom="8dp"
+                        android:textColor="@color/green" android:textSize="18sp" android:textStyle="bold" />
+
                     <!-- Material Type badge | Opening Date -->
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:orientation="horizontal">
@@ -447,32 +457,16 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Status | Physical Location -->
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:orientation="horizontal" android:layout_marginTop="8dp">
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Status" android:textColor="@color/white54" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvStatus"
-                                android:layout_width="match_parent" android:layout_height="44dp"
-                                android:background="@drawable/bg_input"
-                                android:gravity="center_vertical" android:paddingStart="10dp"
-                                android:layout_marginTop="4dp"
-                                android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
-                        </LinearLayout>
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                            android:layout_weight="1" android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:text="Physical Location" android:textColor="@color/white54" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvPhysicalLocation"
-                                android:layout_width="match_parent" android:layout_height="44dp"
-                                android:background="@drawable/bg_input"
-                                android:gravity="center_vertical" android:paddingStart="10dp"
-                                android:layout_marginTop="4dp"
-                                android:textColor="@color/white" android:textSize="14sp" />
-                        </LinearLayout>
-                    </LinearLayout>
+                    <!-- Physical Location (full-width) -->
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Physical Location" android:textColor="@color/white54" android:textSize="11sp"
+                        android:layout_marginTop="8dp" />
+                    <TextView android:id="@+id/tvPhysicalLocation"
+                        android:layout_width="match_parent" android:layout_height="44dp"
+                        android:background="@drawable/bg_input"
+                        android:gravity="center_vertical" android:paddingStart="12dp"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/white" android:textSize="14sp" />
                 </LinearLayout>
 
                 <!-- ── BILL CLOSING - CALCULATED AMOUNTS (visible only when closed) ── -->

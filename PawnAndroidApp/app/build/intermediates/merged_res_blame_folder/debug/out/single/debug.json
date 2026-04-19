@@ -28,12 +28,12 @@
         "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\layout\\activity_monthly_report.xml"
     },
     {
-        "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\layout_activity_todays_account.xml.flat",
-        "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\layout\\activity_todays_account.xml"
-    },
-    {
         "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\menu_menu_home.xml.flat",
         "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\menu\\menu_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\layout_activity_todays_account.xml.flat",
+        "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\layout\\activity_todays_account.xml"
     },
     {
         "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\mipmap-anydpi-v26_ic_launcher.xml.flat",

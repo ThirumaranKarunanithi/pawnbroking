@@ -238,11 +238,11 @@ public class BillingController {
                                             : java.time.LocalDate.now();
             String endDateStr = endDate.toString(); // yyyy-MM-dd
 
-            // 1. Interest type: DAY_OR_MONTHLY_INTEREST from COMPANY
+            // 1. Interest type: DAY_OR_MONTHLY_INTEREST from COMPANY (cast enum to text)
             String interestType = queryScalar(
-                "SELECT COALESCE(DAY_OR_MONTHLY_INTEREST,'MONTH') FROM COMPANY WHERE COMPANY_ID = ?",
+                "SELECT COALESCE(DAY_OR_MONTHLY_INTEREST::text,'MONTH') FROM COMPANY WHERE COMPANY_ID = ?",
                 companyId);
-            if (interestType == null || interestType.isBlank()) interestType = "MONTH";
+            if (interestType == null || interestType.isBlank() || "0".equals(interestType)) interestType = "MONTH";
 
             // 2. Reduce data from COMPANY_REDUCE_MONTHS_OR_DAYS
             String[] reduceDatas  = queryReduceRow(companyId, mt, "REDUCTION");
