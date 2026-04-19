@@ -1,5 +1,6 @@
 package com.pawnbroking.app;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -20,6 +21,9 @@ import com.pawnbroking.app.services.ApiService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AccountDetailActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
@@ -27,6 +31,18 @@ public class AccountDetailActivity extends AppCompatActivity {
     private TextView tvCount;
 
     private String companyId, companyName, date, type, title;
+
+    // Maps detail type → {materialType, billNumberColumnIndex}
+    // Used to make rows tappable and open BillingActivity
+    private static final Map<String, String[]> BILL_NAV = new HashMap<>();
+    static {
+        BILL_NAV.put("GOLD_OPENING",   new String[]{"GOLD",   "1"});
+        BILL_NAV.put("SILVER_OPENING", new String[]{"SILVER", "1"});
+        BILL_NAV.put("GOLD_CLOSING",   new String[]{"GOLD",   "1"});
+        BILL_NAV.put("SILVER_CLOSING", new String[]{"SILVER", "1"});
+        BILL_NAV.put("GOLD_ADVANCE",   new String[]{"GOLD",   "2"});
+        BILL_NAV.put("SILVER_ADVANCE", new String[]{"SILVER", "2"});
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +122,11 @@ public class AccountDetailActivity extends AppCompatActivity {
 
         if (rows == null) return;
 
+        // Determine if rows should navigate to BillingActivity
+        String[] navInfo   = BILL_NAV.get(type != null ? type.toUpperCase() : "");
+        String   navMat    = navInfo != null ? navInfo[0] : null;
+        int      billCol   = navInfo != null ? Integer.parseInt(navInfo[1]) : -1;
+
         // Data rows
         for (int i = 0; i < rows.length(); i++) {
             JSONArray row = rows.optJSONArray(i);
@@ -119,14 +140,39 @@ public class AccountDetailActivity extends AppCompatActivity {
 
             for (int j = 0; j < row.length(); j++) {
                 String cellText = row.optString(j, "");
-                // Right-align if it looks like a number
+                // Highlight bill number column in gold; right-align numbers
+                boolean isBillNoCol = (j == billCol);
                 boolean isAmount = false;
                 try { Double.parseDouble(cellText.replace(",", "")); isAmount = true; }
                 catch (Exception ignored) {}
-                tr.addView(makeCell(cellText, isAmount));
+                TextView cell = makeCell(cellText, isAmount);
+                if (isBillNoCol) {
+                    cell.setTextColor(Color.parseColor("#E6B800")); // gold
+                    cell.setTypeface(null, Typeface.BOLD);
+                }
+                tr.addView(cell);
             }
+
+            // Make row tappable → open BillingActivity
+            if (navMat != null && billCol >= 0 && billCol < row.length()) {
+                final String billNumber   = row.optString(billCol, "").trim();
+                final String materialType = navMat;
+                if (!billNumber.isEmpty()) {
+                    tr.setForeground(getDrawable(android.R.drawable.list_selector_background));
+                    tr.setOnClickListener(v -> openBill(billNumber, materialType));
+                }
+            }
+
             tableDetail.addView(tr);
         }
+    }
+
+    private void openBill(String billNumber, String materialType) {
+        Intent intent = new Intent(this, BillingActivity.class);
+        intent.putExtra("companyId",    companyId);
+        intent.putExtra("billNumber",   billNumber);
+        intent.putExtra("materialType", materialType);
+        startActivity(intent);
     }
 
     private TextView makeHeader(String text) {

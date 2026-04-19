@@ -86,6 +86,15 @@ public class BillingActivity extends AppCompatActivity {
         bindViews();
         setupChips();
         setupSearchBar();
+
+        // If launched from a bill list, pre-fill and auto-search
+        String launchBill = getIntent().getStringExtra("billNumber");
+        String launchMat  = getIntent().getStringExtra("materialType");
+        if (launchBill != null && !launchBill.isEmpty()) {
+            if (launchMat != null && !launchMat.isEmpty()) selectMaterial(launchMat);
+            etBillNumber.setText(launchBill);
+            searchBill();
+        }
     }
 
     // ── View binding ──────────────────────────────────────────────────────────

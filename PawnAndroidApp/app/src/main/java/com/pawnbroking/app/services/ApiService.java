@@ -220,19 +220,25 @@ public class ApiService {
 
     // ── Stock ─────────────────────────────────────────────────────────────────
 
+    /** Company Alone: OPENED/LOCKED bills without repledge. */
     public static void getStock(String companyId, String materialType, String search,
-                                String from, String to, int page, int size,
+                                String from, String to,
+                                String customerName, String amountFrom, String amountTo,
+                                int page, int size,
                                 Callback<JSONObject> cb) {
         EXEC.execute(() -> {
             try {
                 HttpUrl.Builder b = HttpUrl.parse(AppConfig.STOCK).newBuilder()
-                    .addQueryParameter("companyId", companyId)
+                    .addQueryParameter("companyId",    companyId)
                     .addQueryParameter("materialType", materialType)
-                    .addQueryParameter("search", search != null ? search : "")
-                    .addQueryParameter("page",  String.valueOf(page))
-                    .addQueryParameter("size",  String.valueOf(size));
-                if (from != null && !from.isEmpty()) b.addQueryParameter("from", from);
-                if (to   != null && !to.isEmpty())   b.addQueryParameter("to",   to);
+                    .addQueryParameter("search",       search != null ? search : "")
+                    .addQueryParameter("page",         String.valueOf(page))
+                    .addQueryParameter("size",         String.valueOf(size));
+                if (from         != null && !from.isEmpty())         b.addQueryParameter("from",         from);
+                if (to           != null && !to.isEmpty())           b.addQueryParameter("to",           to);
+                if (customerName != null && !customerName.isEmpty()) b.addQueryParameter("customerName", customerName);
+                if (amountFrom   != null && !amountFrom.isEmpty())   b.addQueryParameter("amountFrom",   amountFrom);
+                if (amountTo     != null && !amountTo.isEmpty())     b.addQueryParameter("amountTo",     amountTo);
                 Request req = new Request.Builder().url(b.build()).get().build();
                 try (Response res = CLIENT.newCall(req).execute()) {
                     String raw = res.body() != null ? res.body().string() : "{}";
@@ -243,18 +249,57 @@ public class ApiService {
         });
     }
 
+    /** Repledge Alone: bills in repledge_billing. */
     public static void getRepledgeStock(String companyId, String materialType, String search,
+                                        String repledgeName,
+                                        String repledgeDateFrom, String repledgeDateTo,
                                         int page, int size, Callback<JSONObject> cb) {
         EXEC.execute(() -> {
             try {
-                HttpUrl url = HttpUrl.parse(AppConfig.STOCK_REPLEDGE).newBuilder()
-                    .addQueryParameter("companyId", companyId)
+                HttpUrl.Builder b = HttpUrl.parse(AppConfig.STOCK_REPLEDGE).newBuilder()
+                    .addQueryParameter("companyId",    companyId)
                     .addQueryParameter("materialType", materialType)
-                    .addQueryParameter("search", search != null ? search : "")
-                    .addQueryParameter("page",  String.valueOf(page))
-                    .addQueryParameter("size",  String.valueOf(size))
-                    .build();
-                Request req = new Request.Builder().url(url).get().build();
+                    .addQueryParameter("search",       search != null ? search : "")
+                    .addQueryParameter("page",         String.valueOf(page))
+                    .addQueryParameter("size",         String.valueOf(size));
+                if (repledgeName     != null && !repledgeName.isEmpty())     b.addQueryParameter("repledgeName",     repledgeName);
+                if (repledgeDateFrom != null && !repledgeDateFrom.isEmpty()) b.addQueryParameter("repledgeDateFrom", repledgeDateFrom);
+                if (repledgeDateTo   != null && !repledgeDateTo.isEmpty())   b.addQueryParameter("repledgeDateTo",   repledgeDateTo);
+                Request req = new Request.Builder().url(b.build()).get().build();
+                try (Response res = CLIENT.newCall(req).execute()) {
+                    String raw = res.body() != null ? res.body().string() : "{}";
+                    checkStatus(res, raw);
+                    cb.onSuccess(new JSONObject(raw));
+                }
+            } catch (Exception e) { cb.onError(e.getMessage()); }
+        });
+    }
+
+    /** All Details: ALL company bills LEFT/INNER JOIN repledge info. */
+    public static void getAllStock(String companyId, String materialType, String search,
+                                   String compDateFrom, String compDateTo,
+                                   String customerName, String amountFrom, String amountTo,
+                                   String repledgeName,
+                                   String repledgeDateFrom, String repledgeDateTo,
+                                   int page, int size,
+                                   Callback<JSONObject> cb) {
+        EXEC.execute(() -> {
+            try {
+                HttpUrl.Builder b = HttpUrl.parse(AppConfig.STOCK_ALL).newBuilder()
+                    .addQueryParameter("companyId",    companyId)
+                    .addQueryParameter("materialType", materialType)
+                    .addQueryParameter("search",       search != null ? search : "")
+                    .addQueryParameter("page",         String.valueOf(page))
+                    .addQueryParameter("size",         String.valueOf(size));
+                if (compDateFrom  != null && !compDateFrom.isEmpty())  b.addQueryParameter("compDateFrom",      compDateFrom);
+                if (compDateTo    != null && !compDateTo.isEmpty())    b.addQueryParameter("compDateTo",        compDateTo);
+                if (customerName  != null && !customerName.isEmpty())  b.addQueryParameter("customerName",      customerName);
+                if (amountFrom    != null && !amountFrom.isEmpty())    b.addQueryParameter("amountFrom",        amountFrom);
+                if (amountTo      != null && !amountTo.isEmpty())      b.addQueryParameter("amountTo",          amountTo);
+                if (repledgeName  != null && !repledgeName.isEmpty())  b.addQueryParameter("repledgeName",      repledgeName);
+                if (repledgeDateFrom != null && !repledgeDateFrom.isEmpty()) b.addQueryParameter("repledgeDateFrom", repledgeDateFrom);
+                if (repledgeDateTo   != null && !repledgeDateTo.isEmpty())   b.addQueryParameter("repledgeDateTo",   repledgeDateTo);
+                Request req = new Request.Builder().url(b.build()).get().build();
                 try (Response res = CLIENT.newCall(req).execute()) {
                     String raw = res.body() != null ? res.body().string() : "{}";
                     checkStatus(res, raw);
