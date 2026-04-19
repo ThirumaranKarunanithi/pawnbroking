@@ -1,9 +1,14 @@
 package com.pawnbroking.app;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,6 +16,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.pawnbroking.app.config.AppConfig;
 import com.pawnbroking.app.services.ApiService;
 
 import org.json.JSONObject;
@@ -70,6 +78,11 @@ public class BillingActivity extends AppCompatActivity {
     private TextView tvReplBillId, tvReplStatus, tvReplName;
     private TextView tvReplBillNumber, tvReplCompanyBill;
     private TextView tvReplOpenedDate, tvReplAmount;
+
+    // Bill images
+    private LinearLayout layoutClosingImages;
+    private ImageView ivOpenCustomer, ivOpenJewel, ivOpenUser;
+    private ImageView ivCloseCustomer, ivCloseJewel, ivCloseUser;
 
     private final NumberFormat inFmt =
         NumberFormat.getNumberInstance(new Locale("en", "IN"));
@@ -186,6 +199,15 @@ public class BillingActivity extends AppCompatActivity {
         tvReplCompanyBill     = findViewById(R.id.tvReplCompanyBill);
         tvReplOpenedDate      = findViewById(R.id.tvReplOpenedDate);
         tvReplAmount          = findViewById(R.id.tvReplAmount);
+
+        // Bill images
+        layoutClosingImages = findViewById(R.id.layoutClosingImages);
+        ivOpenCustomer      = findViewById(R.id.ivOpenCustomer);
+        ivOpenJewel         = findViewById(R.id.ivOpenJewel);
+        ivOpenUser          = findViewById(R.id.ivOpenUser);
+        ivCloseCustomer     = findViewById(R.id.ivCloseCustomer);
+        ivCloseJewel        = findViewById(R.id.ivCloseJewel);
+        ivCloseUser         = findViewById(R.id.ivCloseUser);
     }
 
     // ── Material type chips ───────────────────────────────────────────────────
@@ -427,8 +449,12 @@ public class BillingActivity extends AppCompatActivity {
             layoutRepledgeSection.setVisibility(View.GONE);
         }
 
+        // Bill images — load opening images always; closing only for non-open statuses
+        String billNum = r.optString("bill_number", "");
+        loadBillImages(billNum, selectedMaterialType, statusVal);
+
         layoutBillDetails.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "Loaded: " + r.optString("bill_number", ""), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Loaded: " + billNum, Toast.LENGTH_SHORT).show();
     }
 
     private void populateClosingSection(
@@ -502,4 +528,74 @@ public class BillingActivity extends AppCompatActivity {
     }
 
     private String fmt(double v) { return inFmt.format(v); }
+
+    // ── Bill images ───────────────────────────────────────────────────────────
+
+    /**
+     * Loads all 6 bill images from S3.
+     * Opening images are always shown.
+     * Closing images are shown only when the bill is in a closed state.
+     */
+    private void loadBillImages(String billNumber, String materialType, String status) {
+        if (billNumber.isEmpty()) return;
+
+        boolean isClosed = "CLOSED".equals(status)
+                        || "DELIVERED".equals(status)
+                        || "REBILLED".equals(status)
+                        || "REBILLED-REMOVED".equals(status)
+                        || "REBILLED-ADDED".equals(status)
+                        || "REBILLED-MULTIPLE".equals(status);
+
+        layoutClosingImages.setVisibility(isClosed ? View.VISIBLE : View.GONE);
+
+        loadImg(AppConfig.billImageUrl(companyId, materialType, billNumber, "open_customer.png"),
+                ivOpenCustomer, "Opening – Customer");
+        loadImg(AppConfig.billImageUrl(companyId, materialType, billNumber, "open_jewel.png"),
+                ivOpenJewel,    "Opening – Jewel");
+        loadImg(AppConfig.billImageUrl(companyId, materialType, billNumber, "open_user.png"),
+                ivOpenUser,     "Opening – User");
+
+        if (isClosed) {
+            loadImg(AppConfig.billImageUrl(companyId, materialType, billNumber, "close_customer.png"),
+                    ivCloseCustomer, "Closing – Customer");
+            loadImg(AppConfig.billImageUrl(companyId, materialType, billNumber, "close_jewel.png"),
+                    ivCloseJewel,    "Closing – Jewel");
+            loadImg(AppConfig.billImageUrl(companyId, materialType, billNumber, "close_user.png"),
+                    ivCloseUser,     "Closing – User");
+        }
+    }
+
+    /** Loads a single S3 image into an ImageView; tap opens full-screen viewer. */
+    private void loadImg(String url, ImageView iv, String title) {
+        Glide.with(this)
+             .load(url)
+             .diskCacheStrategy(DiskCacheStrategy.ALL)
+             .placeholder(android.R.color.darker_gray)
+             .error(android.R.color.darker_gray)
+             .into(iv);
+
+        iv.setOnClickListener(v -> openImageFullScreen(url, title));
+    }
+
+    /** Shows the image full-screen in a dismiss-on-tap dialog. */
+    private void openImageFullScreen(String url, String title) {
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+        }
+
+        ImageView full = new ImageView(this);
+        full.setBackgroundColor(Color.BLACK);
+        full.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        Glide.with(this)
+             .load(url)
+             .diskCacheStrategy(DiskCacheStrategy.ALL)
+             .into(full);
+
+        full.setOnClickListener(v -> dialog.dismiss());
+        dialog.setContentView(full);
+        dialog.show();
+    }
 }

@@ -66,8 +66,15 @@ id etPassword
 id etSearch
 id etUsername
 id ibTogglePass
+id ivCloseCustomer
+id ivCloseJewel
+id ivCloseUser
+id ivOpenCustomer
+id ivOpenJewel
+id ivOpenUser
 id layoutAmountInput
 id layoutBillDetails
+id layoutClosingImages
 id layoutClosingSection
 id layoutContent
 id layoutControls

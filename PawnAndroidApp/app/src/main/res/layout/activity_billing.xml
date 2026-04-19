@@ -911,6 +911,132 @@
                 </LinearLayout>
                 <!-- ── END REPLEDGE INFORMATION ── -->
 
+                <!-- ── BILL IMAGES ── -->
+                <TextView style="@style/SectionHeader"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="BILL IMAGES" />
+
+                <LinearLayout
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:background="@drawable/bg_card"
+                    android:orientation="vertical"
+                    android:padding="12dp" android:layout_marginBottom="16dp">
+
+                    <!-- Opening sub-header -->
+                    <TextView
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="BILL OPENING"
+                        android:textColor="@color/gold"
+                        android:textSize="12sp" android:textStyle="bold"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- Opening row: Customer | Jewel | User -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical"
+                            android:gravity="center_horizontal" android:layout_marginEnd="4dp">
+                            <ImageView android:id="@+id/ivOpenCustomer"
+                                android:layout_width="match_parent" android:layout_height="110dp"
+                                android:background="#1E2A4A" android:scaleType="centerCrop"
+                                android:clickable="true" android:focusable="true" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Customer" android:textColor="@color/white54"
+                                android:textSize="10sp" android:layout_marginTop="3dp" />
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical"
+                            android:gravity="center_horizontal" android:layout_marginEnd="4dp">
+                            <ImageView android:id="@+id/ivOpenJewel"
+                                android:layout_width="match_parent" android:layout_height="110dp"
+                                android:background="#1E2A4A" android:scaleType="centerCrop"
+                                android:clickable="true" android:focusable="true" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="Jewel" android:textColor="@color/white54"
+                                android:textSize="10sp" android:layout_marginTop="3dp" />
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical"
+                            android:gravity="center_horizontal">
+                            <ImageView android:id="@+id/ivOpenUser"
+                                android:layout_width="match_parent" android:layout_height="110dp"
+                                android:background="#1E2A4A" android:scaleType="centerCrop"
+                                android:clickable="true" android:focusable="true" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:text="User" android:textColor="@color/white54"
+                                android:textSize="10sp" android:layout_marginTop="3dp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- ── Closing images (hidden for OPENED / LOCKED bills) ── -->
+                    <LinearLayout android:id="@+id/layoutClosingImages"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <View android:layout_width="match_parent" android:layout_height="1dp"
+                            android:background="@color/card_border"
+                            android:layout_marginTop="12dp" android:layout_marginBottom="12dp" />
+
+                        <!-- Closing sub-header -->
+                        <TextView
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="BILL CLOSING"
+                            android:textColor="@color/blue"
+                            android:textSize="12sp" android:textStyle="bold"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Closing row: Customer | Jewel | User -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical"
+                                android:gravity="center_horizontal" android:layout_marginEnd="4dp">
+                                <ImageView android:id="@+id/ivCloseCustomer"
+                                    android:layout_width="match_parent" android:layout_height="110dp"
+                                    android:background="#1E2A4A" android:scaleType="centerCrop"
+                                    android:clickable="true" android:focusable="true" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Customer" android:textColor="@color/white54"
+                                    android:textSize="10sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical"
+                                android:gravity="center_horizontal" android:layout_marginEnd="4dp">
+                                <ImageView android:id="@+id/ivCloseJewel"
+                                    android:layout_width="match_parent" android:layout_height="110dp"
+                                    android:background="#1E2A4A" android:scaleType="centerCrop"
+                                    android:clickable="true" android:focusable="true" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Jewel" android:textColor="@color/white54"
+                                    android:textSize="10sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical"
+                                android:gravity="center_horizontal">
+                                <ImageView android:id="@+id/ivCloseUser"
+                                    android:layout_width="match_parent" android:layout_height="110dp"
+                                    android:background="#1E2A4A" android:scaleType="centerCrop"
+                                    android:clickable="true" android:focusable="true" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="User" android:textColor="@color/white54"
+                                    android:textSize="10sp" android:layout_marginTop="3dp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                    <!-- ── End closing images ── -->
+
+                </LinearLayout>
+                <!-- ── END BILL IMAGES ── -->
+
                 <!-- bottom padding -->
                 <View android:layout_width="match_parent" android:layout_height="24dp" />
 

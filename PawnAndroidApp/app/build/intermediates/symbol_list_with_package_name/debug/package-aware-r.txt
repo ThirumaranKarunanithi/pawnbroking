@@ -3331,6 +3331,7 @@ id frost
 id fullscreen_header
 id ghost_view
 id ghost_view_holder
+id glide_custom_view_target_tag
 id gone
 id graph
 id graph_wrap
@@ -3359,12 +3360,19 @@ id inward
 id is_pooling_container_tag
 id italic
 id item_touch_helper_previous_elevation
+id ivCloseCustomer
+id ivCloseJewel
+id ivCloseUser
+id ivOpenCustomer
+id ivOpenJewel
+id ivOpenUser
 id jumpToEnd
 id jumpToStart
 id labeled
 id layout
 id layoutAmountInput
 id layoutBillDetails
+id layoutClosingImages
 id layoutClosingSection
 id layoutContent
 id layoutControls
