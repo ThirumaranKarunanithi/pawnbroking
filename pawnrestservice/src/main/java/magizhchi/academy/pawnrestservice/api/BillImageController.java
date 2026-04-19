@@ -17,8 +17,11 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 /**
  * Proxies bill images stored in S3 back to the Android client.
@@ -186,6 +189,48 @@ public class BillImageController {
                 out.put("objectExists", false);
                 out.put("s3Error", e.getMessage());
             }
+        }
+        return ResponseEntity.ok(out);
+    }
+
+    /**
+     * Lists up to 50 S3 keys under a given prefix so we can see what's actually stored.
+     * GET /api/bills/image/browse?prefix=alwarpuram/CMP1
+     * GET /api/bills/image/browse        ← lists top-level under alwarpuram/
+     */
+    @GetMapping("/image/browse")
+    public ResponseEntity<java.util.Map<String,Object>> browse(
+            @RequestParam(defaultValue = "") String searchPrefix) {
+
+        java.util.Map<String,Object> out = new java.util.LinkedHashMap<>();
+        if (s3Client == null) {
+            out.put("error", "S3 not ready: " + initError);
+            return ResponseEntity.ok(out);
+        }
+
+        String fullPrefix = searchPrefix.isEmpty() ? prefix + "/" : searchPrefix;
+        out.put("bucket", bucket);
+        out.put("prefix", fullPrefix);
+
+        try {
+            ListObjectsV2Response resp = s3Client.listObjectsV2(
+                    ListObjectsV2Request.builder()
+                            .bucket(bucket)
+                            .prefix(fullPrefix)
+                            .maxKeys(50)
+                            .build());
+
+            java.util.List<String> keys = new java.util.ArrayList<>();
+            for (S3Object obj : resp.contents()) {
+                keys.add(obj.key() + "  (" + obj.size() + " bytes)");
+            }
+            out.put("count", keys.size());
+            out.put("truncated", resp.isTruncated());
+            out.put("keys", keys);
+        } catch (S3Exception e) {
+            out.put("error", "S3 HTTP " + e.statusCode() + ": " + e.awsErrorDetails().errorMessage());
+        } catch (Exception e) {
+            out.put("error", e.getMessage());
         }
         return ResponseEntity.ok(out);
     }
