@@ -9,7 +9,12 @@
       "Bash(bash -c \"cd 'D:/Pawnbroking/SOURCE/webservice/pawnrestservice' && ./mvnw package -DskipTests -q 2>&1 | tail -5\")",
       "Bash(./mvnw package *)",
       "Bash(mvn package *)",
-      "Bash(bash mvnw *)"
+      "Bash(bash mvnw *)",
+      "Bash(mvnw.cmd clean *)",
+      "Bash(cmd /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice && mvnw.cmd clean package -DskipTests 2>&1 | tail -20\")",
+      "Bash(cmd /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice && mvnw.cmd clean package -DskipTests\")",
+      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice'; & '.\\\\mvnw.cmd' clean package -DskipTests 2>&1\")",
+      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; & '.\\\\gradlew.bat' assembleDebug 2>&1\")"
     ]
   }
 }

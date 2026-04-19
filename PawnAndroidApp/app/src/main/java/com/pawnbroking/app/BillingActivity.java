@@ -277,11 +277,17 @@ public class BillingActivity extends AppCompatActivity {
         // Closing section — always show
         double closeTaken = r.optDouble("close_taken_amount", 0);
         String billStatus = r.optString("status", "");
-        boolean isClosed  = "CLOSED".equals(billStatus) || "DELIVERED".equals(billStatus)
-                         || "REBILLED".equals(billStatus);
+        // CLOSED/DELIVERED/REBILLED/* → show stored DB values
+        // OPENED/LOCKED/CANCELLED     → calculate via API
+        boolean fetchFromDb = "CLOSED".equals(billStatus)
+                           || "DELIVERED".equals(billStatus)
+                           || "REBILLED".equals(billStatus)
+                           || "REBILLED-REMOVED".equals(billStatus)
+                           || "REBILLED-ADDED".equals(billStatus)
+                           || "REBILLED-MULTIPLE".equals(billStatus);
 
         String acceptedClosingDate = r.optString("accepted_closing_date", "");
-        if (isClosed && closeTaken > 0) {
+        if (fetchFromDb) {
             // Bill already closed — show stored DB values
             populateClosingSection(
                 "—", "—", "—", "—",

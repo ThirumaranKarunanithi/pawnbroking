@@ -287,8 +287,7 @@ public class BillingController {
                     remDaysAsMonths = parseDouble(rm);
                 }
                 takenMonths = taken[0] + remDaysAsMonths;
-                // Apply minimum
-                if (takenMonths < minVal) takenMonths = minVal;
+                // NOTE: minimum is displayed only (like desktop), not enforced in formula
             } else {
                 // DAY interest type
                 if ("MONTHS FROM OPENING MONTH".equals(reduceType)) {
@@ -299,7 +298,7 @@ public class BillingController {
                 } else {
                     takenDays = totalDays;
                 }
-                if (takenDays < minVal) takenDays = minVal;
+                // NOTE: minimum is displayed only (like desktop), not enforced in formula
                 takenMonths = takenDays; // DAY mode uses days in formula
             }
 
@@ -415,10 +414,10 @@ public class BillingController {
         String[] data = {"0", ""};
         try {
             List<Map<String, Object>> rows = jdbc.queryForList(
-                "SELECT COALESCE(DAYS_OR_MONTHS,0), REDUCTION_TYPE " +
+                "SELECT COALESCE(DAYS_OR_MONTHS,0), COALESCE(REDUCTION_TYPE::text,'') " +
                 "FROM COMPANY_REDUCE_MONTHS_OR_DAYS " +
                 "WHERE COMPANY_ID=? AND JEWEL_MATERIAL_TYPE=?::MATERIAL_TYPE " +
-                "AND REDUCTION_OR_MINIMUM_TYPE=?::REDUCTION_OR_MINIMUM_TYPE LIMIT 1",
+                "AND REDUCTION_OR_MINIMUM_TYPE::text=? LIMIT 1",
                 companyId, mt, type);
             if (!rows.isEmpty()) {
                 Map<String, Object> r = rows.get(0);
