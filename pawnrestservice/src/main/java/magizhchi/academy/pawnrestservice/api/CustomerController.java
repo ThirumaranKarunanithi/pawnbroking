@@ -34,13 +34,14 @@ public class CustomerController {
             if (companyId != null && !companyId.isBlank()) {
                 sql = """
                     SELECT DISTINCT customer_name,
-                           MAX(spouse_type)    AS spouse_type,
-                           MAX(spouse_name)    AS spouse_name,
-                           MAX(mobile_number)  AS mobile_number,
-                           MAX(door_number)    AS door_number,
-                           MAX(street)         AS street,
-                           MAX(area)           AS area,
-                           MAX(city)           AS city,
+                           MAX(spouse_type)      AS spouse_type,
+                           MAX(spouse_name)      AS spouse_name,
+                           MAX(mobile_number)    AS mobile_number,
+                           MAX(door_number)      AS door_number,
+                           MAX(street)           AS street,
+                           MAX(area)             AS area,
+                           MAX(city)             AS city,
+                           COALESCE(MAX(customer_id),'') AS customer_id,
                            COUNT(CASE WHEN status::text IN ('OPENED','LOCKED') THEN 1 END) AS open_bills,
                            COUNT(*) AS total_bills
                     FROM company_billing
@@ -54,11 +55,12 @@ public class CustomerController {
             } else {
                 sql = """
                     SELECT DISTINCT customer_name,
-                           MAX(spouse_type)    AS spouse_type,
-                           MAX(spouse_name)    AS spouse_name,
-                           MAX(mobile_number)  AS mobile_number,
-                           MAX(area)           AS area,
-                           MAX(city)           AS city,
+                           MAX(spouse_type)      AS spouse_type,
+                           MAX(spouse_name)      AS spouse_name,
+                           MAX(mobile_number)    AS mobile_number,
+                           MAX(area)             AS area,
+                           MAX(city)             AS city,
+                           COALESCE(MAX(customer_id),'') AS customer_id,
                            COUNT(CASE WHEN status::text IN ('OPENED','LOCKED') THEN 1 END) AS open_bills,
                            COUNT(*) AS total_bills
                     FROM company_billing

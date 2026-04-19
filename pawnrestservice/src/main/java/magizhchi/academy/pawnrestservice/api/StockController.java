@@ -96,6 +96,8 @@ public class StockController {
 
     /**
      * Repledge Alone stock.
+     * JOINs company_billing (CB) ↔ repledge_billing (RB) on repledge_bill_id + company_bill_number.
+     * Repledge statuses are OPENED / GIVEN / SUSPENSE (different from company bill statuses).
      * GET /api/stock/repledge?companyId=&materialType=ALL&search=
      *                        &repledgeName=&repledgeDateFrom=&repledgeDateTo=&page=0&size=50
      */
@@ -116,29 +118,39 @@ public class StockController {
             boolean filterReplFrom = repledgeDateFrom != null && !repledgeDateFrom.isBlank();
             boolean filterReplTo   = repledgeDateTo   != null && !repledgeDateTo.isBlank();
 
+            // JOIN company_billing so we filter on the right company and validate linkage.
+            // Repledge bill statuses: OPENED, GIVEN, SUSPENSE (not LOCKED).
             StringBuilder where = new StringBuilder(
-                "WHERE company_id = ? AND status::text IN ('OPENED','LOCKED') ");
+                "WHERE RB.company_id = CB.company_id " +
+                "AND RB.jewel_material_type = CB.jewel_material_type " +
+                "AND RB.repledge_bill_id = CB.repledge_bill_id " +
+                "AND RB.company_bill_number = CB.bill_number " +
+                "AND CB.repledge_bill_id IS NOT NULL AND CB.repledge_bill_id != '' " +
+                "AND RB.company_id = ? " +
+                "AND RB.status::text IN ('OPENED','GIVEN','SUSPENSE') ");
             List<Object> params = new ArrayList<>(List.of(companyId));
 
-            if (filterMat)      { where.append("AND jewel_material_type::text = ? ");  params.add(materialType.toUpperCase()); }
-            if (filterReplFrom) { where.append("AND opening_date::date >= ?::date ");  params.add(repledgeDateFrom); }
-            if (filterReplTo)   { where.append("AND opening_date::date <= ?::date ");  params.add(repledgeDateTo); }
-            if (filterReplName) { where.append("AND LOWER(repledge_name) LIKE ? ");    params.add("%" + repledgeName.toLowerCase() + "%"); }
+            if (filterMat)      { where.append("AND RB.jewel_material_type::text = ? "); params.add(materialType.toUpperCase()); }
+            if (filterReplFrom) { where.append("AND RB.opening_date::date >= ?::date "); params.add(repledgeDateFrom); }
+            if (filterReplTo)   { where.append("AND RB.opening_date::date <= ?::date "); params.add(repledgeDateTo); }
+            if (filterReplName) { where.append("AND LOWER(RB.repledge_name) LIKE ? ");   params.add("%" + repledgeName.toLowerCase() + "%"); }
             if (filterSrch)     {
-                where.append("AND (LOWER(repledge_bill_id) LIKE ? OR LOWER(repledge_name) LIKE ?) ");
+                where.append("AND (LOWER(RB.repledge_bill_id) LIKE ? OR LOWER(RB.repledge_name) LIKE ?) ");
                 String like = "%" + search.toLowerCase() + "%";
                 params.add(like); params.add(like);
             }
 
-            String baseQuery = "FROM repledge_billing " + where;
-            String sumSql    = "SELECT COUNT(*) total, COALESCE(SUM(amount),0) total_amount, " +
-                               "COALESCE(SUM(open_taken_amount),0) total_interest " + baseQuery;
+            String baseQuery = "FROM company_billing CB, repledge_billing RB " + where;
+
+            String sumSql = "SELECT COUNT(*) total, COALESCE(SUM(RB.amount),0) total_amount, " +
+                            "COALESCE(SUM(RB.interest),0) total_interest " + baseQuery;
             Map<String, Object> summary = jdbc.queryForMap(sumSql, params.toArray());
 
-            String listSql = "SELECT repledge_bill_id, repledge_bill_number, opening_date::text, " +
-                "repledge_name, company_bill_number, amount, open_taken_amount interest, " +
-                "jewel_material_type::text material_type, status::text " +
-                baseQuery + "ORDER BY opening_date DESC LIMIT ? OFFSET ?";
+            String listSql =
+                "SELECT RB.repledge_bill_id, RB.repledge_bill_number, RB.opening_date::text, " +
+                "RB.repledge_name, RB.company_bill_number, RB.amount, RB.interest, " +
+                "RB.jewel_material_type::text material_type, RB.status::text " +
+                baseQuery + "ORDER BY RB.opening_date DESC LIMIT ? OFFSET ?";
             List<Object> listParams = new ArrayList<>(params);
             listParams.add(size); listParams.add(page * size);
 

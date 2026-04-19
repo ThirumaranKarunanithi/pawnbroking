@@ -800,6 +800,117 @@
                         android:textColor="@color/white" android:textSize="14sp" />
                 </LinearLayout>
 
+                <!-- ── REPLEDGE INFORMATION (hidden when no repledge) ── -->
+                <LinearLayout android:id="@+id/layoutRepledgeSection"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView style="@style/SectionHeader"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="REPLEDGE INFORMATION" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:background="@drawable/bg_card"
+                        android:orientation="vertical"
+                        android:padding="16dp" android:layout_marginBottom="16dp">
+
+                        <!-- Row: Repledge Bill ID + Status side by side -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Repledge Bill ID" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvReplBillId"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="12dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/gold" android:textSize="14sp" android:textStyle="bold" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Repledge Bill Status" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvReplStatus"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Repledge Name -->
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="Repledge Name" android:textColor="@color/white54" android:textSize="11sp"
+                            android:layout_marginTop="8dp" />
+                        <TextView android:id="@+id/tvReplName"
+                            android:layout_width="match_parent" android:layout_height="44dp"
+                            android:background="@drawable/bg_input"
+                            android:gravity="center_vertical" android:paddingStart="12dp"
+                            android:layout_marginTop="4dp"
+                            android:textColor="@color/white" android:textSize="14sp" />
+
+                        <!-- Row: Repledge Bill Number + Company Bill Number -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Repledge Bill Number" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvReplBillNumber"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Company Bill Number" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvReplCompanyBill"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Row: Repledge Opened Date + Repledge Bill Amount -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginTop="8dp">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Repledge Opened Date" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvReplOpenedDate"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:text="Repledge Bill Amount" android:textColor="@color/white54" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvReplAmount"
+                                    android:layout_width="match_parent" android:layout_height="44dp"
+                                    android:background="@drawable/bg_input"
+                                    android:gravity="center_vertical" android:paddingStart="10dp"
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="@color/white" android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+                <!-- ── END REPLEDGE INFORMATION ── -->
+
                 <!-- bottom padding -->
                 <View android:layout_width="match_parent" android:layout_height="24dp" />
 

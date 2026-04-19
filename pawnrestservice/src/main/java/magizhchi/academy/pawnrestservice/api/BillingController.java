@@ -126,6 +126,33 @@ public class BillingController {
             Map<String, Object> row = rows.get(0);
             Map<String, Object> result = new LinkedHashMap<>();
             row.forEach((k, v) -> result.put(k, v != null ? v : ""));
+
+            // ── Repledge lookup ──────────────────────────────────────────────
+            // If this company bill has been repledged, attach repledge details.
+            try {
+                String replSql =
+                    "SELECT RB.repledge_bill_id, " +
+                    "  COALESCE(RB.repledge_name,'')        AS repl_name, " +
+                    "  COALESCE(RB.repledge_bill_number,'') AS repl_bill_number, " +
+                    "  COALESCE(RB.company_bill_number,'')  AS repl_company_bill, " +
+                    "  to_char(RB.opening_date,'DD-MM-YYYY') AS repl_opening_date, " +
+                    "  COALESCE(RB.amount,0)                AS repl_amount, " +
+                    "  COALESCE(RB.interest,0)              AS repl_interest, " +
+                    "  COALESCE(RB.document_charge,0)       AS repl_doc_charge, " +
+                    "  RB.status::text                      AS repl_status " +
+                    "FROM repledge_billing RB " +
+                    "WHERE RB.company_id = ? AND RB.company_bill_number = ? " +
+                    "ORDER BY RB.opening_date DESC LIMIT 1";
+                List<Map<String, Object>> replRows =
+                    jdbc.queryForList(replSql, companyId, billNumber);
+                if (!replRows.isEmpty()) {
+                    Map<String, Object> rr = replRows.get(0);
+                    rr.forEach((k, v) -> result.put(k, v != null ? v : ""));
+                }
+            } catch (Exception re) {
+                log.warn("Repledge lookup failed for {}: {}", billNumber, re.getMessage());
+            }
+
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             log.error("find error", e);

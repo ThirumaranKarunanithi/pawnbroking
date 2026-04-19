@@ -65,6 +65,12 @@ public class BillingActivity extends AppCompatActivity {
     private TextView tvReferredBy, tvCustomerId, tvOccupation;
     private TextView tvAcceptedDate, tvNote;
 
+    // Repledge section
+    private LinearLayout layoutRepledgeSection;
+    private TextView tvReplBillId, tvReplStatus, tvReplName;
+    private TextView tvReplBillNumber, tvReplCompanyBill;
+    private TextView tvReplOpenedDate, tvReplAmount;
+
     private final NumberFormat inFmt =
         NumberFormat.getNumberInstance(new Locale("en", "IN"));
 
@@ -170,6 +176,16 @@ public class BillingActivity extends AppCompatActivity {
         tvOccupation      = findViewById(R.id.tvOccupation);
         tvAcceptedDate    = findViewById(R.id.tvAcceptedDate);
         tvNote            = findViewById(R.id.tvNote);
+
+        // Repledge
+        layoutRepledgeSection = findViewById(R.id.layoutRepledgeSection);
+        tvReplBillId          = findViewById(R.id.tvReplBillId);
+        tvReplStatus          = findViewById(R.id.tvReplStatus);
+        tvReplName            = findViewById(R.id.tvReplName);
+        tvReplBillNumber      = findViewById(R.id.tvReplBillNumber);
+        tvReplCompanyBill     = findViewById(R.id.tvReplCompanyBill);
+        tvReplOpenedDate      = findViewById(R.id.tvReplOpenedDate);
+        tvReplAmount          = findViewById(R.id.tvReplAmount);
     }
 
     // ── Material type chips ───────────────────────────────────────────────────
@@ -385,6 +401,31 @@ public class BillingActivity extends AppCompatActivity {
         String accDate = r.optString("accepted_closing_date", "");
         tvAcceptedDate.setText("null".equals(accDate) ? "—" : accDate);
         tvNote.setText(         r.optString("note",                ""));
+
+        // Repledge section — show only when repledge data is present
+        String replBillId = r.optString("repledge_bill_id", "").trim();
+        if (!replBillId.isEmpty() && !"".equals(replBillId)) {
+            tvReplBillId.setText(replBillId);
+            tvReplName.setText(r.optString("repl_name", ""));
+            tvReplBillNumber.setText(r.optString("repl_bill_number", ""));
+            tvReplCompanyBill.setText(r.optString("repl_company_bill", ""));
+            tvReplOpenedDate.setText(r.optString("repl_opening_date", ""));
+            tvReplAmount.setText(fmt(r.optDouble("repl_amount", 0)));
+
+            String replStatus = r.optString("repl_status", "");
+            tvReplStatus.setText(replStatus);
+            int replColor;
+            switch (replStatus.toUpperCase()) {
+                case "GIVEN":    replColor = getResources().getColor(R.color.blue,   getTheme()); break;
+                case "OPENED":   replColor = getResources().getColor(R.color.green,  getTheme()); break;
+                case "SUSPENSE": replColor = getResources().getColor(R.color.orange, getTheme()); break;
+                default:         replColor = getResources().getColor(R.color.white,  getTheme()); break;
+            }
+            tvReplStatus.setTextColor(replColor);
+            layoutRepledgeSection.setVisibility(View.VISIBLE);
+        } else {
+            layoutRepledgeSection.setVisibility(View.GONE);
+        }
 
         layoutBillDetails.setVisibility(View.VISIBLE);
         Toast.makeText(this, "Loaded: " + r.optString("bill_number", ""), Toast.LENGTH_SHORT).show();

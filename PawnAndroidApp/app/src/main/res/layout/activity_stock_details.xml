@@ -242,13 +242,14 @@
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <!-- Name / text input (Customer Name or Repledge Name) -->
-            <EditText
-                android:id="@+id/etNameInput"
+            <!-- Name / text input (Customer Name autocomplete or Repledge Name plain text) -->
+            <AutoCompleteTextView
+                android:id="@+id/acNameInput"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/bg_input"
+                android:completionThreshold="1"
                 android:hint="Enter name…"
                 android:inputType="textCapWords"
                 android:paddingStart="8dp"

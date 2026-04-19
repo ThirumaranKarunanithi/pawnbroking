@@ -22,7 +22,15 @@
       "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\pawnrestservice'; & '.\\\\mvnw.cmd' clean package -DskipTests 2>&1 | Select-String -Pattern 'BUILD|ERROR|error'\")",
       "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; & '.\\\\gradlew.bat' assembleDebug 2>&1 | Select-String -Pattern 'BUILD|error|FAILED'\")",
       "Bash(powershell -Command \"Get-ChildItem 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\app\\\\src\\\\main\\\\java\\\\com\\\\pawnbroking\\\\app' -Recurse -Filter '*.java' | Select-Object Name, FullName\")",
-      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; & '.\\\\gradlew.bat' assembleDebug 2>&1 | Select-String -Pattern 'BUILD|error|FAILED|compileDebug'\")"
+      "Bash(powershell -Command \"Set-Location 'D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp'; & '.\\\\gradlew.bat' assembleDebug 2>&1 | Select-String -Pattern 'BUILD|error|FAILED|compileDebug'\")",
+      "Bash(gradlew.bat assembleDebug)",
+      "Bash(cmd.exe /c \"gradlew.bat assembleDebug\")",
+      "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug\")",
+      "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug > build_output.txt 2>&1 && echo BUILD_SUCCESS || echo BUILD_FAILED\")",
+      "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain 2>&1 | more\")",
+      "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain\")",
+      "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain --info 1>build_out.txt 2>build_err.txt\" sleep 5 cat \"D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\build_out.txt\")",
+      "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain 1>D:\\\\build_out.txt 2>D:\\\\build_err.txt && echo done >> D:\\\\build_out.txt || echo failed >> D:\\\\build_err.txt\" sleep 30 cat /d/build_out.txt)"
     ]
   }
 }

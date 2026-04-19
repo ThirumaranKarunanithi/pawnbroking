@@ -1,5 +1,9 @@
 [
     {
+        "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\drawable_chip_filter.xml.flat",
+        "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\drawable\\chip_filter.xml"
+    },
+    {
         "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\drawable_ic_launcher_background.xml.flat",
         "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\drawable\\ic_launcher_background.xml"
     },
