@@ -2,11 +2,14 @@ package com.pawnbroking.app;
 
 import android.app.DatePickerDialog;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,9 +44,8 @@ public class StockDetailsActivity extends AppCompatActivity {
     // ── Active filter model ────────────────────────────────────────────────────
     private static class ActiveFilter {
         String type, label, value1, value2;
-        ActiveFilter(String type, String label, String value1, String value2) {
-            this.type = type; this.label = label;
-            this.value1 = value1; this.value2 = value2;
+        ActiveFilter(String type, String label, String v1, String v2) {
+            this.type = type; this.label = label; this.value1 = v1; this.value2 = v2;
         }
     }
     private final List<ActiveFilter> activeFilters = new ArrayList<>();
@@ -55,8 +57,7 @@ public class StockDetailsActivity extends AppCompatActivity {
     private TextView tvCompanyName, tvSummaryCount, tvSummaryAmount, tvSummaryInterest;
     private LinearLayout layoutSummary, layoutFilterContent, layoutMaterial;
     private LinearLayout layoutDateInput, layoutAmountInput, layoutFilterChips;
-    private EditText etSearch, etDateFrom, etDateTo, etAmountFrom, etAmountTo;
-    private AutoCompleteTextView acNameInput;
+    private EditText etSearch, etDateFrom, etDateTo, etAmountFrom, etAmountTo, etNameInput;
     private Button btnToggleFilters, btnModeCompany, btnModeRepledge, btnModeAll;
     private Button btnAddFilter, btnClearAllFilters;
     private Spinner spinnerMaterial, spinnerFilterType;
@@ -65,18 +66,21 @@ public class StockDetailsActivity extends AppCompatActivity {
     private String currentMaterial = "ALL";
     private boolean filterPanelOpen = false;
 
-    // ── Customer autocomplete ─────────────────────────────────────────────────
+    // ── Customer popup ────────────────────────────────────────────────────────
     private final List<JSONObject> customerSuggestions = new ArrayList<>();
-    private ArrayAdapter<String> customerDropdownAdapter;
-    private TextWatcher customerSearchWatcher;
-    private final android.os.Handler custHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private PopupWindow customerPopup;
+    private CustomerSuggestionAdapter customerListAdapter;
+    private TextWatcher customerNameWatcher;
+    private final android.os.Handler custHandler =
+            new android.os.Handler(android.os.Looper.getMainLooper());
 
     private final NumberFormat fmt = NumberFormat.getNumberInstance(new Locale("en", "IN"));
     private final List<JSONObject> bills = new ArrayList<>();
     private BillAdapter adapter;
 
     private final Runnable searchRunnable = this::load;
-    private final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final android.os.Handler handler =
+            new android.os.Handler(android.os.Looper.getMainLooper());
 
     // ── onCreate ───────────────────────────────────────────────────────────────
     @Override
@@ -98,7 +102,6 @@ public class StockDetailsActivity extends AppCompatActivity {
         }
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        // ── bind views ──
         tvCompanyName      = findViewById(R.id.tvCompanyName);
         tvSummaryCount     = findViewById(R.id.tvSummaryCount);
         tvSummaryAmount    = findViewById(R.id.tvSummaryAmount);
@@ -116,7 +119,7 @@ public class StockDetailsActivity extends AppCompatActivity {
         etDateTo           = findViewById(R.id.etDateTo);
         etAmountFrom       = findViewById(R.id.etAmountFrom);
         etAmountTo         = findViewById(R.id.etAmountTo);
-        acNameInput        = findViewById(R.id.acNameInput);
+        etNameInput        = findViewById(R.id.etNameInput);
         btnToggleFilters   = findViewById(R.id.btnToggleFilters);
         btnModeCompany     = findViewById(R.id.btnModeCompany);
         btnModeRepledge    = findViewById(R.id.btnModeRepledge);
@@ -128,50 +131,36 @@ public class StockDetailsActivity extends AppCompatActivity {
 
         tvCompanyName.setText(companyName);
 
-        // ── customer autocomplete adapter ──
-        customerDropdownAdapter = new ArrayAdapter<>(this,
-            android.R.layout.simple_dropdown_item_1line, new ArrayList<>());
-
-        // ── customer search TextWatcher (debounced 350ms) ──
-        customerSearchWatcher = new TextWatcher() {
+        // ── customer name watcher (debounced, 350ms) ──
+        customerNameWatcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void afterTextChanged(Editable s) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
                 custHandler.removeCallbacksAndMessages(null);
                 String q = s.toString().trim();
-                if (q.length() < 1) return;
-                custHandler.postDelayed(() -> ApiService.searchCustomers(companyId, q,
-                    new ApiService.Callback<JSONArray>() {
-                        @Override public void onSuccess(JSONArray data) {
-                            runOnUiThread(() -> {
-                                customerSuggestions.clear();
-                                List<String> items = new ArrayList<>();
-                                for (int i = 0; i < data.length(); i++) {
-                                    JSONObject c = data.optJSONObject(i);
-                                    if (c != null) {
-                                        customerSuggestions.add(c);
-                                        items.add(formatCustomer(c));
+                if (q.isEmpty()) { dismissCustomerPopup(); return; }
+                custHandler.postDelayed(() ->
+                    ApiService.searchCustomers(companyId, q,
+                        new ApiService.Callback<JSONArray>() {
+                            @Override public void onSuccess(JSONArray data) {
+                                runOnUiThread(() -> {
+                                    customerSuggestions.clear();
+                                    for (int i = 0; i < data.length(); i++) {
+                                        JSONObject c = data.optJSONObject(i);
+                                        if (c != null) customerSuggestions.add(c);
                                     }
-                                }
-                                customerDropdownAdapter.clear();
-                                customerDropdownAdapter.addAll(items);
-                                customerDropdownAdapter.notifyDataSetChanged();
-                            });
-                        }
-                        @Override public void onError(String msg) {}
-                    }), 350);
+                                    if (customerSuggestions.isEmpty()) dismissCustomerPopup();
+                                    else showCustomerPopup();
+                                });
+                            }
+                            @Override public void onError(String msg) {}
+                        }), 350);
             }
         };
 
-        // When an autocomplete item is picked → put just the customer_name in the field
-        acNameInput.setOnItemClickListener((parent, view, pos, id) -> {
-            if (pos < customerSuggestions.size()) {
-                String name = customerSuggestions.get(pos).optString("customer_name", "");
-                handler.post(() -> {
-                    acNameInput.setText(name);
-                    acNameInput.setSelection(name.length());
-                });
-            }
+        // Dismiss popup when name input loses focus
+        etNameInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) custHandler.postDelayed(this::dismissCustomerPopup, 150);
         });
 
         // ── toggle filter panel ──
@@ -194,29 +183,23 @@ public class StockDetailsActivity extends AppCompatActivity {
             @Override public void onNothingSelected(AdapterView<?> p) {}
         });
 
-        // ── mode buttons ──
         btnModeCompany.setOnClickListener(v  -> setMode(ViewMode.COMPANY_ALONE));
         btnModeRepledge.setOnClickListener(v -> setMode(ViewMode.REPLEDGE_ALONE));
         btnModeAll.setOnClickListener(v      -> setMode(ViewMode.ALL_DETAILS));
 
-        // ── filter type spinner ──
         buildFilterTypeSpinner();
 
-        // ── date field pickers ──
         etDateFrom.setOnClickListener(v -> pickDate(etDateFrom));
         etDateTo.setOnClickListener(v   -> pickDate(etDateTo));
 
-        // ── add filter ──
         btnAddFilter.setOnClickListener(v -> addFilter());
 
-        // ── clear all filters ──
         btnClearAllFilters.setOnClickListener(v -> {
             activeFilters.clear();
             refreshChips();
             load();
         });
 
-        // ── search ──
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
@@ -226,7 +209,6 @@ public class StockDetailsActivity extends AppCompatActivity {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // ── recycler ──
         adapter = new BillAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -234,68 +216,153 @@ public class StockDetailsActivity extends AppCompatActivity {
         load();
     }
 
-    // ── Format customer for autocomplete dropdown ──────────────────────────────
-    private String formatCustomer(JSONObject c) {
-        String id    = c.optString("customer_id",  "");
-        String name  = c.optString("customer_name","");
-        String st    = c.optString("spouse_type",  "").trim();
-        String sn    = c.optString("spouse_name",  "").trim();
-        String door  = c.optString("door_number",  "").trim();
-        String street= c.optString("street",       "").trim();
-        String area  = c.optString("area",         "").trim();
-        String city  = c.optString("city",         "").trim();
-        String mob   = c.optString("mobile_number","").trim();
+    // ── Customer popup ─────────────────────────────────────────────────────────
 
-        StringBuilder sb = new StringBuilder();
-        if (!id.isEmpty()) sb.append("ID: ").append(id).append(" - ");
-        sb.append(name);
-        if (!st.isEmpty() || !sn.isEmpty()) sb.append(" ").append(st).append(" ").append(sn);
+    private void showCustomerPopup() {
+        if (customerSuggestions.isEmpty()) { dismissCustomerPopup(); return; }
 
-        List<String> addrParts = new ArrayList<>();
-        if (!door.isEmpty())   addrParts.add(door);
-        if (!street.isEmpty()) addrParts.add(street);
-        if (!area.isEmpty())   addrParts.add(area);
-        if (!addrParts.isEmpty()) sb.append("\n").append(String.join(", ", addrParts));
-
-        if (!city.isEmpty() || !mob.isEmpty()) {
-            sb.append("\n");
-            if (!city.isEmpty()) sb.append(city);
-            if (!mob.isEmpty())  sb.append(city.isEmpty() ? "" : ". ").append("MOB: ").append(mob);
+        // Build adapter once
+        if (customerListAdapter == null) {
+            customerListAdapter = new CustomerSuggestionAdapter();
+        } else {
+            customerListAdapter.notifyDataSetChanged();
         }
-        return sb.toString();
+
+        // Build ListView once
+        ListView lv = new ListView(this);
+        lv.setAdapter(customerListAdapter);
+        lv.setDivider(new ColorDrawable(Color.parseColor("#2A3854")));
+        lv.setDividerHeight(dp(1));
+        lv.setBackgroundColor(Color.parseColor("#0D1B2A"));
+        lv.setOnItemClickListener((parent, view, pos, id) -> {
+            if (pos < customerSuggestions.size()) {
+                String name = customerSuggestions.get(pos).optString("customer_name", "");
+                etNameInput.removeTextChangedListener(customerNameWatcher);
+                etNameInput.setText(name);
+                etNameInput.setSelection(name.length());
+                etNameInput.addTextChangedListener(customerNameWatcher);
+                dismissCustomerPopup();
+            }
+        });
+
+        // Build popup
+        dismissCustomerPopup();
+        customerPopup = new PopupWindow(lv,
+            etNameInput.getWidth(),
+            dp(280),
+            false);
+        customerPopup.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0D1B2A")));
+        customerPopup.setOutsideTouchable(true);
+        customerPopup.setElevation(12f);
+        customerPopup.setOnDismissListener(() -> customerPopup = null);
+        customerPopup.showAsDropDown(etNameInput, 0, dp(2));
+    }
+
+    private void dismissCustomerPopup() {
+        if (customerPopup != null && customerPopup.isShowing()) customerPopup.dismiss();
+        customerPopup = null;
+    }
+
+    // ── Customer suggestion list adapter ──────────────────────────────────────
+
+    private class CustomerSuggestionAdapter extends BaseAdapter {
+        @Override public int getCount()          { return customerSuggestions.size(); }
+        @Override public Object getItem(int pos) { return customerSuggestions.get(pos); }
+        @Override public long getItemId(int pos) { return pos; }
+
+        @Override
+        public View getView(int pos, View convertView, ViewGroup parent) {
+            LinearLayout row = new LinearLayout(StockDetailsActivity.this);
+            row.setOrientation(LinearLayout.VERTICAL);
+            row.setPadding(dp(14), dp(10), dp(14), dp(10));
+            row.setBackgroundColor(Color.parseColor("#0D1B2A"));
+
+            JSONObject c     = customerSuggestions.get(pos);
+            String id        = c.optString("customer_id",   "").trim();
+            String name      = c.optString("customer_name", "").trim();
+            String st        = c.optString("spouse_type",   "").trim();
+            String sn        = c.optString("spouse_name",   "").trim();
+            String door      = c.optString("door_number",   "").trim();
+            String street    = c.optString("street",        "").trim();
+            String area      = c.optString("area",          "").trim();
+            String city      = c.optString("city",          "").trim();
+            String mob       = c.optString("mobile_number", "").trim();
+
+            // ── Line 1: CUST-ID: xxx - Name SpouseType SpouseName ──
+            StringBuilder l1 = new StringBuilder();
+            if (!id.isEmpty()) l1.append("CUST-ID: ").append(id).append("  -  ");
+            l1.append(name);
+            if (!st.isEmpty() || !sn.isEmpty())
+                l1.append("  ").append(st).append(" ").append(sn);
+
+            TextView tvLine1 = new TextView(StockDetailsActivity.this);
+            tvLine1.setText(l1.toString());
+            tvLine1.setTextColor(Color.parseColor("#E6B800"));
+            tvLine1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+            tvLine1.setTypeface(null, Typeface.BOLD);
+            row.addView(tvLine1);
+
+            // ── Line 2: door, street area ──
+            List<String> addrParts = new ArrayList<>();
+            if (!door.isEmpty())   addrParts.add(door);
+            if (!street.isEmpty()) addrParts.add(street);
+            if (!area.isEmpty())   addrParts.add(area);
+            if (!addrParts.isEmpty()) {
+                TextView tvAddr = new TextView(StockDetailsActivity.this);
+                tvAddr.setText(String.join(", ", addrParts));
+                tvAddr.setTextColor(Color.parseColor("#CCCCCC"));
+                tvAddr.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+                tvAddr.setPadding(0, dp(2), 0, 0);
+                row.addView(tvAddr);
+            }
+
+            // ── Line 3: city. MOB: mobile ──
+            if (!city.isEmpty() || !mob.isEmpty()) {
+                StringBuilder l3 = new StringBuilder();
+                if (!city.isEmpty()) l3.append(city);
+                if (!mob.isEmpty())  {
+                    if (l3.length() > 0) l3.append("   MOB: ");
+                    else l3.append("MOB: ");
+                    l3.append(mob);
+                }
+                TextView tvCity = new TextView(StockDetailsActivity.this);
+                tvCity.setText(l3.toString());
+                tvCity.setTextColor(Color.parseColor("#AAAAAA"));
+                tvCity.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+                tvCity.setPadding(0, dp(2), 0, 0);
+                row.addView(tvCity);
+            }
+
+            return row;
+        }
     }
 
     // ── Mode switching ─────────────────────────────────────────────────────────
     private void setMode(ViewMode mode) {
         currentMode = mode;
-        int gold     = Color.parseColor("#E6B800");
-        int dark     = Color.parseColor("#0D1B2A");
-        int inactive = Color.parseColor("#1E2A4A");
-        int grey     = Color.parseColor("#AAAAAA");
+        int gold = Color.parseColor("#E6B800"), dark = Color.parseColor("#0D1B2A");
+        int inactive = Color.parseColor("#1E2A4A"), grey = Color.parseColor("#AAAAAA");
 
         btnModeCompany.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                mode == ViewMode.COMPANY_ALONE  ? gold : inactive));
+            mode == ViewMode.COMPANY_ALONE  ? gold : inactive));
         btnModeCompany.setTextColor(mode == ViewMode.COMPANY_ALONE  ? dark : grey);
 
         btnModeRepledge.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                mode == ViewMode.REPLEDGE_ALONE ? gold : inactive));
+            mode == ViewMode.REPLEDGE_ALONE ? gold : inactive));
         btnModeRepledge.setTextColor(mode == ViewMode.REPLEDGE_ALONE ? dark : grey);
 
         btnModeAll.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
-                mode == ViewMode.ALL_DETAILS    ? gold : inactive));
+            mode == ViewMode.ALL_DETAILS    ? gold : inactive));
         btnModeAll.setTextColor(mode == ViewMode.ALL_DETAILS    ? dark : grey);
 
-        // Material type only relevant for Company / All
         layoutMaterial.setVisibility(mode == ViewMode.REPLEDGE_ALONE ? View.GONE : View.VISIBLE);
 
-        // Remove filters incompatible with new mode
-        if (mode == ViewMode.COMPANY_ALONE) {
+        if (mode == ViewMode.COMPANY_ALONE)
             activeFilters.removeIf(f -> f.type.equals(FILTER_REPL_DATE) || f.type.equals(FILTER_REPL_NAME));
-        } else if (mode == ViewMode.REPLEDGE_ALONE) {
+        else if (mode == ViewMode.REPLEDGE_ALONE)
             activeFilters.removeIf(f -> f.type.equals(FILTER_COMP_DATE)   ||
                                         f.type.equals(FILTER_COMP_AMOUNT) ||
                                         f.type.equals(FILTER_CUSTOMER_NAME));
-        }
 
         buildFilterTypeSpinner();
         refreshChips();
@@ -315,10 +382,10 @@ public class StockDetailsActivity extends AppCompatActivity {
             types.add(FILTER_REPL_NAME);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+        ArrayAdapter<String> sa = new ArrayAdapter<>(this,
             android.R.layout.simple_spinner_item, types);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFilterType.setAdapter(adapter);
+        sa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFilterType.setAdapter(sa);
         spinnerFilterType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> p, View v, int pos, long id) {
                 pendingFilterType = types.get(pos);
@@ -326,11 +393,7 @@ public class StockDetailsActivity extends AppCompatActivity {
             }
             @Override public void onNothingSelected(AdapterView<?> p) {}
         });
-
-        if (!types.isEmpty()) {
-            pendingFilterType = types.get(0);
-            updateFilterInputVisibility();
-        }
+        if (!types.isEmpty()) { pendingFilterType = types.get(0); updateFilterInputVisibility(); }
     }
 
     private void updateFilterInputVisibility() {
@@ -339,33 +402,27 @@ public class StockDetailsActivity extends AppCompatActivity {
         boolean isAmount = FILTER_COMP_AMOUNT.equals(pendingFilterType);
         boolean isName   = FILTER_CUSTOMER_NAME.equals(pendingFilterType)
                         || FILTER_REPL_NAME.equals(pendingFilterType);
-        boolean isCustName = FILTER_CUSTOMER_NAME.equals(pendingFilterType);
+        boolean isCust   = FILTER_CUSTOMER_NAME.equals(pendingFilterType);
 
         layoutDateInput.setVisibility(isDate   ? View.VISIBLE : View.GONE);
         layoutAmountInput.setVisibility(isAmount ? View.VISIBLE : View.GONE);
-        acNameInput.setVisibility(isName     ? View.VISIBLE : View.GONE);
+        etNameInput.setVisibility(isName     ? View.VISIBLE : View.GONE);
 
-        // Attach / detach customer autocomplete TextWatcher based on filter type
-        acNameInput.removeTextChangedListener(customerSearchWatcher);
+        // Attach / detach customer search watcher
+        etNameInput.removeTextChangedListener(customerNameWatcher);
         customerSuggestions.clear();
-        customerDropdownAdapter.clear();
-        if (isCustName) {
-            acNameInput.setAdapter(customerDropdownAdapter);
-            acNameInput.addTextChangedListener(customerSearchWatcher);
-        } else {
-            // Plain input for Repledge Name — no autocomplete
-            acNameInput.setAdapter(null);
-        }
-        acNameInput.setText("");
+        dismissCustomerPopup();
+        if (isCust) etNameInput.addTextChangedListener(customerNameWatcher);
+        etNameInput.setText("");
     }
 
     // ── Date picker ────────────────────────────────────────────────────────────
     private void pickDate(EditText target) {
         Calendar cal = Calendar.getInstance();
-        new DatePickerDialog(this, (view, year, month, day) -> {
-            String date = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day);
-            target.setText(date);
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show();
+        new DatePickerDialog(this, (view, year, month, day) ->
+            target.setText(String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, day)),
+            cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            .show();
     }
 
     // ── Add filter ─────────────────────────────────────────────────────────────
@@ -377,74 +434,57 @@ public class StockDetailsActivity extends AppCompatActivity {
             v1 = etDateFrom.getText().toString().trim();
             v2 = etDateTo.getText().toString().trim();
             if (v1.isEmpty() && v2.isEmpty()) {
-                Toast.makeText(this, "Pick at least one date", Toast.LENGTH_SHORT).show();
-                return;
+                Toast.makeText(this, "Pick at least one date", Toast.LENGTH_SHORT).show(); return;
             }
-            String prefix = FILTER_COMP_DATE.equals(type) ? "Comp Date" : "Repl Date";
-            label = prefix + ": " + (v1.isEmpty() ? "…" : v1)
-                           + " → " + (v2.isEmpty() ? "…" : v2);
-            etDateFrom.setText("");
-            etDateTo.setText("");
+            label = (FILTER_COMP_DATE.equals(type) ? "Comp Date" : "Repl Date") +
+                    ": " + (v1.isEmpty() ? "…" : v1) + " → " + (v2.isEmpty() ? "…" : v2);
+            etDateFrom.setText(""); etDateTo.setText("");
 
         } else if (FILTER_COMP_AMOUNT.equals(type)) {
             v1 = etAmountFrom.getText().toString().trim();
             v2 = etAmountTo.getText().toString().trim();
             if (v1.isEmpty() && v2.isEmpty()) {
-                Toast.makeText(this, "Enter at least one amount", Toast.LENGTH_SHORT).show();
-                return;
+                Toast.makeText(this, "Enter at least one amount", Toast.LENGTH_SHORT).show(); return;
             }
-            label = "Amount: " + (v1.isEmpty() ? "0" : v1)
-                               + " → " + (v2.isEmpty() ? "∞" : v2);
-            etAmountFrom.setText("");
-            etAmountTo.setText("");
+            label = "Amount: " + (v1.isEmpty() ? "0" : v1) + " → " + (v2.isEmpty() ? "∞" : v2);
+            etAmountFrom.setText(""); etAmountTo.setText("");
 
         } else {
-            // CUSTOMER_NAME or REPLEDGE_NAME
-            v1 = acNameInput.getText().toString().trim();
+            v1 = etNameInput.getText().toString().trim();
             if (v1.isEmpty()) {
-                Toast.makeText(this, "Enter a name to search", Toast.LENGTH_SHORT).show();
-                return;
+                Toast.makeText(this, "Enter a name to search", Toast.LENGTH_SHORT).show(); return;
             }
             label = (FILTER_CUSTOMER_NAME.equals(type) ? "Customer" : "Repl Name") + ": " + v1;
-            acNameInput.setText("");
+            etNameInput.setText("");
+            dismissCustomerPopup();
         }
 
-        // Replace existing filter of the same type
         activeFilters.removeIf(f -> f.type.equals(type));
         activeFilters.add(new ActiveFilter(type, label, v1, v2));
-
         refreshChips();
         load();
     }
 
-    // ── Chips ──────────────────────────────────────────────────────────────────
+    // ── Filter chips ───────────────────────────────────────────────────────────
     private void refreshChips() {
         layoutFilterChips.removeAllViews();
-        if (activeFilters.isEmpty()) {
-            btnClearAllFilters.setVisibility(View.GONE);
-            return;
-        }
+        if (activeFilters.isEmpty()) { btnClearAllFilters.setVisibility(View.GONE); return; }
         btnClearAllFilters.setVisibility(View.VISIBLE);
-        for (ActiveFilter f : new ArrayList<>(activeFilters)) {
-            layoutFilterChips.addView(makeChip(f));
-        }
+        for (ActiveFilter f : new ArrayList<>(activeFilters)) layoutFilterChips.addView(makeChip(f));
     }
 
     private View makeChip(ActiveFilter f) {
         LinearLayout chip = new LinearLayout(this);
         chip.setOrientation(LinearLayout.HORIZONTAL);
-        chip.setGravity(android.view.Gravity.CENTER_VERTICAL);
-
+        chip.setGravity(Gravity.CENTER_VERTICAL);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(Color.parseColor("#1E2A4A"));
         bg.setStroke(dp(1), Color.parseColor("#E6B800"));
         bg.setCornerRadius(dp(14));
         chip.setBackground(bg);
-
         chip.setPadding(dp(10), dp(3), dp(6), dp(3));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lp.setMarginEnd(dp(6));
         chip.setLayoutParams(lp);
 
@@ -458,11 +498,7 @@ public class StockDetailsActivity extends AppCompatActivity {
         tvX.setText("  ×");
         tvX.setTextColor(Color.parseColor("#E6B800"));
         tvX.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        tvX.setOnClickListener(v -> {
-            activeFilters.remove(f);
-            refreshChips();
-            load();
-        });
+        tvX.setOnClickListener(v -> { activeFilters.remove(f); refreshChips(); load(); });
         chip.addView(tvX);
         return chip;
     }
@@ -474,25 +510,23 @@ public class StockDetailsActivity extends AppCompatActivity {
         String search = etSearch.getText().toString().trim();
 
         String compDateFrom = null, compDateTo = null;
-        String amountFrom   = null, amountTo   = null;
-        String customerName = null;
-        String repledgeName = null;
-        String replDateFrom = null, replDateTo = null;
+        String amountFrom = null, amountTo = null, customerName = null;
+        String repledgeName = null, replDateFrom = null, replDateTo = null;
 
         for (ActiveFilter f : activeFilters) {
             switch (f.type) {
                 case FILTER_COMP_DATE:     compDateFrom = f.value1; compDateTo = f.value2; break;
                 case FILTER_COMP_AMOUNT:   amountFrom   = f.value1; amountTo   = f.value2; break;
-                case FILTER_CUSTOMER_NAME: customerName = f.value1; break;
+                case FILTER_CUSTOMER_NAME: customerName = f.value1;                        break;
                 case FILTER_REPL_DATE:     replDateFrom = f.value1; replDateTo = f.value2; break;
-                case FILTER_REPL_NAME:     repledgeName = f.value1; break;
+                case FILTER_REPL_NAME:     repledgeName = f.value1;                        break;
             }
         }
 
         ApiService.Callback<JSONObject> cb = new ApiService.Callback<JSONObject>() {
             @Override public void onSuccess(JSONObject data) {
-                final boolean isRepledge = (currentMode == ViewMode.REPLEDGE_ALONE);
-                runOnUiThread(() -> bindData(data, isRepledge));
+                final boolean isRepl = (currentMode == ViewMode.REPLEDGE_ALONE);
+                runOnUiThread(() -> bindData(data, isRepl));
             }
             @Override public void onError(String msg) {
                 runOnUiThread(() -> {
@@ -505,8 +539,7 @@ public class StockDetailsActivity extends AppCompatActivity {
         switch (currentMode) {
             case COMPANY_ALONE:
                 ApiService.getStock(companyId, currentMaterial, search,
-                    compDateFrom, compDateTo, customerName, amountFrom, amountTo,
-                    0, 200, cb);
+                    compDateFrom, compDateTo, customerName, amountFrom, amountTo, 0, 200, cb);
                 break;
             case REPLEDGE_ALONE:
                 ApiService.getRepledgeStock(companyId, currentMaterial, search,
@@ -530,22 +563,17 @@ public class StockDetailsActivity extends AppCompatActivity {
 
     private void bindData(JSONObject data, boolean isRepledge) {
         progressBar.setVisibility(View.GONE);
-        long   count    = data.optLong("total", 0);
-        double amount   = data.optDouble("totalAmount", 0);
-        double interest = data.optDouble("totalInterest", 0);
-
+        long count = data.optLong("total", 0);
         tvSummaryCount.setText(count + " bill" + (count != 1 ? "s" : ""));
-        tvSummaryAmount.setText("₹" + shortFmt(amount));
-        tvSummaryInterest.setText("Intr ₹" + shortFmt(interest));
+        tvSummaryAmount.setText("₹" + shortFmt(data.optDouble("totalAmount", 0)));
+        tvSummaryInterest.setText("Intr ₹" + shortFmt(data.optDouble("totalInterest", 0)));
         layoutSummary.setVisibility(View.VISIBLE);
 
         bills.clear();
         JSONArray arr = data.optJSONArray("bills");
-        if (arr != null) {
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject o = arr.optJSONObject(i);
-                if (o != null) bills.add(o);
-            }
+        if (arr != null) for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.optJSONObject(i);
+            if (o != null) bills.add(o);
         }
         adapter.setMode(currentMode, isRepledge);
         adapter.notifyDataSetChanged();
@@ -565,7 +593,7 @@ public class StockDetailsActivity extends AppCompatActivity {
     // ── RecyclerView Adapter ───────────────────────────────────────────────────
     class BillAdapter extends RecyclerView.Adapter<BillAdapter.VH> {
         private boolean isRepledge = false;
-        private ViewMode mode      = ViewMode.COMPANY_ALONE;
+        private ViewMode mode = ViewMode.COMPANY_ALONE;
 
         void setMode(ViewMode m, boolean r) { mode = m; isRepledge = r; }
 
@@ -579,7 +607,6 @@ public class StockDetailsActivity extends AppCompatActivity {
             JSONObject b = bills.get(pos);
 
             if (isRepledge) {
-                // ── Repledge Alone ──
                 h.tvBillNo.setText(b.optString("repledge_bill_id", ""));
                 h.tvCustomer.setText(b.optString("repledge_name", "")
                     + " — " + b.optString("repledge_bill_number", ""));
@@ -589,24 +616,16 @@ public class StockDetailsActivity extends AppCompatActivity {
                 h.tvInterest.setText("₹" + fmt.format(b.optDouble("interest", 0)));
                 h.tvWeight.setText("");
             } else {
-                // ── Company Alone or All Details ──
                 h.tvBillNo.setText(b.optString("bill_number", ""));
-
                 String cust = b.optString("customer_name", "");
-                String spouseType = b.optString("spouse_type", "");
-                String spouseName = b.optString("spouse_name", "");
-                if (!spouseName.isEmpty()) cust += " " + spouseType + " " + spouseName;
+                String sn = b.optString("spouse_name", "");
+                if (!sn.isEmpty()) cust += " " + b.optString("spouse_type","") + " " + sn;
                 String area = b.optString("area", "");
                 if (!area.isEmpty()) cust += "\n" + area;
-
                 if (mode == ViewMode.ALL_DETAILS) {
-                    String replName = b.optString("repledge_name", "");
-                    if (!replName.isEmpty()) {
-                        String replDate = dateStr(b.optString("repledge_date", ""));
-                        cust += "\nRepledge: " + replName + (replDate.isEmpty() ? "" : " (" + replDate + ")");
-                    }
+                    String rn = b.optString("repledge_name", "");
+                    if (!rn.isEmpty()) cust += "\nRepledge: " + rn;
                 }
-
                 h.tvCustomer.setText(cust);
                 h.tvItems.setText(b.optString("items", ""));
                 h.tvDate.setText(dateStr(b.optString("opening_date", "")));
@@ -622,28 +641,21 @@ public class StockDetailsActivity extends AppCompatActivity {
 
             String status = b.optString("status", "");
             h.tvStatus.setText(status);
-            int statusColor;
+            int sc;
             switch (status.toUpperCase()) {
-                case "OPENED":    statusColor = Color.parseColor("#4CAF50"); break;
-                case "LOCKED":    statusColor = Color.parseColor("#FF9800"); break;
-                case "GIVEN":     statusColor = Color.parseColor("#2196F3"); break;
-                case "SUSPENSE":  statusColor = Color.parseColor("#9C27B0"); break;
-                default:          statusColor = Color.parseColor("#AAAAAA"); break;
+                case "OPENED":   sc = Color.parseColor("#4CAF50"); break;
+                case "LOCKED":   sc = Color.parseColor("#FF9800"); break;
+                case "GIVEN":    sc = Color.parseColor("#2196F3"); break;
+                case "SUSPENSE": sc = Color.parseColor("#9C27B0"); break;
+                default:         sc = Color.parseColor("#AAAAAA"); break;
             }
-            h.tvStatus.setTextColor(statusColor);
+            h.tvStatus.setTextColor(sc);
 
-            // ── Row tap → open BillingActivity ──
-            final String billNo;
-            final String materialType = mat;
-            if (isRepledge) {
-                billNo = b.optString("company_bill_number", "");
-            } else {
-                billNo = b.optString("bill_number", "");
-            }
+            final String billNo = isRepledge
+                ? b.optString("company_bill_number", "")
+                : b.optString("bill_number", "");
             h.itemView.setForeground(getDrawable(android.R.drawable.list_selector_background));
-            h.itemView.setOnClickListener(v -> {
-                if (!billNo.isEmpty()) openBill(billNo, materialType);
-            });
+            h.itemView.setOnClickListener(v -> { if (!billNo.isEmpty()) openBill(billNo, mat); });
         }
 
         @Override public int getItemCount() { return bills.size(); }

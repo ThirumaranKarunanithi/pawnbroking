@@ -32,12 +32,12 @@
         "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\layout\\activity_monthly_report.xml"
     },
     {
-        "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\menu_menu_home.xml.flat",
-        "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\menu\\menu_home.xml"
-    },
-    {
         "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\layout_activity_todays_account.xml.flat",
         "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\layout\\activity_todays_account.xml"
+    },
+    {
+        "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\menu_menu_home.xml.flat",
+        "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\menu\\menu_home.xml"
     },
     {
         "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
@@ -60,16 +60,16 @@
         "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\layout\\activity_customers.xml"
     },
     {
-        "merged": "com.pawnbroking.app-merged_res-33:/layout_activity_billing.xml.flat",
-        "source": "com.pawnbroking.app-main-35:/layout/activity_billing.xml"
-    },
-    {
         "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\layout_item_stock_bill.xml.flat",
         "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\layout\\item_stock_bill.xml"
     },
     {
         "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\layout_activity_settings.xml.flat",
         "source": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-main-35:\\layout\\activity_settings.xml"
+    },
+    {
+        "merged": "com.pawnbroking.app-merged_res-33:/layout_activity_stock_details.xml.flat",
+        "source": "com.pawnbroking.app-main-35:/layout/activity_stock_details.xml"
     },
     {
         "merged": "C:\\Users\\tiruk\\.gradle\\daemon\\8.4\\com.pawnbroking.app-merged_res-33:\\layout_activity_bill_detail.xml.flat",

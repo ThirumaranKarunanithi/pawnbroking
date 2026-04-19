@@ -20,7 +20,6 @@ drawable chip_unselected
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_logo
-id acNameInput
 id action_logout
 id action_refresh
 id action_settings
@@ -62,6 +61,7 @@ id etAmountTo
 id etBillNumber
 id etDateFrom
 id etDateTo
+id etNameInput
 id etPassword
 id etSearch
 id etUsername

@@ -30,7 +30,9 @@
       "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain 2>&1 | more\")",
       "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain\")",
       "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain --info 1>build_out.txt 2>build_err.txt\" sleep 5 cat \"D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp\\\\build_out.txt\")",
-      "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain 1>D:\\\\build_out.txt 2>D:\\\\build_err.txt && echo done >> D:\\\\build_out.txt || echo failed >> D:\\\\build_err.txt\" sleep 30 cat /d/build_out.txt)"
+      "Bash(cmd.exe /c \"cd /d D:\\\\Pawnbroking\\\\SOURCE\\\\webservice\\\\PawnAndroidApp && gradlew.bat assembleDebug --console=plain 1>D:\\\\build_out.txt 2>D:\\\\build_err.txt && echo done >> D:\\\\build_out.txt || echo failed >> D:\\\\build_err.txt\" sleep 30 cat /d/build_out.txt)",
+      "Bash(cmd.exe /c gradlew.bat assembleDebug)",
+      "Bash(bash gradlew *)"
     ]
   }
 }
